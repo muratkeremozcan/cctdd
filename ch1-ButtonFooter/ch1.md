@@ -40,7 +40,7 @@ We will be following Angular's well known [Tour of Heroes tutorial](https://angu
 
 This is what our component might look like eventually. We need a button that wraps a label and CSS icon.
 
-![button-footer](/Users/murat/Desktop/pics/button-footer.png)
+![button-footer](../img/button-footer.png)
 
 Create a branch `feat/button-footer `.
 
@@ -85,7 +85,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-![ButtonFooter-2](/Users/murat/Desktop/pics/ButtonFooter-hello.png)
+![ButtonFooter-2](../img/ButtonFooter-hello.png)
 
 Time for some red. Let's have the button wrap a span, the span will include a label.
 
@@ -192,7 +192,7 @@ export default function ButtonFooter({ label, IconClass }: ButtonFooterProps) {
 
 That fails the test because now we have to pass a `IconClass` prop to the component we are mounting. Become familiar with this error; it says we expected some prop but got undefined.
 
-![ButtonFooter-error](/Users/murat/Desktop/pics/ButtonFooter-error.png)
+![ButtonFooter-error](../img/ButtonFooter-error.png)
 
 If we pass a prop `IconClass` with a value of type `StyledIcon`, then our test will pass again (Green 3).
 
@@ -211,7 +211,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-![ButtoFooter-style-green](/Users/murat/Desktop/pics/ButtoFooter-style-green.png)
+![ButtoFooter-style-green](../img/ButtoFooter-style-green.png)
 
 This means we can have different styles, and probably should call a click handler on click. Let's write the test for it (Red 4).
 
@@ -449,7 +449,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-![ButtonFooter-2tests-green](/Users/murat/Desktop/pics/ButtonFooter-2tests-green.png)
+![ButtonFooter-2tests-green](../img/ButtonFooter-2tests-green.png)
 
 ## Summary
 
