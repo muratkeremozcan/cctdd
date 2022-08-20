@@ -281,6 +281,8 @@ This finalizes our work with the component.
 
 ![CardContent-final](../img/CardContent-final.png)
 
+> We can now delete the sanity placeholder e2e and ct test; delete `cypress/e2e/spec.cy.ts` and `src/App.test.tsx`.
+
 ## Summary
 
 Here are the Red Green Refactor cycles we went through while creating the component.
