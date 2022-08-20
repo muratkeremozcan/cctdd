@@ -1,48 +1,10 @@
-We will recreate Angular's Tour of Heroes, in a component test driven manner, using Cypress, React and Redux.
-
-## Setup
-
-Use this [template](https://github.com/muratkeremozcan/react-cypress-ts-template) to create a repository, it has React, TS, Cypress (e2e & ct), GHA with CI architecture, Jest, ESLint, Prettier, Renovate, Husky, Lint-staged, and most of the things you need to get started with a new project. Clone the repo and install.
-
-For the instructions we will assume that the repo is https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts, and we are using yarn.
-
-```bash
-git clone https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts
-cd tour-of-heroes-react-cypress-ts
-# if you are setup on company proxy, append the --registry modifier
-# otherwise just yarn install
-yarn install --registry https://registry.yarnpkg.com
-# note: from here on assume that --registry https://registry.yarnpkg.com
-# will need to be appended if working on a company proxy
-```
-
-For a sanity check, we will execute the commands one at a time
-
-```bash
-# parallel unit, typecheck, lint, format, build
-yarn validate
-
-# Execute the e2e, ct & unit tests
-
-# check the Cypress component test runner
-yarn cy:open-ct
-
-# check the Cypress e2e test runner (starts the app)
-yarn cy:open-e2e
-
-# check Jest (local execution is in watch mode)
-yarn test
-```
-
-We will be following Angular's well known [Tour of Heroes tutorial](https://angular.io/tutorial), which serves us a requirement specification.
-
-## ButtonFooter
+# ButtonFooter
 
 This is what our component might look like eventually. We need a button that wraps a label and CSS icon.
 
 ![button-footer](../img/button-footer.png)
 
-Create a branch `feat/button-footer `.
+Create a branch `feat/button-footer`.
 
 Create `src/components/ButtonFooter` folder and 2 files in it; `ButtonFooter.cy.tsx`, `ButtonFooter.tsx`.
 
@@ -459,9 +421,13 @@ We added a minimal component to pass the test (Green 1).
 
 We enhanced the test to check a little more `cy.contains('button', 'hello')` (Refactor 1).
 
+<br />
+
 We enhanced the the component to accept a property `label` (Red 2).
 
 Then we added a test to check that the label is displayed inside the span (Green 2).
+
+<br />
 
 We added the type to the props in the component (Refactor 3).
 
@@ -469,9 +435,13 @@ We added a styled icon to the component as a new prop and got a failing test (Re
 
 We enhanced the test to also use that new prop (Green 3).
 
+<br />
+
 We added a test for the onClick event (Red 4).
 
 We enhanced the component to accommodate the new feature (Green 4).
+
+<br />
 
 We decided to a data-cy query for the button click (Red 5).
 
@@ -479,8 +449,12 @@ And enhanced the component with the data-cy attribute (Green 5).
 
 We enhanced the test and made sure that the `IconClass is rendered (Refactor 5).
 
+<br />
+
 We increased the test coverage by trying a different component; a green Save button (Green 6).
 
 And we refactored the test to be leaner (Refactor 6).
+
+<br />
 
 A PR with these changes can be found [here](https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts/pull/1).
