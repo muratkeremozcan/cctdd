@@ -458,3 +458,5 @@ And we refactored the test to be leaner (Refactor 6).
 <br />
 
 A PR with these changes can be found [here](https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts/pull/1).
+
+// TODO: Decide what is being done with styles, at a later time, and tweak things if needed.
