@@ -114,7 +114,7 @@ export default function CardContent({ name, description }: ButtonFooterProps) {
 }
 ```
 
-Now we can add some styles to our component. Create a file `src/styles.css` and paste the below css in.
+Now we can add some styles to our component. Create a file `src/index.css` and paste the below css in.
 
 ```css
 .menu-list .active-link,
@@ -279,7 +279,7 @@ This finalizes our work with the component.
 
 ![CardContent-final](../img/CardContent-final.png)
 
-> We can now delete the sanity placeholder e2e and ct test; delete `cypress/e2e/spec.cy.ts` and `src/App.test.tsx`.
+
 
 ## Summary
 
