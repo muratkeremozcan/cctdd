@@ -1,6 +1,6 @@
 # ButtonFooter
 
-This is what our component might look like eventually. We need a button that wraps a label and CSS icon.
+This is what our component might look like eventually. We need a button that wraps a label and CSS icon, the icon and the text can vary.
 
 ![button-footer](../img/button-footer.png)
 
@@ -33,7 +33,7 @@ export default function ButtonFooter() {
 
 Start the Cypress component test runner and execute the test; `yarn cy:open-ct`.
 
-Let's test that the string renders (Refactor 1).
+Let's test that the string renders (Green 1).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -49,7 +49,7 @@ describe("ButtonFooter", () => {
 
 ![ButtonFooter-2](../img/ButtonFooter-hello.png)
 
-Time for some red. Let's have the button wrap a span, the span will include a label.
+Let's have the button wrap a span, the span will include a string.
 
 ```ts
 // src/components/ButtonFooter.tsx
@@ -63,7 +63,7 @@ export default function ButtonFooter() {
 }
 ```
 
-The test is still green because we are looking for the string somewhere in within a button selector. Let's update that to be more specific.
+The test is still green because we are looking for the string somewhere in within a button selector. Let's update that to be more specific (Green 1).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -77,21 +77,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-The span need to be a variable, a prop that we can pass in. Let's name the variable for the span `label`, and make it a prop (Red 2).
-
-```tsx
-// src/components/ButtonFooter.tsx
-
-export default function ButtonFooter({ label }) {
-  return (
-    <button>
-      <span>{label}</span>
-    </button>
-  );
-}
-```
-
-Now we need a passing test. Let's mount the component with a prop, and test for it (Green 2).
+We really want that "hello" string to be a variable, a prop that we can pass in to the component. Let's name the variable for the string `label`, and make it a prop. We mount the component with this new prop. The test still passes, but we get compiler error (Red 2).
 
 ```tsx
 // src/components/ButtonFooter.tsx
@@ -99,14 +85,14 @@ import ButtonFooter from "./ButtonFooter";
 
 describe("ButtonFooter", () => {
   it("should", () => {
-    const label = "Edit";
-    cy.mount(<ButtonFooter label={"Edit"} />);
+    const label = "hello";
+    cy.mount(<ButtonFooter label={label} />);
     cy.contains("span", label);
   });
 });
 ```
 
-In the component, we intentionally left the type of the prop out, because first we wanted to use it and then decide what it should be. Making it a string came naturally while using the component. Now we can enhance the types of the properties; `label` will be a `string` (Refactor 2).
+Now we need a passing test. Let's add the prop and its type to the component (Green 2).
 
 ```tsx
 // src/components/ButtonFooter.tsx
@@ -124,13 +110,13 @@ export default function ButtonFooter({ label }: ButtonFooterProps) {
 }
 ```
 
-Styling is not a major part of this guide, but being able to view the styles in a Cypress component test is very valuable. For each component we can have a specific styling using styled components and [styled-icons](https://styled-icons.dev/?s=edit).
+Styling is not a major part of this guide, and we prefer to have global styles for most components. In the case of this one, styled icons make a lot of sense. For each component we can have a specific styling using styled components and [styled-icons](https://styled-icons.dev/?s=edit).
 
 ```bash
 yarn add styled-icons styled-components @types/styled-components
 ```
 
-Per the specification, we want to be able to use different kinds of icons within the button; Edit, Delete, Save. We can have the button wrap that style, and customize it as a prop. We will call the prop `IconClass` add a `StyledIcon` type (Red 3).
+Per the specification, we want to be able to use different kinds of icons within the button; Edit, Delete, Save. We can have the button wrap that style, and customize it as a prop. We will call the prop `IconClass` add a `StyledIcon` type.
 
 ```tsx
 // src/components/ButtonFooter.tsx
@@ -152,7 +138,7 @@ export default function ButtonFooter({ label, IconClass }: ButtonFooterProps) {
 }
 ```
 
-That fails the test because now we have to pass a `IconClass` prop to the component we are mounting. Become familiar with this error; it says we expected some prop but got undefined.
+That fails the test because now we have to pass a `IconClass` prop to the component we are mounting. Become familiar with this error; it says we expected some prop but got undefined (Red 3).
 
 ![ButtonFooter-error](../img/ButtonFooter-error.png)
 
@@ -278,7 +264,7 @@ export default function ButtonFooter({
 }
 ```
 
-There is only one line left to cover; we should make sure that `IconClass` is rendered (Refactor 5). We can also finalize the name of the test. We are rendering an Edit button, verifying the label and the click operation. It is almost like a small scale e2e test.
+There is only one line left to cover; we should make sure that `IconClass` is rendered (Green 5). We can also finalize the name of the test. We are rendering an Edit button, verifying the label and the click operation. It is almost like a small scale e2e test.
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -306,7 +292,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-What else can we do with this component? There is only the label and icon props. Let's write another test for a different kind of icon (Green).
+What else can we do with this component? There is only the label and icon props. Let's write another test for a different kind of icon; Save (Green 6).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -356,11 +342,13 @@ describe("ButtonFooter", () => {
 });
 ```
 
-We don't really like that duplication, we can refactor the test to be drier with a helper function (Refactor).
+We don't really like that duplication, we can refactor the test to be drier with a helper function (Refactor 6).
 
 We can add an additional css check, since in the second test we are adding a style to the component.
 
 ```tsx
+// src/components/ButtonFooter.cy.tsx
+
 import ButtonFooter from "./ButtonFooter";
 import { EditAlt, Save } from "@styled-icons/boxicons-regular";
 import styled from "styled-components";
@@ -419,17 +407,15 @@ We looked at the requirement and wrote a minimal failing test that mounts a comp
 
 We added a minimal component to pass the test (Green 1).
 
-We enhanced the test to check a little more `cy.contains('button', 'hello')` (Refactor 1).
+We enhanced the test to check a little more `cy.contains('button', 'hello')` (Green 1).
 
 <br />
 
-We enhanced the the component to accept a property `label` (Red 2).
+We made the hard-coded string into a variable in the test, and made it so that it is a prop being passed in to `cy.mount`. (Red 2)
 
-Then we added a test to check that the label is displayed inside the span (Green 2).
+We added the prop `label` and its type to the component (Green 2).
 
 <br />
-
-We added the type to the props in the component (Refactor 3).
 
 We added a styled icon to the component as a new prop and got a failing test (Red 3).
 
@@ -456,7 +442,3 @@ We increased the test coverage by trying a different component; a green Save but
 And we refactored the test to be leaner (Refactor 6).
 
 <br />
-
-A PR with these changes can be found [here](https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts/pull/1).
-
-// TODO: Decide what is being done with styles, at a later time, and tweak things if needed.
