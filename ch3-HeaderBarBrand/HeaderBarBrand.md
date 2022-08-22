@@ -168,7 +168,7 @@ export default function HeaderBarBrand() {
 }
 ```
 
-We are only checking the link. We could also verify that there is an `svg` inside a div. We want to have a `data-cy` attribute for the `navbar` instead of a css selector. Let's add a failing test for it (Red 4).
+We are only checking the link. We could also verify that there is an `svg` inside a div. We want to have a `data-cy` attribute for the `header-bar-brand` instead of a css selector. Let's add a failing test for it (Red 4).
 
 ```tsx
 // src/components/HeaderBarBrand.tsx
@@ -182,7 +182,7 @@ describe("HeaderBarBrand", () => {
       .should("have.attr", "href", "https://reactjs.org/")
       .and("have.attr", "target", "_blank")
       .and("have.attr", "rel", "noopener noreferrer");
-    cy.getByCy("navbar").within(() => cy.get("svg"));
+    cy.getByCy("header-bar-brand").within(() => cy.get("svg"));
   });
 });
 ```
@@ -195,7 +195,7 @@ import { FaReact } from "react-icons/fa";
 
 export default function HeaderBarBrand() {
   return (
-    <div data-cy="navbar" className="navbar-brand">
+    <div data-cy="header-bar-brand" className="navbar-brand">
       <a
         href="https://reactjs.org/"
         target="_blank"
@@ -224,7 +224,7 @@ import { NavLink } from "react-router-dom";
 
 export default function HeaderBarBrand() {
   return (
-    <div data-cy="navbar" className="navbar-brand">
+    <div data-cy="header-bar-brand" className="navbar-brand">
       <a
         href="https://reactjs.org/"
         target="_blank"
@@ -252,7 +252,7 @@ import { NavLink } from "react-router-dom";
 
 export default function HeaderBarBrand() {
   return (
-    <div data-cy="navbar" className="navbar-brand">
+    <div data-cy="header-bar-brand" className="navbar-brand">
       <a
         href="https://reactjs.org/"
         target="_blank"
@@ -337,7 +337,7 @@ import { NavLink } from "react-router-dom";
 
 export default function HeaderBarBrand() {
   return (
-    <div data-cy="navbar" className="navbar-brand">
+    <div data-cy="header-bar-brand" className="navbar-brand">
       <a
         href="https://reactjs.org/"
         target="_blank"
