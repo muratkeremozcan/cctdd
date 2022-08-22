@@ -2,13 +2,9 @@
 
 In a visual testing tool, where the tool can also be used for design, leaving out styles would be a pity. We really want our component test to look the same as it would when the app is served.
 
-While it may be preferable to use a React-familiar approach and utilize scoped & styled components, we have other needs to emphasize component test driven design:
+We have some needs to emphasize component test driven design; we do not want styles to be of importance in the component code and we want styles in the rendered component, whether it is the app being served or a component test. For this reason we will prefer to use global styles, and take advantage of styled components where it is profitable.
 
-- We do not want styles to be of importance in the component code.
-- We want styles in the rendered component, whether it is the app being served or a component test.
-- We want to use a generic process that would be the same regardless of the framework, so that anyone new to React would not have to learn an additional idea.
-
-Add `node-sass` and `bulma` to dependencies.
+To setup global styles Add `node-sass` and `bulma` to dependencies.
 
 ```bash
 yarn add node-sass bulma

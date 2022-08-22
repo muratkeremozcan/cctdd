@@ -4,7 +4,7 @@ This is what our component might look like eventually. We need a a div wrapping 
 
 ![card-content](../img/card-content.png)
 
-Create a branch `feat/cardContent`. Create `src/components/CardContent` folder and 2 files in it; `CardContent.cy.tsx`, `CardContent.tsx`.
+Create a branch `feat/cardContent`. Create 2 files under `src/components/` folder; `CardContent.cy.tsx`, `CardContent.tsx`.
 
 We start minimal with a test that renders the component (Red 1).
 

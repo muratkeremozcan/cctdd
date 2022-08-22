@@ -4,9 +4,7 @@ This is what our component might look like eventually. We need a button that wra
 
 ![button-footer](../img/button-footer.png)
 
-Create a branch `feat/button-footer`.
-
-Create `src/components/ButtonFooter` folder and 2 files in it; `ButtonFooter.cy.tsx`, `ButtonFooter.tsx`.
+Create a branch `feat/button-footer`. Create 2 files under `src/components/` folder; `ButtonFooter.cy.tsx`, `ButtonFooter.tsx`.
 
 We start minimal with a test (Red 1).
 
@@ -292,7 +290,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-What else can we do with this component? There is only the label and icon props. Let's write another test for a different kind of icon; Save (Green 6).
+What else can we do with this component? There is only the label and icon props. Let's write another test for a different kind of icon (Green 5).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -433,7 +431,7 @@ We decided to a data-cy query for the button click (Red 5).
 
 And enhanced the component with the data-cy attribute (Green 5).
 
-We enhanced the test and made sure that the `IconClass is rendered (Refactor 5).
+We enhanced the test and made sure that the `IconClass is rendered (Green 5).
 
 <br />
 
