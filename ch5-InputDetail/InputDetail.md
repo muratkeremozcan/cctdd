@@ -241,14 +241,14 @@ describe("InputDetail", () => {
 });
 ```
 
-We can add the readOnly prop to the types, to the arguments and the readonly attribute of the component to get a passing test (Green 4).
+We can add the readOnly prop to the types, to the arguments and the readonly attribute of the component to get a passing test (Green 4). At this time, it is worth noting that `name` and `value` are the mandatory fields, and the rest are optional.
 
 ```tsx
 //  src/components/InputDetail.tsx
 type InputDetailProps = {
   name: string;
   value: string;
-  placeholder: string;
+  placeholder?: string;
   readOnly?: boolean;
 };
 
@@ -332,7 +332,7 @@ import { ChangeEvent } from "react";
 type InputDetailProps = {
   name: string;
   value: string;
-  placeholder: string;
+  placeholder?: string;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   readOnly?: boolean;
 };
@@ -410,6 +410,45 @@ describe("InputDetail", () => {
 });
 ```
 
+As a final touch up, we add a `data-cy` selector to make the component easier to reference when it is used as a child.
+
+```tsx
+import { ChangeEvent } from "react";
+
+type InputDetailProps = {
+  name: string;
+  value: string;
+  placeholder?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  readOnly?: boolean;
+};
+
+export default function InputDetail({
+  name,
+  value,
+  placeholder,
+  onChange,
+  readOnly,
+}: InputDetailProps) {
+  return (
+    <div data-cy={`input-detail-${name}`} className="field">
+      <label className="label" htmlFor={name}>
+        {name}
+      </label>
+      <input
+        name={name}
+        defaultValue={value}
+        placeholder={placeholder}
+        onChange={onChange}
+        readOnly={readOnly}
+        className="input"
+        type="text"
+      ></input>
+    </div>
+  );
+}
+```
+
 ## Summary
 
 We started with an input placeholder text check using Testing Library's `findByPlaceholderText` command (Red 1).
@@ -418,9 +457,9 @@ We hard-coded a value for the placeholder attribute to make the test pass (Green
 
 We refactored the hard-coded value to be instead a prop. We added the prop to the types, to the arguments of the component, and we used that argument for the value of the placeholder attribute (Refactor 1). This became a pattern in the subsequent cycles.
 
-* Add the prop to the types
-* Add it to the arguments or the component
-* Add it with a matching attribute to a tag
+- Add the prop to the types
+- Add it to the arguments or the component
+- Add it with a matching attribute to a tag
 
 <br />
 

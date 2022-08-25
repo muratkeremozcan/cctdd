@@ -234,7 +234,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-Now we can add the data-cy selector to the button attributes. While we are here, we can also add an `aria-label` because it will have a similar value as a freebie (Green 5).
+Now we can add the data-cy selector to the button attributes. While we are here, we can also add an `aria-label` because it will have a similar value as a freebie (Green 5). Here we can also add a `&nbsp;` non-breaking space to have a space between the icon and the text for a nicer look.
 
 ```tsx
 // src/components/ButtonFooter.tsx
@@ -256,6 +256,7 @@ export default function ButtonFooter({
   return (
     <button data-cy={`${label}-button`} aria-label={label} onClick={onClick}>
       <IconClass />
+      &nbsp;
       <span>{label}</span>
     </button>
   );

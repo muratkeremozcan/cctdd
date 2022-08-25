@@ -1,0 +1,1277 @@
+# HeroDetail
+
+In the Angular version of the app, we see a component slightly more involved than the others so far. When a component is involved, it is always easier to make sense out of it starting at the top level, and moving down layer by layer.
+
+* header
+  * `p` with the hero name
+* div/div
+  * 3 fields using the `InputDetail` component. The first is `readonly`, data coming from the network
+* footer
+  * 2 footers using the `ButtonFooter` component; a `Cancel` and a `Save` variant
+
+**Test driven design, engineering and the scientific method are all bound together; breaking the problem down into smaller parts, verifying our progress via tests through short feedback cycles and iterating quickly is common in all these disciplines.** What makes Cypress component testing a good fit is the quality and the speed of the feedback cycles. We are developing the front-end, and we are engineering the component with the lights on.
+
+![HeroDetail-initial](../img/HeroDetail-initial.png)
+
+Create a branch `feat/HeroDetail`. Create 2 files under `src/heroes/` folder; `HeroDetail.cy.tsx`, `HeroDetail.tsx`. As usual, start minimal with a component rendering; copy the below to the files and execute the test after opening the runner with `yarn cy:open-ct`.
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from "./HeroDetail";
+import '../styles.scss'
+
+describe("HeroDetail", () => {
+  it("should", () => {
+    cy.mount(<HeroDetail />);
+  });
+});
+```
+
+```tsx
+// src/components/HeroDetail.tsx
+
+export default function HeroDetail() {
+  return <div>hello</div>;
+}
+```
+
+## `header`
+
+Looking at the component high level layers we looked at in the beginning, we can begin to write a failing test with the outline (Red 1).
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from './HeroDetail'
+import '../styles.scss'
+
+describe('HeroDetail', () => {
+  it('should', () => {
+    cy.mount(<HeroDetail />)
+
+    cy.getByCy('hero-detail').contains('my hero')
+    cy.contains('header', 'my hero')
+  })
+})
+```
+
+We start with the minimal requirement for now; all we need to pass this test is a `data-cy` attribute and header tag which contains a hard coded value (Green 1).
+
+```tsx
+// src/components/HeroDetail.tsx
+
+export default function HeroDetail() {
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>my hero</p>
+      </header>
+    </div>
+  )
+}
+```
+
+## The 3 form fields
+
+The next tags are the 3 fields for `InputDetail` components, which will constitute the fields. Let's check that their length should be 3 (Red 2).
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from './HeroDetail'
+import '../styles.scss'
+
+describe('HeroDetail', () => {
+  it('should', () => {
+    cy.mount(<HeroDetail />)
+
+    cy.getByCy('hero-detail').contains('my hero')
+    cy.contains('header', 'my hero')
+    cy.getByCyLike('input-detail').should('have.length', 3)
+  })
+})
+```
+
+We add the `InputDetail` components under two layers of `divs`, and get a passing test (Green 2).
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+
+export default function HeroDetail() {
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>my hero</p>
+      </header>
+      <div>
+        <div>
+          <InputDetail></InputDetail>
+          <InputDetail></InputDetail>
+          <InputDetail></InputDetail>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+![HeroDetail-Green2](../img/HeroDetail-Green2.png)
+
+TS is helping us out, notifying that `InputDetail` component should come with some props. If we use the compiler and auto-fix it, it adds the mandatory props (Red 3, Green 3).
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+
+export default function HeroDetail() {
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>my hero</p>
+      </header>
+      <div>
+        <div>
+          <InputDetail name={''} value={''}></InputDetail>
+          <InputDetail name={''} value={''}></InputDetail>
+          <InputDetail name={''} value={''}></InputDetail>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+We can take a look at the specification to begin enhancing our test. We know that the first `InputDetail` field will be `readonly`. The two writable fields should have placeholder texts. [Testing Library examples](https://github.com/testing-library/cypress-testing-library/blob/97939da7d4707a71049884c0324c0eda56e26fc2/cypress/integration/find.spec.js) include two helpful commands to check for text in form fields (Red 4).
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from './HeroDetail'
+import '../styles.scss'
+
+describe('HeroDetail', () => {
+  it('should', () => {
+    cy.mount(<HeroDetail />)
+
+    cy.getByCy('hero-detail').contains('my hero')
+    cy.contains('header', 'my hero')
+    cy.getByCyLike('input-detail').should('have.length', 3)
+
+    cy.findByDisplayValue('HeroAslaug')
+    cy.findByPlaceholderText('e.g. Colleen')
+    cy.findByPlaceholderText('e.g. dance fight!')
+  })
+})
+```
+
+We need to make the test pass. We can  grab the field names from the initial application screen shot; the names of the fields should be `id`, `name`, `description`. The value of the first field `id`  can be hard-coded for now. The second and third fields hav an empty value, and `placeholder` instead. This is the minimal to get a green test (Green 4).
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+
+export default function HeroDetail() {
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>my hero</p>
+      </header>
+      <div>
+        <div>
+          <InputDetail name={'id'} value={'HeroAslaug'}></InputDetail>
+          <InputDetail
+            name={'name'}
+            value=""
+            placeholder={'e.g. Colleen'}
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value=""
+            placeholder={'e.g. dance fight!'}
+          ></InputDetail>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+Before we start the refactor, it is worthwhile to talk about the shape of the hero data at this point. We will be reading `id` (readonly) from the network, and we will be writing `name` and  `description` to the network. Our data is an object with 3 string properties, such as:
+
+```json
+{
+  "id": "HeroAslaug",
+  "name": "Aslaug",
+  "description": "warrior queen"
+}
+```
+
+In React, we can simplify our UI state management into two categories:
+
+1) UI state: modal is open, item is highlighted, etc.
+
+2) Server data 
+
+In our component placeholder texts are okay being hard-coded, but the `value` props stick out. This gives the hint for a need of state in our app. For now we can hard-code it into the component (Refactor 4).
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+
+export default function HeroDetail() {
+  const hero = {
+    id: 'HeroAslaug',
+    name: '',
+    description: '',
+  }
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>my hero</p>
+      </header>
+      <div>
+        <div>
+          <InputDetail
+            name={'id'}
+            value={hero.id}
+            readOnly={true}
+          ></InputDetail>
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+          ></InputDetail>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+![HeroDetail-Refactor4](../img/HeroDetail-Refactor4.png)
+
+We are still hard coding "my-hero" into the test and the component. This is obviously `hero.name`, and in the application screen shot it is not even displayed. We need a mechanism to display it whether the network data exists or not. Since the data is hard coded into the component, we will not be able to stub the network for now, so we can disable the text checks with `contains('my hero')` for the time being and work on the component.
+
+Our test and component are looking like so at this time:
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from './HeroDetail'
+import '../styles.scss'
+
+describe('HeroDetail', () => {
+  it('should', () => {
+    cy.mount(<HeroDetail />)
+
+    cy.getByCy('hero-detail')
+    cy.getByCyLike('input-detail').should('have.length', 3)
+
+    cy.findByDisplayValue('HeroAslaug')
+    cy.findByPlaceholderText('e.g. Colleen')
+    cy.findByPlaceholderText('e.g. dance fight!')
+  })
+})
+```
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+
+export default function HeroDetail() {
+  const hero = {
+    id: 'HeroAslaug',
+    name: '',
+    description: '',
+  }
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>{hero.name}</p>
+      </header>
+      <div>
+        <div>
+          <InputDetail
+            name={'id'}
+            value={hero.id}
+            readOnly={true}
+          ></InputDetail>
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+          ></InputDetail>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+If we enter a string for `hero.name` we can toggle the `p` in the component test runner. We need a similar logic for the id field, because if the network data does not exist for `id`, then it does not make sense to display it. We can achieve this with conditional rendering.
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+
+export default function HeroDetail() {
+  const hero = {
+    id: '',
+    name: '',
+    description: '',
+  }
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>{hero.name}</p>
+      </header>
+      <div>
+        <div>
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+          ></InputDetail>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+Toggle the `hero.id` value, and the field should also be toggled. We need to tweak the test to be okay with 2 fields or more for now (Refactor 5).
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from './HeroDetail'
+import '../styles.scss'
+
+describe('HeroDetail', () => {
+  it('should', () => {
+    cy.mount(<HeroDetail />)
+
+    // cy.getByCy('hero-detail').contains('my hero')
+    // cy.contains('header', 'my hero')
+    // cy.getByCyLike('input-detail').should('have.length', 3)
+    cy.getByCy('hero-detail')
+    cy.getByCyLike('input-detail').should('have.length.gte', 2)
+
+    // cy.findByDisplayValue('HeroAslaug')
+    cy.findByPlaceholderText('e.g. Colleen')
+    cy.findByPlaceholderText('e.g. dance fight!')
+  })
+})
+```
+
+When there is no `id`, the id field will be disabled vice versa. When there is a name, `p` will show vice versa. These are all test cases we will cover with network stubbing later.  It is important to note that while we cannot use the tests to verify the design we need, the fact that the component test is a mini UI application is helping us out for the time being. 
+
+![HeroDetail-Refactor5](../img/HeroDetail-Refactor5.png)
+
+![HeroDetail-Refactor5.2](../img/HeroDetail-Refactor5.2.png)
+
+We will delay the decisions about state until after we have the full UI layout.
+
+## `footer`
+
+The footer consists of a `footer` tag wrapping 2 `ButtonFooter` components; buttons for `Cancel` and `Save`. Let's write a failing test for it. We are looking at `ButtonFooter` component with the relevant selector; `save-button`, `cancel-button  (Red 6)
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from './HeroDetail'
+import '../styles.scss'
+
+describe('HeroDetail', () => {
+  it('should verify the layout of the component', () => {
+    cy.mount(<HeroDetail />)
+
+    // cy.getByCy('hero-detail').contains('my hero')
+    // cy.contains('header', 'my hero')
+    // cy.getByCyLike('input-detail').should('have.length', 3)
+    cy.getByCy('hero-detail')
+    cy.getByCyLike('input-detail').should('have.length.gte', 2)
+
+    // cy.findByDisplayValue('HeroAslaug')
+    cy.findByPlaceholderText('e.g. Colleen')
+    cy.findByPlaceholderText('e.g. dance fight!')
+
+    cy.getByCy('save-button').should('be.visible')
+    cy.getByCy('cancel-button').should('be.visible')
+  })
+})
+```
+
+Adding the `ButtonFooter` child components, we get TS errors as well as a failing test (Red 6).
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+import ButtonFooter from '../components/ButtonFooter'
+
+export default function HeroDetail() {
+  const hero = {
+    id: 'HeroAslaug',
+    name: 'Aslaug',
+    description: '',
+  }
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>{hero.name}</p>
+      </header>
+      <div>
+        <div>
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+          ></InputDetail>
+        </div>
+      </div>
+      <footer>
+        <ButtonFooter />
+        <ButtonFooter />
+      </footer>
+    </div>
+  )
+}
+```
+
+`ButtonFooter` props are `label`, `IconClass` and `onClick`. TS as well as the component test we wrote for it, `/components/ButtonFooter.cy.tsx` serve as documentation. Let's add the missing props looking at that component test. For now, the click handlers can be empty functions. We can grab the icons from [react-icons](https://react-icons.github.io/react-icons/search?q=undo). The `label` can be any string (Green 6).
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+import ButtonFooter from '../components/ButtonFooter'
+import {FaUndo, FaRegSave} from 'react-icons/fa'
+
+export default function HeroDetail() {
+  const hero = {
+    id: 'HeroAslaug',
+    name: 'Aslaug',
+    description: '',
+  }
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>{hero.name}</p>
+      </header>
+      <div>
+        <div>
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+          ></InputDetail>
+        </div>
+      </div>
+      <footer>
+        <ButtonFooter label="Cancel" IconClass={FaUndo} onClick={() => {}} />
+        <ButtonFooter label="Save" IconClass={FaRegSave} onClick={() => {}} />
+      </footer>
+    </div>
+  )
+}
+```
+
+![HeroDetail-Green6](../img/HeroDetail-Green6.png)
+
+When saving or cancelling this form, we will modifying the state, therefore an event should occur. We can write failing tests that spy on `console.log` for now (Red 7).
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from './HeroDetail'
+import '../styles.scss'
+
+describe('HeroDetail', () => {
+  it('should verify the layout of the component', () => {
+    cy.mount(<HeroDetail />)
+
+    // cy.getByCy('hero-detail').contains('my hero')
+    // cy.contains('header', 'my hero')
+    // cy.getByCyLike('input-detail').should('have.length', 3)
+    cy.getByCy('hero-detail')
+    cy.getByCyLike('input-detail').should('have.length.gte', 2)
+
+    // cy.findByDisplayValue('HeroAslaug')
+    cy.findByPlaceholderText('e.g. Colleen')
+    cy.findByPlaceholderText('e.g. dance fight!')
+
+    cy.getByCy('save-button').should('be.visible')
+    cy.getByCy('cancel-button').should('be.visible')
+  })
+  it('should handle Save', () => {
+    cy.mount(<HeroDetail />)
+    cy.window()
+      .its('console')
+      .then(console => cy.spy(console, 'log').as('log'))
+
+    cy.getByCy('save-button').click()
+    cy.get('@log').should('have.been.calledWith', 'handleSave')
+  })
+
+  it('should handle Cancel', () => {
+    cy.mount(<HeroDetail />)
+    cy.window()
+      .its('console')
+      .then(console => cy.spy(console, 'log').as('log'))
+
+    cy.getByCy('cancel-button').click()
+
+    cy.get('@log').should('have.been.calledWith', 'handleCancel')
+  })
+})
+
+```
+
+We can make the test pass by adding console.logs for the handlers (Green 7).
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+import ButtonFooter from '../components/ButtonFooter'
+import {FaUndo, FaRegSave} from 'react-icons/fa'
+
+export default function HeroDetail() {
+  const hero = {
+    id: 'HeroAslaug',
+    name: 'Aslaug',
+    description: '',
+  }
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>{hero.name}</p>
+      </header>
+      <div>
+        <div>
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+          ></InputDetail>
+        </div>
+      </div>
+      <footer>
+        <ButtonFooter
+          label="Cancel"
+          IconClass={FaUndo}
+          onClick={() => {
+            console.log('handleCancel')
+          }}
+        />
+        <ButtonFooter
+          label="Save"
+          IconClass={FaRegSave}
+          onClick={() => {
+            console.log('handleSave')
+          }}
+        />
+      </footer>
+    </div>
+  )
+}
+```
+
+We can refactor the functions out of the component return (Refactor 7)
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+import ButtonFooter from '../components/ButtonFooter'
+import {FaUndo, FaRegSave} from 'react-icons/fa'
+
+export default function HeroDetail() {
+  const hero = {
+    id: 'HeroAslaug',
+    name: 'Aslaug',
+    description: '',
+  }
+
+  const handleCancel = () => console.log('handleCancel')
+  const handleSave = () => console.log('handleSave')
+
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>{hero.name}</p>
+      </header>
+      <div>
+        <div>
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+          ></InputDetail>
+        </div>
+      </div>
+      <footer>
+        <ButtonFooter
+          label="Cancel"
+          IconClass={FaUndo}
+          onClick={handleCancel}
+        />
+        <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
+      </footer>
+    </div>
+  )
+}
+```
+
+When we save a hero, we will either be creating or updating a hero. If there is no `hero.name` we should be creating it. If there is a `hero.name` we should be updating the hero. Let's create functions for update and save, and enhance `handleSave` with logic (Refactor 7). To test it, for now we can toggle the `name` property, and see the console toggle between `updateHero` and `saveHero` when `handleSave` is invoked.
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+import ButtonFooter from '../components/ButtonFooter'
+import {FaUndo, FaRegSave} from 'react-icons/fa'
+
+export default function HeroDetail() {
+  const hero = {
+    id: 'HeroAslaug',
+    name: 'Aslaug',
+    description: '',
+  }
+
+  const handleCancel = () => console.log('handleCancel')
+
+  const updateHero = () => console.log('updateHero')
+  const saveHero = () => console.log('saveHero')
+  const handleSave = () => {
+    console.log('handleSave')
+    return hero.name ? updateHero() : saveHero()
+  }
+
+  return (
+    <div data-cy="hero-detail">
+      <header>
+        <p>{hero.name}</p>
+      </header>
+      <div>
+        <div>
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+          ></InputDetail>
+        </div>
+      </div>
+      <footer>
+        <ButtonFooter
+          label="Cancel"
+          IconClass={FaUndo}
+          onClick={handleCancel}
+        />
+        <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
+      </footer>
+    </div>
+  )
+}
+```
+
+Before we move on to the topic of state, we can add the styles (Refactor 7).
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+import ButtonFooter from '../components/ButtonFooter'
+import {FaUndo, FaRegSave} from 'react-icons/fa'
+
+export default function HeroDetail() {
+  const hero = {
+    id: 'HeroAslaug',
+    name: 'Aslaug',
+    description: '',
+  }
+
+  const handleCancel = () => console.log('handleCancel')
+
+  const updateHero = () => console.log('updateHero')
+  const saveHero = () => console.log('saveHero')
+  const handleSave = () => {
+    console.log('handleSave')
+    return hero.name ? updateHero() : saveHero()
+  }
+
+  return (
+    <div data-cy="hero-detail" className="card edit-detail">
+      <header className="card-header">
+        <p className="card-header-title">{hero.name}</p>
+        &nbsp;
+      </header>
+      <div className="card-content">
+        <div className="content">
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+          ></InputDetail>
+        </div>
+      </div>
+      <footer className="card-footer">
+        <ButtonFooter
+          label="Cancel"
+          IconClass={FaUndo}
+          onClick={handleCancel}
+        />
+        <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
+      </footer>
+    </div>
+  )
+}
+```
+
+
+
+![HeroDetail-Refactor7](../img/HeroDetail-Refactor7.png)
+
+
+
+## State
+
+Before implementing any state, we can write lots of tests that scrutinize the layout of the component. Instead of the hard coded `hero` object in the component, we can pass in data with a prop. We either manipulate our components via props or what wraps them, and prop is the easier choice at the moment. 
+
+The shape of the prop is just our hero object. What will control the state are the values of `id`, `name` and `description`. `description` is not very interesting, it does not impact component layout. What changes our component layout are `id` and `name`, which result in 2^2 = 4 states.
+
+| id    | name  |
+| ----- | ----- |
+| false | false |
+| false | true  |
+| true  | false |
+| true  | true  |
+
+Our first test which we named `'should verify the layout of the component'`  is in fact the first case. Let's write tests for the remaining. We can wrap these in a `context` block to communicate the intent (Red 8).
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from './HeroDetail'
+import '../styles.scss'
+
+describe('HeroDetail', () => {
+  it('should handle Save', () => {
+    cy.mount(<HeroDetail />)
+    cy.window()
+      .its('console')
+      .then(console => cy.spy(console, 'log').as('log'))
+
+    cy.getByCy('save-button').click()
+    cy.get('@log').should('have.been.calledWith', 'handleSave')
+  })
+
+  it('should handle Cancel', () => {
+    cy.mount(<HeroDetail />)
+    cy.window()
+      .its('console')
+      .then(console => cy.spy(console, 'log').as('log'))
+
+    cy.getByCy('cancel-button').click()
+
+    cy.get('@log').should('have.been.calledWith', 'handleCancel')
+  })
+
+  context('state: should verify the layout of the component', () => {
+    it('id: false, name: false ', () => {
+      const hero = {id: '', name: '', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.getByCy('hero-detail')
+      cy.getByCyLike('input-detail').should('have.length', 2)
+
+      cy.findByPlaceholderText('e.g. Colleen')
+      cy.findByPlaceholderText('e.g. dance fight!')
+
+      cy.getByCy('save-button').should('be.visible')
+      cy.getByCy('cancel-button').should('be.visible')
+    })
+
+    it('id: false, name: true - should display hero title and field name, and not display id field', () => {
+      const hero = {id: '', name: 'Aslaug', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.contains('p', hero.name)
+      cy.findByDisplayValue(hero.name)
+
+      cy.getByCyLike('input-detail').should('have.length', 2)
+      cy.getByCy('input-detail-id').should('not.exist')
+    })
+
+    it('id: true, name: false - should not display hero name, and display all fields', () => {
+      const hero = {id: 'HeroAslaug', name: '', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.get('p').then($el => cy.wrap($el.text()).should('equal', ''))
+
+      cy.findByDisplayValue(hero.id)
+      cy.getByCyLike('input-detail').should('have.length', 3)
+    })
+
+    it('id: true, name: true - should display hero name, id  ', () => {
+      const hero = {id: 'HeroAslaug', name: 'Aslaug', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.contains('p', hero.name)
+      cy.findByDisplayValue(hero.name)
+      cy.findByDisplayValue(hero.id)
+
+      cy.getByCyLike('input-detail').should('have.length', 3)
+
+      cy.getByCy('input-detail-description').type('hero description')
+      cy.findByDisplayValue('hero description')
+    })
+  })
+})
+```
+
+Recall our previous statement. In React, we can simplify our UI state management into two categories:
+
+1) UI state: modal is open, item is highlighted, etc.
+
+2) Server data 
+
+We created placeholders for handling save and cancel operations, these would fall into category 2. We also have state in the name and description fields, and those fall under category 1. We always want to prefer to manage state where it is most relevant. The most basic way to do this in React is with `useState` hook.  We want to alert React that a value used within a component has changed, and just updating the variable directly won’t do, we need an updater function. In this approach:
+
+1. Consider what state the component needs
+
+2. Display the state
+
+3. Update the state in response to events
+
+`useState` hook returns a value & its updater function in an array of 2, the names are arbitrary. If we want an initial value for the variable, we pass it as an argument to the `useState`
+
+```tsx
+const [value, setValue] = useState(initialValue)
+```
+
+In our case this can be:
+
+```tsx
+const [hero, setHero] = useState(someInitialHeroData)
+```
+
+The variable name `someInitialHeroData` is problematic. From the perspective of whoever is using `HeroDetail` component, it is just `hero`. From the perspective within the component, it is also `hero`. To resolve this we can alias the name, and create copy of the hero being passed in using object destructuring. 
+
+Like we laid out in the tests, the simplest way to pass in any data to our component is a prop. We can refactor our component to get ready for state management. This way we do not have to have a hard-coded piece of `hero` data in the component, and we can let that be determined by whoever is using the component. Once the prop is passed in, what we do with the component state will be handled through `useState` hook. (Green 8). 
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+import {useState} from 'react'
+import ButtonFooter from '../components/ButtonFooter'
+import {FaUndo, FaRegSave} from 'react-icons/fa'
+
+type Hero = {
+  id: string
+  name: string
+  description: string
+}
+type HeroDetailProps = {
+  hero: Hero
+}
+
+export default function HeroDetail({hero: initHero}: HeroDetailProps) {
+  const [hero, setHero] =useState<Hero>({...initHero})
+
+  const handleCancel = () => console.log('handleCancel')
+  const updateHero = () => console.log('updateHero')
+  const saveHero = () => console.log('saveHero')
+  const handleSave = () => {
+    console.log('handleSave')
+    return hero.name ? updateHero() : saveHero()
+  }
+
+  return (
+    <div data-cy="hero-detail" className="card edit-detail">
+      <header className="card-header">
+        <p className="card-header-title">{hero.name}</p>
+        &nbsp;
+      </header>
+      <div className="card-content">
+        <div className="content">
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+          ></InputDetail>
+        </div>
+      </div>
+      <footer className="card-footer">
+        <ButtonFooter
+          label="Cancel"
+          IconClass={FaUndo}
+          onClick={handleCancel}
+        />
+        <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
+      </footer>
+    </div>
+  )
+}
+
+```
+
+ESLint is warning us that `setHero` is not being used. Notice that `InputDetail`  has an `onChange` handler, used for writable fields, and that is where `setHero` fits. Let's write two more tests for handling name change and description change. Also, TS is giving us a warning in the handleSave and handleCancel tests that we are missing props. For all these handleSomething tests, we can just pass in a hero object with empty properties (Red 9).
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from './HeroDetail'
+import '../styles.scss'
+
+describe('HeroDetail', () => {
+  it('should handle Save', () => {
+    const hero = {id: '', name: '', description: ''}
+    cy.mount(<HeroDetail hero={hero} />)
+    cy.window()
+      .its('console')
+      .then(console => cy.spy(console, 'log').as('log'))
+
+    cy.getByCy('save-button').click()
+    cy.get('@log').should('have.been.calledWith', 'handleSave')
+  })
+
+  it('should handle Cancel', () => {
+    const hero = {id: '', name: '', description: ''}
+    cy.mount(<HeroDetail hero={hero} />)
+    cy.window()
+      .its('console')
+      .then(console => cy.spy(console, 'log').as('log'))
+
+    cy.getByCy('cancel-button').click()
+
+    cy.get('@log').should('have.been.calledWith', 'handleCancel')
+  })
+
+  it('should handle name change', () => {
+    const hero = {id: '', name: '', description: ''}
+    cy.mount(<HeroDetail hero={hero} />)
+    cy.window()
+      .its('console')
+      .then(console => cy.spy(console, 'log').as('log'))
+
+    cy.getByCy('input-detail-name').type('abc')
+    cy.get('@log').should('have.been.calledWith', 'handleNameChange')
+    cy.get('@log').its('callCount').should('eq', 3)
+  })
+
+  it('should handle description change', () => {
+    const hero = {id: '', name: '', description: ''}
+    cy.mount(<HeroDetail hero={hero} />)
+    cy.window()
+      .its('console')
+      .then(console => cy.spy(console, 'log').as('log'))
+
+    cy.getByCy('input-detail-description').type('123')
+    cy.get('@log').should('have.been.calledWith', 'handleDescriptionChange')
+    cy.get('@log').its('callCount').should('eq', 3)
+  })
+
+  context('state: should verify the layout of the component', () => {
+    it('id: false, name: false ', () => {
+      const hero = {id: '', name: '', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.getByCy('hero-detail')
+      cy.getByCyLike('input-detail').should('have.length', 2)
+
+      cy.findByPlaceholderText('e.g. Colleen')
+      cy.findByPlaceholderText('e.g. dance fight!')
+
+      cy.getByCy('save-button').should('be.visible')
+      cy.getByCy('cancel-button').should('be.visible')
+    })
+
+    it('id: false, name: true - should display hero title and field name, and not display id field', () => {
+      const hero = {id: '', name: 'Aslaug', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.contains('p', hero.name)
+      cy.findByDisplayValue(hero.name)
+
+      cy.getByCyLike('input-detail').should('have.length', 2)
+      cy.getByCy('input-detail-id').should('not.exist')
+    })
+
+    it('id: true, name: false - should not display hero name, and display all fields', () => {
+      const hero = {id: 'HeroAslaug', name: '', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.get('p').then($el => cy.wrap($el.text()).should('equal', ''))
+
+      cy.findByDisplayValue(hero.id)
+      cy.getByCyLike('input-detail').should('have.length', 3)
+    })
+
+    it('id: true, name: true - should display hero name, id  ', () => {
+      const hero = {id: 'HeroAslaug', name: 'Aslaug', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.contains('p', hero.name)
+      cy.findByDisplayValue(hero.name)
+      cy.findByDisplayValue(hero.id)
+
+      cy.getByCyLike('input-detail').should('have.length', 3)
+
+      cy.getByCy('input-detail-description').type('hero description')
+      cy.findByDisplayValue('hero description')
+    })
+  })
+})
+```
+
+We can add the missing handlers to the test to make the test pass (Green 9).
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+import {useState} from 'react'
+import ButtonFooter from '../components/ButtonFooter'
+import {FaUndo, FaRegSave} from 'react-icons/fa'
+
+type Hero = {
+  id: string
+  name: string
+  description: string
+}
+type HeroDetailProps = {
+  hero: Hero
+}
+
+export default function HeroDetail({hero: initHero}: HeroDetailProps) {
+  const [hero, setHero] =useState<Hero>({...initHero})
+
+  const handleCancel = () => console.log('handleCancel')
+  const updateHero = () => console.log('updateHero')
+  const saveHero = () => console.log('saveHero')
+  const handleSave = () => {
+    console.log('handleSave')
+    return hero.name ? updateHero() : saveHero()
+  }
+  const handleNameChange = () => console.log('handleNameChange')
+  const handleDescriptionChange = () => console.log('handleDescriptionChange')
+
+  return (
+    <div data-cy="hero-detail" className="card edit-detail">
+      <header className="card-header">
+        <p className="card-header-title">{hero.name}</p>
+        &nbsp;
+      </header>
+      <div className="card-content">
+        <div className="content">
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+            onChange={handleNameChange}
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+            onChange={handleDescriptionChange}
+          ></InputDetail>
+        </div>
+      </div>
+      <footer className="card-footer">
+        <ButtonFooter
+          label="Cancel"
+          IconClass={FaUndo}
+          onClick={handleCancel}
+        />
+        <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
+      </footer>
+    </div>
+  )
+}
+```
+
+We need to call `setHero` with the value of entire text field. We can make a copy the current `hero` data via restructuring, and overwrite any hero property with the value of the event target. We can also add the types here (Refactor 9).
+
+```tsx
+// src/components/HeroDetail.tsx
+import InputDetail from '../components/InputDetail'
+import {useState, ChangeEvent} from 'react'
+import ButtonFooter from '../components/ButtonFooter'
+import {FaUndo, FaRegSave} from 'react-icons/fa'
+
+type Hero = {
+  id: string
+  name: string
+  description: string
+}
+type HeroDetailProps = {
+  hero: Hero
+}
+
+export default function HeroDetail({hero: initHero}: HeroDetailProps) {
+  const [hero, setHero] = useState<Hero>({...initHero})
+
+  const handleCancel = () => console.log('handleCancel')
+  const updateHero = () => console.log('updateHero')
+  const saveHero = () => console.log('saveHero')
+  const handleSave = () => {
+    console.log('handleSave')
+    return hero.name ? updateHero() : saveHero()
+  }
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log('handleNameChange')
+    setHero({...hero, name: e.target.value})
+  }
+  const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log('handleDescriptionChange')
+    setHero({...hero, description: e.target.value})
+  }
+
+  return (
+    <div data-cy="hero-detail" className="card edit-detail">
+      <header className="card-header">
+        <p className="card-header-title">{hero.name}</p>
+        &nbsp;
+      </header>
+      <div className="card-content">
+        <div className="content">
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+            onChange={handleNameChange}
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+            onChange={handleDescriptionChange}
+          ></InputDetail>
+        </div>
+      </div>
+      <footer className="card-footer">
+        <ButtonFooter
+          label="Cancel"
+          IconClass={FaUndo}
+          onClick={handleCancel}
+        />
+        <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
+      </footer>
+    </div>
+  )
+}
+```
+
+// TODO
+
+- what to do instead of console.logs
+- history?
+- summary
