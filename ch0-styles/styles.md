@@ -2,7 +2,7 @@
 
 In a visual testing tool, where the tool can also be used for design, leaving out styles would be a pity. We really want our component test to look the same as it would when the app is served.
 
-We have some needs to emphasize component test driven design; we do not want styles to be of importance in the component code and we want styles in the rendered component, whether it is the app being served or a component test. For this reason we will prefer to use global styles, and take advantage of [styled-icons](https://styled-icons.dev/?s=refresh) or [react-icons](https://react-icons.github.io/react-icons) where it is profitable.
+We have some needs to emphasize component test driven design; we do not want styles to be of importance in the component code and we want styles in the rendered component, whether it is the app being served or a component test. For this reason we will prefer to use global styles, and take advantage of [react-icons](https://react-icons.github.io/react-icons) where it is profitable.
 
 To setup global styles Add `node-sass` and `bulma` to dependencies.
 
