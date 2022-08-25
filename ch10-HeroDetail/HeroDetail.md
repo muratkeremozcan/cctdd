@@ -1,6 +1,6 @@
 # HeroDetail
 
-In the Angular version of the app, we see a component slightly more involved than the others so far. When a component is involved, it is always easier to make sense out of it starting at the top level, and moving down layer by layer.
+In the Angular version of the app, we see a component slightly more involved than the others so far. When a component is looking complicated, it is easier to make sense out of it starting at the top level, and moving down layer by layer.
 
 * header
   * `p` with the hero name
@@ -37,7 +37,7 @@ export default function HeroDetail() {
 
 ## `header`
 
-Looking at the component high level layers we looked at in the beginning, we can begin to write a failing test with the outline (Red 1).
+Looking at the component high level layers, we can begin to write a failing test with the outline (Red 1).
 
 ```tsx
 // src/components/HeroDetail.cy.tsx
@@ -72,7 +72,7 @@ export default function HeroDetail() {
 
 ## The 3 form fields
 
-The next tags are the 3 fields for `InputDetail` components, which will constitute the fields. Let's check that their length should be 3 (Red 2).
+The next tags are the 3 fields for `InputDetail` components, which will constitute the forms fields. Let's check that their length should be 3 (Red 2).
 
 ```tsx
 // src/components/HeroDetail.cy.tsx
@@ -140,7 +140,7 @@ export default function HeroDetail() {
 }
 ```
 
-We can take a look at the specification to begin enhancing our test. We know that the first `InputDetail` field will be `readonly`. The two writable fields should have placeholder texts. [Testing Library examples](https://github.com/testing-library/cypress-testing-library/blob/97939da7d4707a71049884c0324c0eda56e26fc2/cypress/integration/find.spec.js) include two helpful commands to check for text in form fields (Red 4).
+We can take a look at the specification to begin enhancing our test. We know that the first `InputDetail` field will be `readonly`. The two writable fields should have placeholder texts. [Testing Library examples](https://github.com/testing-library/cypress-testing-library/blob/97939da7d4707a71049884c0324c0eda56e26fc2/cypress/integration/find.spec.js) include two helpful commands to check for text in form fields; `findByDisplayValue`, `findByPlaceholderText` (Red 4).
 
 ```tsx
 // src/components/HeroDetail.cy.tsx
@@ -204,12 +204,6 @@ Before we start the refactor, it is worthwhile to talk about the shape of the he
 }
 ```
 
-In React, we can simplify our UI state management into two categories:
-
-1) UI state: modal is open, item is highlighted, etc.
-
-2) Server data 
-
 In our component placeholder texts are okay being hard-coded, but the `value` props stick out. This gives the hint for a need of state in our app. For now we can hard-code it into the component (Refactor 4).
 
 ```tsx
@@ -251,9 +245,7 @@ export default function HeroDetail() {
 }
 ```
 
-![HeroDetail-Refactor4](../img/HeroDetail-Refactor4.png)
-
-We are still hard coding "my-hero" into the test and the component. This is obviously `hero.name`, and in the application screen shot it is not even displayed. We need a mechanism to display it whether the network data exists or not. Since the data is hard coded into the component, we will not be able to stub the network for now, so we can disable the text checks with `contains('my hero')` for the time being and work on the component.
+We are still hard coding "my-hero" into the test and the component. This is obviously `hero.name`, and in the application screen shot it is not even displayed. We need a mechanism to display it whether the network data exists or not. Since the data is hard coded into the component, we will not be able to control it with the tests for now, so we can disable the text checks with `contains('my hero')` for the time being and work on the component.
 
 Our test and component are looking like so at this time:
 
@@ -315,7 +307,7 @@ export default function HeroDetail() {
 }
 ```
 
-If we enter a string for `hero.name` we can toggle the `p` in the component test runner. We need a similar logic for the id field, because if the network data does not exist for `id`, then it does not make sense to display it. We can achieve this with conditional rendering.
+If we enter a string for `hero.name` we can toggle the `p` in the component test runner. We need a similar logic for the id field, because if the data does not exist for `id`, then it does not make sense to display it. We can achieve this with conditional rendering.
 
 ```tsx
 // src/components/HeroDetail.tsx
@@ -358,7 +350,7 @@ export default function HeroDetail() {
 }
 ```
 
-Toggle the `hero.id` value, and the field should also be toggled. We need to tweak the test to be okay with 2 fields or more for now (Refactor 5).
+Toggle the `hero.id` value, and the field should also be toggled. We need to tweak the test to be okay with 2 fields or more for now (Refactor 4).
 
 ```tsx
 // src/components/HeroDetail.cy.tsx
@@ -382,17 +374,17 @@ describe('HeroDetail', () => {
 })
 ```
 
-When there is no `id`, the id field will be disabled vice versa. When there is a name, `p` will show vice versa. These are all test cases we will cover with network stubbing later.  It is important to note that while we cannot use the tests to verify the design we need, the fact that the component test is a mini UI application is helping us out for the time being. 
+When there is no `id`, the id field will be disabled vice versa. When there is a name, `p` will show vice versa. These are all test cases we will cover later.  It is important to note that while we cannot use the tests to verify the design we need, the fact that the component test is a mini UI application is helping us out for the time being. 
 
-![HeroDetail-Refactor5](../img/HeroDetail-Refactor5.png)
+![HeroDetail-Refactor4](../img/HeroDetail-Refactor4.png)
 
-![HeroDetail-Refactor5.2](../img/HeroDetail-Refactor5.2.png)
+![HeroDetail-Refactor4.1](../img/HeroDetail-Refactor4.1.png)
 
 We will delay the decisions about state until after we have the full UI layout.
 
 ## `footer`
 
-The footer consists of a `footer` tag wrapping 2 `ButtonFooter` components; buttons for `Cancel` and `Save`. Let's write a failing test for it. We are looking at `ButtonFooter` component with the relevant selector; `save-button`, `cancel-button  (Red 6)
+The footer consists of a `footer` tag wrapping 2 `ButtonFooter` components; buttons for `Cancel` and `Save`. Let's write a failing test for it. We are looking at `ButtonFooter` component with the relevant selector; `save-button`, `cancel-button  (Red 5)
 
 ```tsx
 // src/components/HeroDetail.cy.tsx
@@ -419,7 +411,7 @@ describe('HeroDetail', () => {
 })
 ```
 
-Adding the `ButtonFooter` child components, we get TS errors as well as a failing test (Red 6).
+Adding the `ButtonFooter` child components, we get TS errors as well as a failing test (Red 5).
 
 ```tsx
 // src/components/HeroDetail.tsx
@@ -467,7 +459,7 @@ export default function HeroDetail() {
 }
 ```
 
-`ButtonFooter` props are `label`, `IconClass` and `onClick`. TS as well as the component test we wrote for it, `/components/ButtonFooter.cy.tsx` serve as documentation. Let's add the missing props looking at that component test. For now, the click handlers can be empty functions. We can grab the icons from [react-icons](https://react-icons.github.io/react-icons/search?q=undo). The `label` can be any string (Green 6).
+`ButtonFooter` props are `label`, `IconClass` and `onClick`. TS as well as the component test we wrote for it, `/components/ButtonFooter.cy.tsx` serve as documentation. Let's add the missing props looking at that component test. For now, the click handlers can be empty functions. We can grab the icons from [react-icons](https://react-icons.github.io/react-icons/search?q=undo). The `label` can be any string (Green 5).
 
 ```tsx
 // src/components/HeroDetail.tsx
@@ -516,9 +508,9 @@ export default function HeroDetail() {
 }
 ```
 
-![HeroDetail-Green6](../img/HeroDetail-Green6.png)
+![HeroDetail-Green5](../img/HeroDetail-Green5.png)
 
-When saving or cancelling this form, we will modifying the state, therefore an event should occur. We can write failing tests that spy on `console.log` for now (Red 7).
+When saving or cancelling this form, we will modifying the state, therefore an event should occur. We can write failing tests that spy on `console.log` for now (Red 6).
 
 ```tsx
 // src/components/HeroDetail.cy.tsx
@@ -566,7 +558,7 @@ describe('HeroDetail', () => {
 
 ```
 
-We can make the test pass by adding console.logs for the handlers (Green 7).
+We can make the test pass by adding console.logs for the handlers (Green 6).
 
 ```tsx
 // src/components/HeroDetail.tsx
@@ -627,7 +619,7 @@ export default function HeroDetail() {
 }
 ```
 
-We can refactor the functions out of the component return (Refactor 7)
+We can refactor the functions out of the component return (Refactor 6)
 
 ```tsx
 // src/components/HeroDetail.tsx
@@ -684,7 +676,7 @@ export default function HeroDetail() {
 }
 ```
 
-When we save a hero, we will either be creating or updating a hero. If there is no `hero.name` we should be creating it. If there is a `hero.name` we should be updating the hero. Let's create functions for update and save, and enhance `handleSave` with logic (Refactor 7). To test it, for now we can toggle the `name` property, and see the console toggle between `updateHero` and `saveHero` when `handleSave` is invoked.
+When we save a hero, we will either be creating or updating a hero. If there is no `hero.name` we should be creating it. If there is a `hero.name` we should be updating the hero. Let's create functions for update and save, and enhance `handleSave` with logic. To test it, for now we can toggle the `name` property, and see the console toggle between `updateHero` and `saveHero` when `handleSave` is invoked.
 
 ```tsx
 // src/components/HeroDetail.tsx
@@ -747,7 +739,7 @@ export default function HeroDetail() {
 }
 ```
 
-Before we move on to the topic of state, we can add the styles (Refactor 7).
+Before we move on to the topic of state, we can add the styles (Refactor 6).
 
 ```tsx
 // src/components/HeroDetail.tsx
@@ -811,15 +803,17 @@ export default function HeroDetail() {
 }
 ```
 
-
-
-![HeroDetail-Refactor7](../img/HeroDetail-Refactor7.png)
-
-
+![HeroDetail-Refactor7](../img/HeroDetail-Refactor6.png)
 
 ## State
 
-Before implementing any state, we can write lots of tests that scrutinize the layout of the component. Instead of the hard coded `hero` object in the component, we can pass in data with a prop. We either manipulate our components via props or what wraps them, and prop is the easier choice at the moment. 
+Quoting Kent C. Dodds, in React we can simplify our UI state management into two categories:
+
+1) UI state: modal is open, item is highlighted, etc.
+
+2) Server data 
+
+Before implementing any state, we can write lots of tests that scrutinize the layout of the component. Instead of the hard coded `hero` object in the component, we can pass in data with a prop. We either manipulate our components via props or what wraps them, and a prop is the easier choice at the moment. 
 
 The shape of the prop is just our hero object. What will control the state are the values of `id`, `name` and `description`. `description` is not very interesting, it does not impact component layout. What changes our component layout are `id` and `name`, which result in 2^2 = 4 states.
 
@@ -830,7 +824,7 @@ The shape of the prop is just our hero object. What will control the state are t
 | true  | false |
 | true  | true  |
 
-Our first test which we named `'should verify the layout of the component'`  is in fact the first case. Let's write tests for the remaining. We can wrap these in a `context` block to communicate the intent (Red 8).
+Our first test which we named `'should verify the layout of the component'`  is in fact the first case. Let's write tests for the remaining. We can wrap these in a `context` block to communicate the intent (Red 7).
 
 ```tsx
 // src/components/HeroDetail.cy.tsx
@@ -912,13 +906,7 @@ describe('HeroDetail', () => {
 })
 ```
 
-Recall our previous statement. In React, we can simplify our UI state management into two categories:
-
-1) UI state: modal is open, item is highlighted, etc.
-
-2) Server data 
-
-We created placeholders for handling save and cancel operations, these would fall into category 2. We also have state in the name and description fields, and those fall under category 1. We always want to prefer to manage state where it is most relevant. The most basic way to do this in React is with `useState` hook.  We want to alert React that a value used within a component has changed, and just updating the variable directly won’t do, we need an updater function. In this approach:
+Previously we created placeholders for handling save and cancel operations, these would fall into category 2 (server data). We also have state in the name and description fields, and those fall under category 1 (ui state). We always want to prefer to manage state where it is most relevant. The most basic way to do this in React is with `useState` hook.  We want to alert React that a value used within a component has changed, and just updating the variable directly won’t do, we need an updater function. In this approach:
 
 1. Consider what state the component needs
 
@@ -926,7 +914,7 @@ We created placeholders for handling save and cancel operations, these would fal
 
 3. Update the state in response to events
 
-`useState` hook returns a value & its updater function in an array of 2, the names are arbitrary. If we want an initial value for the variable, we pass it as an argument to the `useState`
+`useState` hook returns a value and its updater function in an array of 2, the names are arbitrary. If we want an initial value for the variable, we pass it as an argument to the `useState`
 
 ```tsx
 const [value, setValue] = useState(initialValue)
@@ -940,7 +928,7 @@ const [hero, setHero] = useState(someInitialHeroData)
 
 The variable name `someInitialHeroData` is problematic. From the perspective of whoever is using `HeroDetail` component, it is just `hero`. From the perspective within the component, it is also `hero`. To resolve this we can alias the name, and create copy of the hero being passed in using object destructuring. 
 
-Like we laid out in the tests, the simplest way to pass in any data to our component is a prop. We can refactor our component to get ready for state management. This way we do not have to have a hard-coded piece of `hero` data in the component, and we can let that be determined by whoever is using the component. Once the prop is passed in, what we do with the component state will be handled through `useState` hook. (Green 8). 
+Like we laid out in the tests, the simplest way to pass in any data to our component is a prop. We can refactor our component to get ready for state management. This way we do not have to have a hard-coded piece of `hero` data in the component, and we can let that be determined by whoever is using the component. Once the prop is passed in, what we do with the component state will be handled through `useState` hook (Green 7). 
 
 ```tsx
 // src/components/HeroDetail.tsx
@@ -1010,7 +998,7 @@ export default function HeroDetail({hero: initHero}: HeroDetailProps) {
 
 ```
 
-ESLint is warning us that `setHero` is not being used. Notice that `InputDetail`  has an `onChange` handler, used for writable fields, and that is where `setHero` fits. Let's write two more tests for handling name change and description change. Also, TS is giving us a warning in the handleSave and handleCancel tests that we are missing props. For all these handleSomething tests, we can just pass in a hero object with empty properties (Red 9).
+ESLint is warning us that `setHero` is not being used. Notice that `InputDetail`  has an `onChange` handler, used for writable fields, and that is where `setHero` fits. Let's write two more tests for handling name change and description change. Also, TS is giving us a warning in the handleSave and handleCancel tests that we are missing props. For all these handleSomething tests, we can just pass in a hero object with empty properties (Red 8).
 
 ```tsx
 // src/components/HeroDetail.cy.tsx
@@ -1118,7 +1106,7 @@ describe('HeroDetail', () => {
 })
 ```
 
-We can add the missing handlers to the test to make the test pass (Green 9).
+We can add the missing handlers to the component to make the test pass (Green 8).
 
 ```tsx
 // src/components/HeroDetail.tsx
@@ -1191,7 +1179,7 @@ export default function HeroDetail({hero: initHero}: HeroDetailProps) {
 }
 ```
 
-We need to call `setHero` with the value of entire text field. We can make a copy the current `hero` data via restructuring, and overwrite any hero property with the value of the event target. We can also add the types here (Refactor 9).
+We need to call `setHero` with the value of entire text field. We can make a copy the current `hero` data via destructuring, and overwrite any hero property with the value of the event target. We can also add the types here (Refactor 8).
 
 ```tsx
 // src/components/HeroDetail.tsx
@@ -1270,8 +1258,405 @@ export default function HeroDetail({hero: initHero}: HeroDetailProps) {
 }
 ```
 
-// TODO
+For the state that has to do with server (category 2) such as `handleSave` and  `handleCancel` we will delay the decision until the we have to manage the state outside of the component. For now, the console.logs will do. 
 
-- what to do instead of console.logs
-- history?
-- summary
+For the state that has to do with the component (category 1) such as `handleNameChange` and `handleDescriptionChange`, we are already doing more than the console.log by using `setHero`. Therefore we can remove the logs, and improve the tests to spy on `useState` instead. Every increment of `useState` goes in an array which includes the `hero` object at that point in time. When we spy on the final state, we want to look at array position 0 of the last array element.
+
+![HeroDetail-useStateSpy](../img/HeroDetail-useStateSpy.png)
+
+We can tweak the test to remove the console log checks for name and description change, an spy on `useState` (Refactor 8).
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail from './HeroDetail'
+import '../styles.scss'
+import React from 'react'
+
+describe('HeroDetail', () => {
+  it('should handle Save', () => {
+    const hero = {id: '', name: '', description: ''}
+    cy.mount(<HeroDetail hero={hero} />)
+    cy.window()
+      .its('console')
+      .then(console => cy.spy(console, 'log').as('log'))
+
+    cy.getByCy('save-button').click()
+    cy.get('@log').should('have.been.calledWith', 'handleSave')
+  })
+
+  it('should handle Cancel', () => {
+    const hero = {id: '', name: '', description: ''}
+    cy.mount(<HeroDetail hero={hero} />)
+    cy.window()
+      .its('console')
+      .then(console => cy.spy(console, 'log').as('log'))
+
+    cy.getByCy('cancel-button').click()
+
+    cy.get('@log').should('have.been.calledWith', 'handleCancel')
+  })
+
+  it('should handle name change', () => {
+    const hero = {id: '', name: '', description: ''}
+    cy.mount(<HeroDetail hero={hero} />)
+
+    cy.spy(React, 'useState').as('useState')
+
+    const newHeroName = 'abc'
+    cy.getByCy('input-detail-name').type(newHeroName)
+    cy.get('@useState')
+      .should('have.been.calledWith', hero)
+      .its('returnValues')
+      .its(newHeroName.length)
+      .its(0)
+      .should('deep.eq', {...hero, name: newHeroName})
+  })
+
+  it('should handle description change', () => {
+    const hero = {id: '', name: '', description: ''}
+    cy.mount(<HeroDetail hero={hero} />)
+
+    cy.spy(React, 'useState').as('useState')
+
+    const newHeroDescription = '123'
+    cy.getByCy('input-detail-description').type(newHeroDescription)
+    cy.get('@useState')
+      .should('have.been.calledWith', hero)
+      .its('returnValues')
+      .its(newHeroDescription.length)
+      .its(0)
+      .should('deep.eq', {...hero, description: newHeroDescription})
+  })
+
+  context('state: should verify the layout of the component', () => {
+    it('id: false, name: false ', () => {
+      const hero = {id: '', name: '', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.getByCy('hero-detail')
+      cy.getByCyLike('input-detail').should('have.length', 2)
+
+      cy.findByPlaceholderText('e.g. Colleen')
+      cy.findByPlaceholderText('e.g. dance fight!')
+
+      cy.getByCy('save-button').should('be.visible')
+      cy.getByCy('cancel-button').should('be.visible')
+    })
+
+    it('id: false, name: true - should display hero title and field name, and not display id field', () => {
+      const hero = {id: '', name: 'Aslaug', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.contains('p', hero.name)
+      cy.findByDisplayValue(hero.name)
+
+      cy.getByCyLike('input-detail').should('have.length', 2)
+      cy.getByCy('input-detail-id').should('not.exist')
+    })
+
+    it('id: true, name: false - should not display hero name, and display all fields', () => {
+      const hero = {id: 'HeroAslaug', name: '', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.get('p').then($el => cy.wrap($el.text()).should('equal', ''))
+
+      cy.findByDisplayValue(hero.id)
+      cy.getByCyLike('input-detail').should('have.length', 3)
+    })
+
+    it('id: true, name: true - should display hero name, id  ', () => {
+      const hero = {id: 'HeroAslaug', name: 'Aslaug', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      cy.contains('p', hero.name)
+      cy.findByDisplayValue(hero.name)
+      cy.findByDisplayValue(hero.id)
+
+      cy.getByCyLike('input-detail').should('have.length', 3)
+
+      cy.getByCy('input-detail-description').type('hero description')
+      cy.findByDisplayValue('hero description')
+    })
+  })
+})
+```
+
+We can make the two `it` blocks drier with a `beforeEach` hook in a new `context` block. The same idea applies to `handleSave` and `handleCancel` tests as well. We can also make some of the assertions about drier (Refactor 8). 
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import HeroDetail, {Hero} from './HeroDetail'
+import '../styles.scss'
+import React from 'react'
+
+describe('HeroDetail', () => {
+  context('handleSave, handleCancel', () => {
+    let hero: Hero
+    beforeEach(() => {
+      cy.window()
+        .its('console')
+        .then(console => cy.spy(console, 'log').as('log'))
+
+      hero = {id: '', name: '', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+    })
+    it('should handle Save', () => {
+      cy.getByCy('save-button').click()
+      cy.get('@log').should('have.been.calledWith', 'handleSave')
+    })
+
+    it('should handle Cancel', () => {
+      cy.mount(<HeroDetail hero={hero} />)
+      cy.getByCy('cancel-button').click()
+      cy.get('@log').should('have.been.calledWith', 'handleCancel')
+    })
+  })
+
+  context('handleNameChange, handleDescriptionChange', () => {
+    let hero: Hero
+    beforeEach(() => {
+      cy.spy(React, 'useState').as('useState')
+
+      hero = {id: '', name: '', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+    })
+
+    it('should handle name change', () => {
+      const newHeroName = 'abc'
+      cy.getByCy('input-detail-name').type(newHeroName)
+      cy.get('@useState')
+        .should('have.been.calledWith', hero)
+        .its('returnValues')
+        .its(newHeroName.length)
+        .its(0)
+        .should('deep.eq', {...hero, name: newHeroName})
+    })
+
+    it('should handle description change', () => {
+      const newHeroDescription = '123'
+      cy.getByCy('input-detail-description').type(newHeroDescription)
+      cy.get('@useState')
+        .should('have.been.calledWith', hero)
+        .its('returnValues')
+        .its(newHeroDescription.length)
+        .its(0)
+        .should('deep.eq', {...hero, description: newHeroDescription})
+    })
+  })
+
+  context('state: should verify the layout of the component', () => {
+    const shouldNotRenderName = () =>
+      cy.get('p').then($el => cy.wrap($el.text()).should('equal', ''))
+
+    const shouldNotRenderId = () => {
+      cy.getByCyLike('input-detail').should('have.length', 2)
+      cy.getByCy('input-detail-id').should('not.exist')
+    }
+
+    const shouldRenderName = (hero: Hero) => {
+      cy.contains('p', hero.name)
+      cy.findByDisplayValue(hero.name)
+    }
+
+    const shouldRenderId = (hero: Hero) => {
+      cy.findByDisplayValue(hero.id)
+      cy.getByCyLike('input-detail').should('have.length', 3)
+    }
+
+    it('id: false, name: false - should verify the minimal state of the component', () => {
+      const hero = {id: '', name: '', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      shouldNotRenderName()
+      shouldNotRenderId()
+
+      cy.findByPlaceholderText('e.g. Colleen')
+      cy.findByPlaceholderText('e.g. dance fight!')
+
+      cy.getByCy('save-button').should('be.visible')
+      cy.getByCy('cancel-button').should('be.visible')
+    })
+
+    it('id: false, name: true - should display hero title and field name, and not display id field', () => {
+      const hero = {id: '', name: 'Aslaug', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      shouldRenderName(hero)
+      shouldNotRenderId()
+    })
+
+    it('id: true, name: false - should not display hero name, and display all fields', () => {
+      const hero = {id: 'HeroAslaug', name: '', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      shouldNotRenderName()
+      shouldRenderId(hero)
+    })
+
+    it('id: true, name: true - should display hero name, id  ', () => {
+      const hero = {id: 'HeroAslaug', name: 'Aslaug', description: ''}
+      cy.mount(<HeroDetail hero={hero} />)
+
+      shouldRenderName(hero)
+      shouldRenderId(hero)
+
+      cy.getByCy('input-detail-description').type('hero description')
+      cy.findByDisplayValue('hero description')
+    })
+  })
+})
+```
+
+Here is the final form of the component. We are leaving the server side of state management for later.
+
+```tsx
+// src/components/HeroDetail.cy.tsx
+import InputDetail from '../components/InputDetail'
+import {useState, ChangeEvent} from 'react'
+import ButtonFooter from '../components/ButtonFooter'
+import {FaUndo, FaRegSave} from 'react-icons/fa'
+
+export type Hero = {
+  id: string
+  name: string
+  description: string
+}
+type HeroDetailProps = {
+  hero: Hero
+}
+
+export default function HeroDetail({hero: initHero}: HeroDetailProps) {
+  const [hero, setHero] = useState<Hero>({...initHero})
+
+  const handleCancel = () => console.log('handleCancel')
+  const updateHero = () => console.log('updateHero')
+  const saveHero = () => console.log('saveHero')
+  const handleSave = () => {
+    console.log('handleSave')
+    return hero.name ? updateHero() : saveHero()
+  }
+
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setHero({...hero, name: e.target.value})
+  }
+  const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setHero({...hero, description: e.target.value})
+  }
+
+  return (
+    <div data-cy="hero-detail" className="card edit-detail">
+      <header className="card-header">
+        <p className="card-header-title">{hero.name}</p>
+        &nbsp;
+      </header>
+      <div className="card-content">
+        <div className="content">
+          {hero.id && (
+            <InputDetail
+              name={'id'}
+              value={hero.id}
+              readOnly={true}
+            ></InputDetail>
+          )}
+          <InputDetail
+            name={'name'}
+            value={hero.name}
+            placeholder="e.g. Colleen"
+            onChange={handleNameChange}
+          ></InputDetail>
+          <InputDetail
+            name={'description'}
+            value={hero.description}
+            placeholder="e.g. dance fight!"
+            onChange={handleDescriptionChange}
+          ></InputDetail>
+        </div>
+      </div>
+      <footer className="card-footer">
+        <ButtonFooter
+          label="Cancel"
+          IconClass={FaUndo}
+          onClick={handleCancel}
+        />
+        <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
+      </footer>
+    </div>
+  )
+}
+```
+
+
+
+## Summary
+
+### `header`
+
+We added a failing test for the header tag and wrote a minimal component to pass the test (Red 1, Green 1).
+
+<br />
+
+### Form fields
+
+We wrote a test checking for 3 `InputDetail` components / form fields and enhanced the component (Red 2, Green 2).
+
+<br />
+
+We took advantage of the TS compiler to add the mandatory props to `InputDetail` component (Red 3, Green 3).
+
+<br />
+
+We took advantage of Cypress Testing Library commands to check for field values and placeholders (Red 4).
+
+We enhanced the component to pass to test with hard-cded values (Green 4).
+
+We hard-coded a `hero` object into the component to represent state (Refactor 4).
+
+We decided to delay the decisions about state until after we have the full UI layout.
+
+Consequently We used the visuals of the component test runner, as opposed to driving the design via tests, to add conditional rendering to the component (Refactor 4). 
+
+It is important to note that while we opted not to use the tests for an uncertain feature (the state), the fact that the component test is a mini UI application helped us progress.
+
+<br />
+
+### `footer`
+
+We added a failing test for the `ButtonFooter` component, and enhanced the parent component to pass the test (Red 5).
+
+We took advantage of TS to add the missing props to `ButtonFooter` component (Green 5).
+
+<br />
+
+
+We wrote a test checking that save and cancel click handlers are called when the respective buttons are pressed (Red 6).
+
+We filled in the handlers with console.logs (Green 6).
+
+We refactored the component, and added styles (Refactor 6).
+
+
+### State
+
+In React, we can simplify our UI state management into two categories:
+
+1) UI state: modal is open, item is highlighted, etc.
+
+2) Server data 
+
+We either manipulate our components via props or what wraps them, and a prop was deemed to be the easier choice moving forward.
+
+We scrutinized the shape of the `hero` object, and decided to pass it in as a prop to the component.
+
+We wrote tests for the 4 states the component, based on the variations of the `hero` object (Red 7)
+
+We used `useState` hook to manage the component's internal (UI) state (Green 7).
+
+<br />
+
+We wrote tests for handling name and description changes (Red 8).
+
+We added the missing handlers to the component to make the test pass (Green 8).
+
+We enhanced the usage of `setHero` via object destructuring (Refactor 8).
+
+We enhanced the tests to spy on `useState` when setHero is triggered via name change and description change handlers. We made the test drier (Refactor 8).

@@ -108,22 +108,22 @@ export default function ButtonFooter({ label }: ButtonFooterProps) {
 }
 ```
 
-Styling is not a major part of this guide, and we prefer to have global styles for most components. In the case of this one, styled icons make a lot of sense. For each component we can have a specific styling using styled components and [styled-icons](https://styled-icons.dev/?s=edit).
+Styling is not a major part of this guide, and we prefer to have global styles for most components. In the case of this one, react-icons make a lot of sense, because for each component we can have a specific styling using [react-icons](https://react-icons.github.io/react-icons/)
 
 ```bash
-yarn add styled-icons styled-components @types/styled-components
+yarn add react-icons
+yard add -D @types/react-icons
 ```
 
-Per the specification, we want to be able to use different kinds of icons within the button; Edit, Delete, Save. We can have the button wrap that style, and customize it as a prop. We will call the prop `IconClass` add a `StyledIcon` type.
+Per the specification, we want to be able to use different kinds of icons within the button; Edit, Delete, Save, Cancel. We can have the button wrap that style, and customize it as a prop. We will call the prop `IconClass` specify the possible types.
 
 ```tsx
 // src/components/ButtonFooter.tsx
-
-import type { StyledIcon } from "@styled-icons/styled-icon";
+import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
 
 type ButtonFooterProps = {
   label: string;
-  IconClass: StyledIcon;
+  IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
 };
 
 export default function ButtonFooter({ label, IconClass }: ButtonFooterProps) {
@@ -140,32 +140,30 @@ That fails the test because now we have to pass a `IconClass` prop to the compon
 
 ![ButtonFooter-error](../img/ButtonFooter-error.png)
 
-If we pass a prop `IconClass` with a value of type `StyledIcon`, then our test will pass again (Green 3).
+If we pass a prop `IconClass` with a value of type `FaEdit`, then our test will pass again (Green 3).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
-
 import ButtonFooter from "./ButtonFooter";
-import { EditAlt } from "@styled-icons/boxicons-regular/EditAlt";
+import { FaEdit } from "react-icons/fa";
 
 describe("ButtonFooter", () => {
   it("should", () => {
     const label = "Edit";
-    cy.mount(<ButtonFooter label={label} IconClass={EditAlt} />);
+    cy.mount(<ButtonFooter label={label} IconClass={FaEdit} />);
     cy.contains("span", label);
   });
 });
 ```
 
-![ButtoFooter-style-green](../img/ButtoFooter-style-green.png)
+![ButtonFooter-Green3](../img/ButtonFooter-Green3.png)
 
 This means we can have different styles, and probably should call a click handler on click. Let's write the test for it (Red 4).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
-
 import ButtonFooter from "./ButtonFooter";
-import { EditAlt } from "@styled-icons/boxicons-regular/EditAlt";
+import { FaEdit } from "react-icons/fa";
 
 describe("ButtonFooter", () => {
   it("should", () => {
@@ -173,7 +171,7 @@ describe("ButtonFooter", () => {
     cy.mount(
       <ButtonFooter
         label={label}
-        IconClass={EditAlt}
+        IconClass={FaEdit}
         onClick={cy.stub().as("click")}
       />
     );
@@ -187,12 +185,12 @@ We can immediately tell that we need an `onClick` prop. Let's enhance our compon
 
 ```tsx
 // src/components/ButtonFooter.tsx
-import type { StyledIcon } from "@styled-icons/styled-icon";
+import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
 import { SyntheticEvent } from "react";
 
 type ButtonFooterProps = {
   label: string;
-  IconClass: StyledIcon;
+  IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
   onClick: (e: SyntheticEvent) => void;
 };
 
@@ -210,13 +208,12 @@ export default function ButtonFooter({
 }
 ```
 
-We can now enhance our selector, and base it on the `label` string. We keep `cy.contains('span', label)` to make sure there is a span, but we will do the clicking with our `data-cy` selector `cy.getByCy(`${label}-button`)`, which should fail the test (Red 5).
+We can now enhance our selector, and base it on the `label` string. We keep `cy.contains('span', label)` to make sure there is a span, but we will do the clicking with our `data-cy` selector, which should fail the test (Red 5).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
-
 import ButtonFooter from "./ButtonFooter";
-import { EditAlt } from "@styled-icons/boxicons-regular/EditAlt";
+import { FaEdit } from "react-icons/fa";
 
 describe("ButtonFooter", () => {
   it("should", () => {
@@ -224,27 +221,26 @@ describe("ButtonFooter", () => {
     cy.mount(
       <ButtonFooter
         label={label}
-        IconClass={EditAlt}
+        IconClass={FaEdit}
         onClick={cy.stub().as("click")}
       />
     );
-    cy.getByCy(`${label}-button`).click();
+    cy.getByCy(`${label.toLowerCase()}-button`).click();
     cy.get("@click").should("be.called");
   });
 });
 ```
 
-Now we can add the data-cy selector to the button attributes. While we are here, we can also add an `aria-label` because it will have a similar value as a freebie (Green 5). Here we can also add a `&nbsp;` non-breaking space to have a space between the icon and the text for a nicer look.
+Now we can add the data-cy selector to the button attributes. While we are here, we can also add an `aria-label` because it will have a similar value as a freebie (Green 5). Here we can also add a `&nbsp;` a non-breaking space to have a space between the icon and the text for a nicer look.
 
 ```tsx
 // src/components/ButtonFooter.tsx
-
-import type { StyledIcon } from "@styled-icons/styled-icon";
+import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
 import { SyntheticEvent } from "react";
 
 type ButtonFooterProps = {
   label: string;
-  IconClass: StyledIcon;
+  IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
   onClick: (e: SyntheticEvent) => void;
 };
 
@@ -254,7 +250,11 @@ export default function ButtonFooter({
   onClick,
 }: ButtonFooterProps) {
   return (
-    <button data-cy={`${label}-button`} aria-label={label} onClick={onClick}>
+    <button
+      data-cy={`${label.toLowerCase()}-button`}
+      aria-label={label}
+      onClick={onClick}
+    >
       <IconClass />
       &nbsp;
       <span>{label}</span>
@@ -263,13 +263,12 @@ export default function ButtonFooter({
 }
 ```
 
-There is only one line left to cover; we should make sure that `IconClass` is rendered (Green 5). We can also finalize the name of the test. We are rendering an Edit button, verifying the label and the click operation. It is almost like a small scale e2e test.
+There is only one line left to cover; we should make sure that the `svg` icon is rendered (Green 5). We can also finalize the name of the test. We are rendering an Edit button, verifying the label and the click operation. It is almost like a small scale e2e test.
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
-
 import ButtonFooter from "./ButtonFooter";
-import { EditAlt } from "@styled-icons/boxicons-regular/EditAlt";
+import { FaEdit } from "react-icons/fa";
 
 describe("ButtonFooter", () => {
   it("should render and Edit button, the label, and trigger an onClick", () => {
@@ -277,15 +276,15 @@ describe("ButtonFooter", () => {
     cy.mount(
       <ButtonFooter
         label={label}
-        IconClass={EditAlt}
+        IconClass={FaEdit}
         onClick={cy.stub().as("click")}
       />
     );
 
     cy.contains("span", label);
-    cy.getByClassLike("StyledIconBase").should("be.visible");
+    cy.get("svg").should("be.visible");
 
-    cy.getByCy(`${label}-button`).click();
+    cy.getByCy(`${label.toLowerCase()}-button`).click();
     cy.get("@click").should("be.called");
   });
 });
@@ -295,10 +294,8 @@ What else can we do with this component? There is only the label and icon props.
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
-
 import ButtonFooter from "./ButtonFooter";
-import { EditAlt, Save } from "@styled-icons/boxicons-regular";
-import styled from "styled-components";
+import { FaEdit, FaRegSave } from "react-icons/fa";
 
 describe("ButtonFooter", () => {
   it("should render and Edit button, the label, and trigger an onClick", () => {
@@ -306,58 +303,52 @@ describe("ButtonFooter", () => {
     cy.mount(
       <ButtonFooter
         label={label}
-        IconClass={EditAlt}
+        IconClass={FaEdit}
         onClick={cy.stub().as("click")}
       />
     );
 
     cy.contains("span", label);
-    cy.getByClassLike("StyledIconBase").should("be.visible");
+    cy.get("svg").should("be.visible");
 
-    cy.getByCy(`${label}-button`).click();
+    cy.getByCy(`${label.toLowerCase()}-button`).click();
     cy.get("@click").should("be.called");
   });
 
-  it("should render a green Save button, the label, and trigger an onClick", () => {
-    const GreenSave = styled(Save)`
-      color: green;
-    `;
+  it("should render and Save button, the label, and trigger an onClick", () => {
     const label = "Save";
-
     cy.mount(
       <ButtonFooter
         label={label}
-        IconClass={GreenSave}
+        IconClass={FaRegSave}
         onClick={cy.stub().as("click")}
       />
     );
 
     cy.contains("span", label);
-    cy.getByClassLike("StyledIconBase").should("be.visible");
+    cy.get("svg").should("be.visible");
 
-    cy.getByCy(`${label}-button`).click();
+    cy.getByCy(`${label.toLowerCase()}-button`).click();
     cy.get("@click").should("be.called");
   });
 });
 ```
 
-We don't really like that duplication, we can refactor the test to be drier with a helper function (Refactor 6).
+We do not really like that duplication, we can refactor the test to be drier with a helper function (Refactor 6).
 
 We can add an additional css check, since in the second test we are adding a style to the component.
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
-
 import ButtonFooter from "./ButtonFooter";
-import { EditAlt, Save } from "@styled-icons/boxicons-regular";
-import styled from "styled-components";
+import { FaEdit, FaRegSave } from "react-icons/fa";
 
 describe("ButtonFooter", () => {
   const doAssertions = (label: string) => {
     cy.contains("span", label);
-    cy.getByClassLike("StyledIconBase").should("be.visible");
+    cy.get("svg").should("be.visible");
 
-    cy.getByCy(`${label}-button`).click();
+    cy.getByCy(`${label.toLowerCase()}-button`).click();
     cy.get("@click").should("be.called");
   };
 
@@ -366,7 +357,7 @@ describe("ButtonFooter", () => {
     cy.mount(
       <ButtonFooter
         label={label}
-        IconClass={EditAlt}
+        IconClass={FaEdit}
         onClick={cy.stub().as("click")}
       />
     );
@@ -374,31 +365,22 @@ describe("ButtonFooter", () => {
     doAssertions(label);
   });
 
-  it("should render a green Save button, the label, and trigger an onClick", () => {
-    const GreenSave = styled(Save)`
-      color: green;
-    `;
+  it("should render and Save button, the label, and trigger an onClick", () => {
     const label = "Save";
-
     cy.mount(
       <ButtonFooter
         label={label}
-        IconClass={GreenSave}
+        IconClass={FaRegSave}
         onClick={cy.stub().as("click")}
       />
     );
 
     doAssertions(label);
-    cy.getByClassLike("StyledIconBase").should(
-      "have.css",
-      "color",
-      "rgb(0, 128, 0)"
-    );
   });
 });
 ```
 
-![ButtonFooter-2tests-green](../img/ButtonFooter-2tests-green.png)
+![ButtonFooter-Refactor6](../img/ButtonFooter-Refactor6.png)
 
 ## Summary
 
@@ -416,7 +398,7 @@ We added the prop `label` and its type to the component (Green 2).
 
 <br />
 
-We added a styled icon to the component as a new prop and got a failing test (Red 3).
+We added an icon to the component as a new prop and got a failing test (Red 3).
 
 We enhanced the test to also use that new prop (Green 3).
 
@@ -432,11 +414,11 @@ We decided to a data-cy query for the button click (Red 5).
 
 And enhanced the component with the data-cy attribute (Green 5).
 
-We enhanced the test and made sure that the `IconClass is rendered (Green 5).
+We enhanced the test and made sure that the `svg` is rendered (Green 5).
 
 <br />
 
-We increased the test coverage by trying a different component; a green Save button (Green 6).
+We increased the test coverage by trying a different component; a Save button (Green 6).
 
 And we refactored the test to be leaner (Refactor 6).
 
