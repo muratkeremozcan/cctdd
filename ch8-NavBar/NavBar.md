@@ -128,7 +128,7 @@ We have a walking skeleton of the component.
 
 Any time we have a green test, _we can either refactor or add additional tests until we get another red_. Let's add some tests which verify that clicking on these routes takes us to the respective urls. The test is similar to what was done in `HeaderBarBrand` and `ListHeader` components. We can use Cypress' selector playground for this enhancement. `cy.get` targeting an `href` is a good selector in this case, which will not change unless the route changes (Green 3).
 
-![NavBar-selector-playground](/Users/murat/cctdd/book/img/NavBar-selector-playground.png)
+![NavBar-selector-playground](../img/NavBar-selector-playground.png)
 
 Adding the route checks, the test is still green.
 

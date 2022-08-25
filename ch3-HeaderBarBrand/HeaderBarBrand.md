@@ -241,7 +241,7 @@ export default function HeaderBarBrand() {
 
 We get two failures. One is a compiler warning about missing attribute, the other is the `react-router` being used without wrapping the component in a `Router` component (Red 1).
 
-![NavLink-red1](/Users/murat/cctdd/book/img/HeaderBarBrand-NavLink-red1.png)
+![NavLink-red1](../img/HeaderBarBrand-NavLink-red1.png)
 
 We can address the compiler warning by adding a `to` attribute to `NavLink` (Green 1).
 
@@ -356,7 +356,7 @@ export default function HeaderBarBrand() {
 }
 ```
 
-![HeaderBarBrand-NavLink-Green2](/Users/murat/cctdd/book/img/HeaderBarBrand-NavLink-Green2.png)
+![HeaderBarBrand-NavLink-Green2](../img/HeaderBarBrand-NavLink-Green2.png)
 
 There is a possible test refactor at this point, should we segregate the test in to two distinct parts, or should it be all under a single `it` block?
 
