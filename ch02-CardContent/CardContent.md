@@ -99,12 +99,12 @@ The test still passes, but the compiler is complaining about the props that don 
 
 ```tsx
 // src/components/CardContent.tsx
-type ButtonFooterProps = {
+type CardContentProps = {
   name: string;
   description: string;
 };
 
-export default function CardContent({ name, description }: ButtonFooterProps) {
+export default function CardContent({ name, description }: CardContentProps) {
   return (
     <div>
       <div>{name}</div>
@@ -128,14 +128,32 @@ Our component is still looking the same in the Cypress runner. Let's add some cs
 
 ```tsx
 // src/components/CardContent.tsx
-type ButtonFooterProps = {
+type CardContentProps = {
   name: string;
   description: string;
 };
 
-export default function CardContent({ name, description }: ButtonFooterProps) {
+export default function CardContent({ name, description }: CardContentProps) {
   return (
     <div className="card-content">
+      <div className="name">{name}</div>
+      <div className="description">{description}</div>
+    </div>
+  );
+}
+```
+
+Finally, we add a `data-cy` attribute to top tag of the component to make it easier to reference when it is used.
+
+```tsx
+type CardContentProps = {
+  name: string;
+  description: string;
+};
+
+export default function CardContent({ name, description }: CardContentProps) {
+  return (
+    <div data-cy="card-content" className="card-content">
       <div className="name">{name}</div>
       <div className="description">{description}</div>
     </div>
