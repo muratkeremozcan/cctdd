@@ -662,7 +662,7 @@ export default function Heroes() {
 }
 ```
 
-### Lifting state
+## Lifting state from `HeroList` & `ModalYesNo` into `Heroes`
 
  `showModal` looks great in there, but we need to be able to `setShowModal` to true when clicking the `Delete` button. Take a look at the console, `handleDeleteHero` is called and this function lives in `HeroList` component. This is a hint that the two child components are sharing state. 
 
@@ -718,7 +718,6 @@ export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
     </ul>
   )
 }
-
 ```
 
 We update the matching test to accept the new `handleDeleteHero` prop. It suffices to use `cy.stub` to ensure that it is called on click.
@@ -1096,3 +1095,8 @@ export default function Heroes() {
 }
 ```
 
+
+
+## `HeroDetail` component
+
+Continued after routing section.
