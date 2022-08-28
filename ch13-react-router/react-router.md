@@ -1,14 +1,14 @@
 # [`react-router`](https://reactrouter.com/en/v6.3.0/getting-started/overview) 
 
-Our `Heroes` component is needing to take advantage of routes, but we have not set that up in our app yet. Until now, every component has been designed in isolation. While the real app launches on the generic page, a user cannot do much with it. We will be setting up [`react-router`](https://reactrouter.com/en/v6.3.0/getting-started/overview) using e2e to test it.
+Our `Heroes` component is needing to take advantage of routes, but we have not set that up in our app yet. Until now, every component has been designed in isolation. Meanwhile, the real app launches on the generic page, and a user cannot do much with it. During this section we will be setting up [`react-router`](https://reactrouter.com/en/v6.3.0/getting-started/overview) using e2e to test it.
 
 #### Minor overhead
 
-If a component is importing a file from outside the source folder, the app will not compile. Make a copy of `heroes.json` from `cypress/fixtures/` in `src/heroes` and update `Heroes` component to use this file instead. We will handle this gracefully later.
+If a component is importing a file from outside the source folder, the component will work in isolation but the greater app will not compile. Make a copy of `heroes.json` from `cypress/fixtures/` in `src/heroes` and update `Heroes` component to use this file instead. We will handle this gracefully later.
 
 ## Using e2e
 
-We can test some of the routing capability in components, if those components have navigation links in them. We implemented examples of these in `HeaderBar` and `NavBar` components. Moving past that, the most confident way to test routing is using e2e tests because it lets us cover the apps routing features in full. 
+We can test some of the routing capability in components, if those components have navigation links in them. We implemented examples of these in `HeaderBar` and `NavBar` components. Moving past that, the most confident way to test routing is using e2e tests because it lets us cover the apps routing features entirely. 
 
 We start the e2e runner with  `yarn cy:open-e2e`. This command internally runs `yarn start` which also serves the app on `localhost:3000`. At the moment we are seeing the generic React app when running the `spec` file. We can rename that to `routes-nav.cy.ts`.
 
@@ -473,3 +473,142 @@ describe('e2e sanity', () => {
 })
 ```
 
+## Using component testing
+
+We are very confident about direct-navigation & routing related tests with e2e. We also covered click navigation in `src/components/NotFound.cy.tsx`. In a component test, the url does not exist upon mount, and we cannot use `cy.visit`. But we can use click navigation. We can update `App.cy.tsx` as such.
+
+```tsx
+import App from './App'
+
+describe('ct sanity', () => {
+  it('should render the App', () => {
+    cy.mount(<App />)
+    cy.getByCy('not-found').should('be.visible')
+
+    cy.getByCy('nav-bar').within(() => {
+      cy.contains('p', 'Menu')
+
+      const routes = ['heroes', 'villains', 'about']
+      cy.getByCy('menu-list').children().should('have.length', routes.length)
+
+      cy.wrap(routes).each((route: string) => {
+        cy.get(`[href="/${route}"]`)
+          .contains(route, {matchCase: false})
+          .click()
+          .should('have.class', 'active-link')
+          .siblings()
+          .should('not.have.class', 'active-link')
+
+        cy.url().should('contain', route)
+      })
+    })
+  })
+})
+```
+
+We check that upon mount the url is uncertain using `cy.getByCy('not-found').should('be.visible')`. The rest of the test is a copy paste from  `src/components/NotFound.cy.tsx`. We could instead check the render of the child components of App component.
+
+```tsx
+import App from './App'
+
+describe('ct sanity', () => {
+  it('should render the App', () => {
+    cy.mount(<App />)
+    cy.getByCy('not-found').should('be.visible')
+
+    cy.contains('Heroes').click()
+    cy.getByCy('heroes').should('be.visible')
+
+    cy.contains('About').click()
+    cy.getByCy('about').should('be.visible')
+  })
+})
+```
+
+![react-router-final](../img/react-router-final.png)
+
+This test does not add additional confidence, because it does not do anything extra over the existing e2e and component tests. At best, it can serve as a sanity test. We will keep it for now for a side project where we will compare Cypress component testing to React Testing library. Here is the initial RTL replica of the same test.
+
+```tsx
+// src/App.test.tsx
+import {render, screen} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import App from './App'
+
+test('renders tour of heroes', async () => {
+  render(<App />)
+  // there is no concept of url in virtual DOM,
+  // therefore 'not-found' component is not relevant here
+
+  userEvent.click(screen.getByText('About'))
+  expect(screen.getByTestId('about')).toBeVisible()
+
+  userEvent.click(screen.getByText('Heroes'))
+  expect(screen.getByTestId('heroes')).toBeVisible()
+})
+
+// CT vs RTL: src/App.cy.tsx
+```
+
+Update `src/setupTests.ts` to overwrite the default test id selector as `data-cy`.
+
+```tsx
+// src/setupTests.ts
+import '@testing-library/jest-dom'
+
+import {configure} from '@testing-library/react'
+
+configure({testIdAttribute: 'data-cy'})
+```
+
+Execute the unit test with `yarn test`.
+
+## Summary
+
+
+We wrote an e2e test to check if we can render some of the main components when the app is served (Red 1, Red 2)
+
+We added `BrowserRouter` wrapping the main component to pass the tests (Green 1, Green 2).
+
+We added styles (Refactor 2).
+
+<br />
+
+We added a failing test for an invalid route, rendering the `NotFound` component (Red 3).
+
+We created the backbone of the route setup; a Routes component wrapping a Route component, with an element prop of `NotFound` (Green 3).
+
+We added styles (Refactor 3).
+
+<br />
+
+We added a test for a direct navigation to /about routes (Red 4).
+
+We setup the route for `About` component (Green 4).
+
+<br />
+
+We added a test for the initial redirect of the app from / to /heroes (Red 5).
+
+We enhanced the setup of routes with `Navigate` (Green 5).
+
+We added a test to check the direct navigation to /heroes, and another to test the route history (Refactor 5).
+
+<br />
+
+We had a look at the test `App.cy.tsx`, and discussed test duplication.
+We deemed the test okay to keep as a sanity although it does not do anything extra over another component test or the e2e.
+The other reason to keep it was to start a study of 1:1 comparisons of CT with RTL.
+We updated the App RTL test to mirror the App sanity component test.
+
+### Takeaways
+
+* Whenever we are testing a component that includes other components, take a look at the child component source and the component test.
+
+* Always check the test coverage of lower level tests and prefer not to duplicate the effort at a higher level, because it will have extra cost but might not provide extra confidence.
+
+* The obvious, but hard to implement, practice in test driven design is to write very small incremental tests at a time. Be more considerate about smaller increments with e2e tests, because of the higher impact radius of the changes.
+
+* Any time we have passing tests, we want to consider a refactor or add more tests before adding more source code. 
+
+* Always look for opportunities to tweak what test is already existing as opposed to writing partially duplicated tests for new specs. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then it is an opportunity for a test enhancement vs partial test duplication.
