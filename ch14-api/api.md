@@ -96,3 +96,9 @@ Content-Type: application/json
   "description": "commander of heroes"
 }
 ```
+
+// TODO
+// resetting the db at app start
+// resetting the db with a /reset route
+// crud tests
+// ui-e2e vs ui-integration
