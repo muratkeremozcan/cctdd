@@ -4,7 +4,7 @@ Our `Heroes` component is needing to take advantage of routes, but we have not s
 
 #### Minor overhead
 
-If a component is importing a file from outside the source folder, the app will not compile. Make a copy `heroes.json` from `cypress/fixtures/` to `src/heroes` and update `Heroes` component to use this file instead. We will handle this gracefully later.
+If a component is importing a file from outside the source folder, the app will not compile. Make a copy of `heroes.json` from `cypress/fixtures/` in `src/heroes` and update `Heroes` component to use this file instead. We will handle this gracefully later.
 
 ## Using e2e
 
@@ -114,7 +114,7 @@ Looking at `NavBar.cy.tsx` we see that we already covered click navigation to he
 
  Whether using e2e or component tests, the flow is the same. The main distinction is scale; with e2e we need to be even more careful to have small incremental steps because the impact in the large scale of the app can be higher, failures harder to diagnose. **The obvious, but hard to implement, practice in test driven design is to write very small incremental tests at a time**.
 
-## Routing features
+## Routing
 
 Write a failing test that checks that we render the `NotFound` component when visiting a non-existing route (Red 3).
 
