@@ -651,8 +651,6 @@ In the `react-router` chapter, we came to the decision that the best way to test
 
 ```tsx
 // cypress/e2e/create-hero.cy.ts
-// TODO: enhance this test when the backend is operational
-
 describe('Create hero', () => {
   beforeEach(() => cy.visit('/'))
   it('should go through the cancel flow', () => {
