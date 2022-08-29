@@ -203,13 +203,15 @@ describe("Heroes", () => {
 });
 ```
 
-We add the child `HeroList` to our component. It requires a heroes prop. **One good idea is to look at the component tests for children, see how they are used, and work off of that documentation when writing the tests for the parent component. We do not need to repeat any tests at the parent, but we can use the help to give an idea about how the child should be mounted.** Take a look at `HeroList.cy.tsx`. We are importing a Cypress fixture and passing it as a prop. We can repeat that same process, and delay the decisions about data and state to a later time until we have to make them (Green 3).
+We add the child `HeroList` to our component. It requires a heroes prop. **One good idea is to look at the component tests for children, see how they are used, and work off of that documentation when writing the tests for the parent component. We do not need to repeat any tests at the parent, but we can use the help to give an idea about how the child should be mounted.** Take a look at `HeroList.cy.tsx`. We are importing a Cypress fixture and passing it as a prop. We can repeat a similar process, and delay the decisions about data and state to a later time until we have to make them (Green 3).
+
+If a component is importing a file from outside the source folder, the component will work in isolation but the greater app will not compile. Make a copy of `heroes.json` from `cypress/fixtures/` in `src/heroes` and update `Heroes` component to use this file instead. We will handle this gracefully later.
 
 ```tsx
 // src/components/Heroes.tsx
 import ListHeader from "../components/ListHeader";
 import HeroList from "./HeroList";
-import heroes from "../../cypress/fixtures/heroes.json";
+import heroes from './heroes.json'
 
 export default function Heroes() {
   const addNewHero = () => console.log("handleAdd");
@@ -294,7 +296,7 @@ To render the child component, we just have to add the props `message`, `onNo`, 
 import ListHeader from "../components/ListHeader";
 import ModalYesNo from "components/ModalYesNo";
 import HeroList from "./HeroList";
-import heroes from "../../cypress/fixtures/heroes.json";
+import heroes from './heroes.json'
 
 export default function Heroes() {
   const addNewHero = () => console.log("handleAdd");
@@ -382,7 +384,7 @@ We get an error in the Cypress runner `func.apply is not a function`. Become fam
 import ListHeader from "../components/ListHeader";
 import ModalYesNo from "components/ModalYesNo";
 import HeroList from "./HeroList";
-import heroes from "../../cypress/fixtures/heroes.json";
+import heroes from './heroes.json'
 
 export default function Heroes() {
   const addNewHero = () => console.log("handleAdd");
@@ -418,7 +420,7 @@ We can refactor that into its own function (Refactor 5).
 import ListHeader from "../components/ListHeader";
 import ModalYesNo from "components/ModalYesNo";
 import HeroList from "./HeroList";
-import heroes from "../../cypress/fixtures/heroes.json";
+import heroes from './heroes.json'
 
 export default function Heroes() {
   const addNewHero = () => console.log("handleAdd");
@@ -527,7 +529,7 @@ To make the test pass, we can just use a `false` chain before the `ModalYesNo` c
 import ListHeader from "../components/ListHeader";
 import ModalYesNo from "components/ModalYesNo";
 import HeroList from "./HeroList";
-import heroes from "../../cypress/fixtures/heroes.json";
+import heroes from './heroes.json'
 
 export default function Heroes() {
   const addNewHero = () => console.log("handleAdd");
@@ -624,7 +626,7 @@ To make this state toggle work, we need to use `useState`. We do not like that h
 import ListHeader from "../components/ListHeader";
 import ModalYesNo from "components/ModalYesNo";
 import HeroList from "./HeroList";
-import heroes from "../../cypress/fixtures/heroes.json";
+import heroes from './heroes.json'
 import { useState } from "react";
 
 export default function Heroes() {
@@ -724,7 +726,7 @@ We update the matching test to accept the new `handleDeleteHero` prop. It suffic
 // src/components/HeroList.cy.tsx
 import HeroList from "./HeroList";
 import "../styles.scss";
-import heroes from "../../cypress/fixtures/heroes.json";
+import heroes from './heroes.json'
 
 describe("HeroList", () => {
   it("should render the item layout", () => {
@@ -772,14 +774,14 @@ describe("HeroList", () => {
 });
 ```
 
-Back in the parent component `Heroes`, now we can pass a prop `handleDeleteHero`. The value of it needs to be a function that returns `setShoModal(<a boolean arg>)`. Why do all the click handlers have to be functions? Per the [React docs](https://reactjs.org/docs/handling-events.html) when using JSX you pass a function as the event handler, rather than a string. After the changes, the test passes. (Green 7).
+Back in the parent component `Heroes`, now we can pass a prop `handleDeleteHero`. The value of it needs to be a function that returns `setShowModal(<a boolean arg>)`. Why do all the click handlers have to be functions? Per the [React docs](https://reactjs.org/docs/handling-events.html) when using JSX you pass a function as the event handler, rather than a string. After the changes, the test passes. (Green 7).
 
 ```tsx
 // src/components/Heroes.tsx
 import ListHeader from "../components/ListHeader";
 import ModalYesNo from "components/ModalYesNo";
 import HeroList from "./HeroList";
-import heroes from "../../cypress/fixtures/heroes.json";
+import heroes from './heroes.json'
 import { useState } from "react";
 
 export default function Heroes() {
@@ -818,14 +820,14 @@ export default function Heroes() {
 }
 ```
 
-We can refactor `() => setShowModal(true)` into its own function. We can also remove the `.only` in the component test (Refactor 8).
+We can refactor `() => setShowModal(true)` into its own function. We can also remove the `.only` in the component test (Refactor 7).
 
 ```tsx
 // src/components/Heroes.tsx
 import ListHeader from "../components/ListHeader";
 import ModalYesNo from "components/ModalYesNo";
 import HeroList from "./HeroList";
-import heroes from "../../cypress/fixtures/heroes.json";
+import heroes from './heroes.json'
 import { useState } from "react";
 
 export default function Heroes() {
@@ -864,7 +866,7 @@ export default function Heroes() {
 }
 ```
 
-Time for the next failing test in the modal flow; when `button-no` is clicked the modal should go away (Red 9).
+Time for the next failing test in the modal flow; when `button-no` is clicked the modal should go away (Red 8).
 
 ```tsx
 // src/components/Heroes.cy.tsx
@@ -919,62 +921,53 @@ describe("Heroes", () => {
 });
 ```
 
-To make this work, we use `setShowModal(false)` in the already existing `handleCloseModal` function (Green 9).
+To make this work, we use `setShowModal(false)` in the already existing `handleCloseModal` function (Green 8).
 
 ```tsx
-// src/components/Heroes.cy.tsx
-import Heroes from "./Heroes";
-import { BrowserRouter } from "react-router-dom";
-import "../styles.scss";
+// src/components/Heroes.tsx
+import ListHeader from "../components/ListHeader";
+import ModalYesNo from "components/ModalYesNo";
+import HeroList from "./HeroList";
+import heroes from './heroes.json'
+import { useState } from "react";
 
-describe("Heroes", () => {
-  it("should handle hero add and refresh", () => {
-    cy.window()
-      .its("console")
-      .then((console) => cy.spy(console, "log").as("log"));
+export default function Heroes() {
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const addNewHero = () => console.log("handleAdd");
+  const handleRefresh = () => console.log("handleRefresh");
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+  const handleDeleteHero = () => {
+    setShowModal(true);
+  };
 
-    cy.mount(
-      <BrowserRouter>
-        <Heroes />
-      </BrowserRouter>
-    );
+  return (
+    <div data-cy="heroes">
+      <ListHeader
+        title="Heroes"
+        handleAdd={addNewHero}
+        handleRefresh={handleRefresh}
+      />
+      <div>
+        <div>
+          <HeroList heroes={heroes} handleDeleteHero={handleDeleteHero} />
+        </div>
+      </div>
 
-    cy.getByCy("list-header");
-    cy.getByCy("add-button").click();
-    cy.get("@log").should("have.been.calledWith", "handleAdd");
-    cy.getByCy("refresh-button").click();
-    cy.get("@log").should("have.been.calledWith", "handleRefresh");
-  });
-
-  it("should display hero list on render", () => {
-    cy.mount(
-      <BrowserRouter>
-        <Heroes />
-      </BrowserRouter>
-    );
-
-    cy.getByCy("hero-list");
-  });
-
-  it("should go through the modal flow", () => {
-    cy.mount(
-      <BrowserRouter>
-        <Heroes />
-      </BrowserRouter>
-    );
-
-    cy.getByCy("modal-yes-no").should("not.exist");
-
-    cy.getByCy("delete-button").first().click();
-    cy.getByCy("modal-yes-no").should("be.visible");
-
-    cy.getByCy("button-no").click();
-    cy.getByCy("modal-yes-no").should("not.exist");
-  });
-});
+      {showModal && (
+        <ModalYesNo
+          message="Would you like to delete the hero?"
+          onNo={handleCloseModal}
+          onYes={() => console.log("handleOnYes")}
+        />
+      )}
+    </div>
+  );
+}
 ```
 
-While we are here, we can the other branch of the modal flow; when clicking yes on the confirmation, we should close the modal and for now at least `console.log` something (Red 10).
+While we are here, we can cover the other branch of the modal flow; when clicking yes on the confirmation, we should close the modal and for now at least `console.log` something (Red 10).
 
 ```tsx
 // src/components/Heroes.cy.tsx
@@ -1042,14 +1035,14 @@ describe("Heroes", () => {
 });
 ```
 
-To pass this test, for now we just need function that toggles the modal off and console.logs the string "handleDeleteFromModal" (Green 10).
+To pass this test, for now we just need function that toggles the modal off and console.logs the string "handleDeleteFromModal" (Green 9).
 
 ```tsx
 // src/components/Heroes.tsx
 import ListHeader from "../components/ListHeader";
 import ModalYesNo from "components/ModalYesNo";
 import HeroList from "./HeroList";
-import heroes from "../../cypress/fixtures/heroes.json";
+import heroes from './heroes.json'
 import { useState } from "react";
 
 export default function Heroes() {
@@ -1095,3 +1088,66 @@ export default function Heroes() {
 ## `HeroDetail` component
 
 Continued after routing section.
+
+## Summary
+
+We added a test to render `ListHeader` child component (wrapped in `BrowserRouter`), and added to component with empty props to make the test pass (Red 1, Green 1).
+
+<br />
+
+We added tests checking for console.logs upon clicking he add and refresh buttons (Red 2).
+
+We used functions that console.log the function name to make the tests Pass (Green 2, Refactor 2).
+
+<br />
+
+We added a failing test for another child `HeroList` and included the child component in the render (Red 3, Green 3). We used hard coded data for the time being.
+
+<br />
+
+We added a failing test for rendering the modal (Red 4). We added mostly empty string props to make the test work (Green 4).
+
+We wrote another test to be able to close the modal and got an error `func.apply is not a function`, which means our event handler isn't doing anything.
+To solve it we used console.logging for the event handler functions and refactored them  (Green 5, Refactor 5).
+
+<br />
+
+We wrote a pseudo test for the modal flow; with the initial step that the modal should be closed on initially (Red 6).
+
+We hard coded a `false` with a blueprint for conditional rendering to make the test pass (Green 6).
+
+<br />
+
+We added a new test to the flow; to check that the modal gets opened on delete button click (Red 7).
+
+We realized that the children `HeroList` and `ModalYesNo` components share state, and lifted state up to our component
+
+`HeroList` then had a prop `handleDeleteHero`, and we set its value with `() => setShowModal(true)`, to show the modal when delete is clicked (Green 7).
+
+As before, we refactored the click handler to its own function (Refactor 7).
+
+<br />
+
+We wrote the next test in the modal flow, when `button-no` is clicked the modal should go away (Red 8).
+
+All we needed was to instead use `setShowModal(false)` instead of the existing console.log in the `handleCloseModal` function (Green 8).
+
+<br />
+
+We added a test for the other branch of the modal; the delete flow (Red 9).
+
+We added a function that toggles the modal off and console.logs the string `handleDeleteFromModal` and used it on the `onYes` handler of the modal (Green 9).
+
+
+## Takeaways
+
+* Look at the component tests for child components, see how they are used, and work off of that documentation when writing the tests for the parent component. We do not need to repeat any tests at the parent, but we can use the help to give an idea about how the child should be mounted. 
+
+* While designing the component, you can delay the decisions about network state and use hard coded data.
+
+* To delay the decisions about event handlers, you can use functions that console.log. These will help when components that share state get used in other components. Note that per the [React docs](https://reactjs.org/docs/handling-events.html) when using JSX you pass a function as the event handler, rather than a string
+
+* From Kent C. Dodds:
+  * If components are sharing state, lift the state up to their closest common ancestor.
+  * If the common ancestor is too deep and lifting state results in prop-drilling, use React's context api.
+  * Beyond that, use state management libraries.
