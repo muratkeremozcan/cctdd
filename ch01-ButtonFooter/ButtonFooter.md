@@ -323,12 +323,13 @@ describe("ButtonFooter", () => {
 
 There are diverging opinions about code duplication in tests. Some prefer to have long tests with duplication, as opposed to using test hooks and helpers, so that failure diagnosis is easier. Always think about how the test may fail and if the refactor will make diagnosis harder. In this case, the two components will most likely fail the same way. If we keep the helper function nearby, we can refactor the test to be drier (Refactor 6).
 
-We can add an additional css check, since in the second test we are adding a style to the component.
+We can add an additional css check, since in the second test we are adding a style to the component. Import the styles for the final look.
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
 import ButtonFooter from "./ButtonFooter";
 import { FaEdit, FaRegSave } from "react-icons/fa";
+import '../styles.scss'
 
 describe("ButtonFooter", () => {
   const doAssertions = (label: "Cancel" | "Save" | "Edit" | "Delete") => {
