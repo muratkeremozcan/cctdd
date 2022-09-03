@@ -1,6 +1,6 @@
 # ButtonFooter
 
-This is what our component might look like eventually. We need a button that wraps a label and CSS icon, the icon and the text can vary; Cancel, Save, Edit or Delete.
+This is what our component might look like eventually. We need a button that wraps a label and CSS icon. The icon and the text can vary; Cancel, Save, Edit or Delete.
 
 ![button-footer](../img/button-footer.png)
 
@@ -61,20 +61,6 @@ export default function ButtonFooter() {
 }
 ```
 
-The test is still green because we are looking for the string somewhere in within a button selector. Let's update that to be more specific (Refactor 1).
-
-```tsx
-// src/components/ButtonFooter.cy.tsx
-import ButtonFooter from "./ButtonFooter";
-
-describe("ButtonFooter", () => {
-  it("should", () => {
-    cy.mount(<ButtonFooter />);
-    cy.contains("span", "hello");
-  });
-});
-```
-
 We really want the "hello" string to be a variable, a prop that we can pass in to the component. Let's name the variable for the string `label`, and make it a prop. We mount the component with this new prop. The test still passes, but we get compiler error (Red 2).
 
 ```tsx
@@ -85,7 +71,7 @@ describe("ButtonFooter", () => {
   it("should", () => {
     const label = "hello";
     cy.mount(<ButtonFooter label={label} />);
-    cy.contains("span", label);
+    cy.contains(label);
   });
 });
 ```
@@ -94,9 +80,8 @@ Now we need a passing test. Let's add the prop and its type to the component (Gr
 
 ```tsx
 // src/components/ButtonFooter.tsx
-
 type ButtonFooterProps = {
-  label: 'Cancel' | 'Save' | 'Edit' | 'Delete';
+  label: "Cancel" | "Save" | "Edit" | "Delete";
 };
 
 export default function ButtonFooter({ label }: ButtonFooterProps) {
@@ -108,7 +93,7 @@ export default function ButtonFooter({ label }: ButtonFooterProps) {
 }
 ```
 
-Styling is not a major part of this guide, and we prefer to have global styles for most components. In the case of this one,  [react-icons](https://react-icons.github.io/react-icons/) makes a lot of sense, because for each component we can have a specific styling.
+Styling is not a major part of this guide, and we prefer to have global styles for most components. In the case of this one, [react-icons](https://react-icons.github.io/react-icons/) makes a lot of sense, because for each component we can have a specific styling.
 
 ```bash
 yarn add react-icons
@@ -122,7 +107,7 @@ Per the specification, we want to be able to use different kinds of icons within
 import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
 
 type ButtonFooterProps = {
-  label: 'Cancel' | 'Save' | 'Edit' | 'Delete';
+  label: "Cancel" | "Save" | "Edit" | "Delete";
   IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
 };
 
@@ -151,7 +136,7 @@ describe("ButtonFooter", () => {
   it("should", () => {
     const label = "Edit";
     cy.mount(<ButtonFooter label={label} IconClass={FaEdit} />);
-    cy.contains("span", label);
+    cy.contains(label);
   });
 });
 ```
@@ -189,7 +174,7 @@ import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
 import { SyntheticEvent } from "react";
 
 type ButtonFooterProps = {
-  label: 'Cancel' | 'Save' | 'Edit' | 'Delete';
+  label: "Cancel" | "Save" | "Edit" | "Delete";
   IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
   onClick: (e: SyntheticEvent) => void;
 };
@@ -208,7 +193,7 @@ export default function ButtonFooter({
 }
 ```
 
-We can now enhance our selector, and base it on the `label` string. We keep `cy.contains('span', label)` to make sure there is a span, but we will do the clicking with our `data-cy` selector, which should fail the test (Red 5).
+We can now enhance our selector, and base it on the `label` string. We keep `cy.contains(label)` to make sure there is a span, but we will do the clicking with our `data-cy` selector, which should fail the test (Red 5).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -231,7 +216,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-Now we can add the data-cy selector to the button attributes. While we are here, we can also add an `aria-label` because it will have a similar value as a freebie (Green 5). Here we can also add a `&nbsp;` a non-breaking space to have a space between the icon and the text for a nicer look.
+Now we can add the `data-cy` selector to the button attributes. While we are here, we can also add an `aria-label` because it will have a similar value as a freebie. Here we can also add a `&nbsp;` a non-breaking space to have a space between the icon and the text for a nicer look (Refactor 5).
 
 ```tsx
 // src/components/ButtonFooter.tsx
@@ -239,7 +224,7 @@ import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
 import { SyntheticEvent } from "react";
 
 type ButtonFooterProps = {
-  label: 'Cancel' | 'Save' | 'Edit' | 'Delete';
+  label: "Cancel" | "Save" | "Edit" | "Delete";
   IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
   onClick: (e: SyntheticEvent) => void;
 };
@@ -263,7 +248,7 @@ export default function ButtonFooter({
 }
 ```
 
-There is only one line left to cover; we should make sure that the `svg` icon is rendered (Green 5). We can also finalize the name of the test. We are rendering an Edit button, verifying the label and the click operation. It is almost like a small scale e2e test.
+There is only one line left to cover; we should make sure that the `svg` icon is rendered. We can also finalize the name of the test. We are rendering an Edit button, verifying the label and the click operation. It is almost like a small scale e2e test.
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -281,7 +266,7 @@ describe("ButtonFooter", () => {
       />
     );
 
-    cy.contains("span", label);
+    cy.contains(label);
     cy.get("svg").should("be.visible");
 
     cy.getByCy(`${label.toLowerCase()}-button`).click();
@@ -308,7 +293,7 @@ describe("ButtonFooter", () => {
       />
     );
 
-    cy.contains("span", label);
+    cy.contains(label);
     cy.get("svg").should("be.visible");
 
     cy.getByCy(`${label.toLowerCase()}-button`).click();
@@ -325,7 +310,7 @@ describe("ButtonFooter", () => {
       />
     );
 
-    cy.contains("span", label);
+    cy.contains(label);
     cy.get("svg").should("be.visible");
 
     cy.getByCy(`${label.toLowerCase()}-button`).click();
@@ -334,7 +319,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-There are diverging opinions about code duplication in tests. Some prefer to have long tests with duplication, as opposed to using test hooks and helpers, so that failure diagnosis is easier. Always think about how the test may fail and if the refactor will make diagnosis harder. In this case, the two components will most likely fail the same way. If we keep the helper function nearby,  we can refactor the test to be drier  (Refactor 6).
+There are diverging opinions about code duplication in tests. Some prefer to have long tests with duplication, as opposed to using test hooks and helpers, so that failure diagnosis is easier. Always think about how the test may fail and if the refactor will make diagnosis harder. In this case, the two components will most likely fail the same way. If we keep the helper function nearby, we can refactor the test to be drier (Refactor 6).
 
 We can add an additional css check, since in the second test we are adding a style to the component.
 
@@ -344,8 +329,8 @@ import ButtonFooter from "./ButtonFooter";
 import { FaEdit, FaRegSave } from "react-icons/fa";
 
 describe("ButtonFooter", () => {
-  const doAssertions = (label: 'Cancel' | 'Save' | 'Edit' | 'Delete') => {
-    cy.contains("span", label);
+  const doAssertions = (label: "Cancel" | "Save" | "Edit" | "Delete") => {
+    cy.contains(label);
     cy.get("svg").should("be.visible");
 
     cy.getByCy(`${label.toLowerCase()}-button`).click();
@@ -412,9 +397,9 @@ We enhanced the component to accommodate the new feature (Green 4).
 
 We decided to a data-cy query for the button click (Red 5).
 
-And enhanced the component with the data-cy attribute (Green 5).
+And enhanced the component with the data-cy attribute (Green 5, Refactor 5).
 
-We enhanced the test and made sure that the `svg` is rendered (Green 5).
+We enhanced the test and made sure that the `svg` is rendered.
 
 <br />
 
@@ -426,9 +411,9 @@ And we refactored the test to be leaner (Refactor 6).
 
 ## Takeaways
 
-* Having first a failing test, ensures a fault-finding one.
-* TypeScript and ESlint can serve as "tests" that give us a Red.
-* Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
-* The RedGreenRefactor cycles do not always have to be in that order. It can be a few cycles of  Red + Green, and then Refactor. Or it can be a Red, followed by a few Greens, and no Refactor. The key idea is to start with something failing, do the minimal to get it to work, and then make it better.
-* Using `data-cy` attributes for selectors, with template literals and JSX, we can have a precise and effortless way to refer to a component or its variants (ex: save vs edit).
-* Refactoring can be applied to tests so long as they will not be detrimental to failure diagnosis, evaluate case by case.
+- Having first a failing test, ensures a fault-finding one.
+- TypeScript and ESlint can serve as "tests" that give us a Red.
+- Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
+- The RedGreenRefactor cycles do not always have to be in that order. It can be a few cycles of Red + Green, and then Refactor. Or it can be a Red, followed by a few Greens, and no Refactor. The key idea is to start with something failing, do the minimal to get it to work, and then make it better.
+- Using `data-cy` attributes for selectors, with template literals and JSX, we can have a precise and effortless way to refer to a component or its variants (ex: save vs edit).
+- Refactoring can be applied to tests so long as they will not be detrimental to failure diagnosis, evaluate case by case.
