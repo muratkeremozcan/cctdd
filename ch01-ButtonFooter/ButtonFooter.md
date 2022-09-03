@@ -1,6 +1,6 @@
 # ButtonFooter
 
-This is what our component might look like eventually. We need a button that wraps a label and CSS icon, the icon and the text can vary.
+This is what our component might look like eventually. We need a button that wraps a label and CSS icon, the icon and the text can vary; Cancel, Save, Edit or Delete.
 
 ![button-footer](../img/button-footer.png)
 
@@ -334,7 +334,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-We do not really like that duplication, we can refactor the test to be drier with a helper function (Refactor 6).
+There are diverging opinions about code duplication in tests. Some prefer to have long tests with duplication, as opposed to using test hooks and helpers, so that failure diagnosis is easier. Always think about how the test may fail and if the refactor will make diagnosis harder. In this case, the two components will most likely fail the same way. If we keep the helper function nearby,  we can refactor the test to be drier  (Refactor 6).
 
 We can add an additional css check, since in the second test we are adding a style to the component.
 
@@ -426,7 +426,9 @@ And we refactored the test to be leaner (Refactor 6).
 
 ## Takeaways
 
-* Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
+* Having first a failing test, ensures a fault-finding one.
 * TypeScript and ESlint can serve as "tests" that give us a Red.
+* Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
 * The RedGreenRefactor cycles do not always have to be in that order. It can be a few cycles of  Red + Green, and then Refactor. Or it can be a Red, followed by a few Greens, and no Refactor. The key idea is to start with something failing, do the minimal to get it to work, and then make it better.
-* Using `data-cy` attributes for selectors. With template literals and JSX, we can have a precise and effortless way to refer to a component or its variants (ex: save vs edit).
+* Using `data-cy` attributes for selectors, with template literals and JSX, we can have a precise and effortless way to refer to a component or its variants (ex: save vs edit).
+* Refactoring can be applied to tests so long as they will not be detrimental to failure diagnosis, evaluate case by case.
