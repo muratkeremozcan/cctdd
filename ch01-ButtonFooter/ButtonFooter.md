@@ -123,6 +123,8 @@ export default function ButtonFooter({ label, IconClass }: ButtonFooterProps) {
 
 That fails the test because now we have to pass a `IconClass` prop to the component we are mounting. Become familiar with this error; it says we expected some prop but got undefined (Red 3).
 
+> The same failure could also be caught via a TS error in the test.
+
 ![ButtonFooter-error](../img/ButtonFooter-error.png)
 
 If we pass a prop `IconClass` with a value of type `FaEdit`, then our test will pass again (Green 3).
@@ -160,7 +162,7 @@ describe("ButtonFooter", () => {
         onClick={cy.stub().as("click")}
       />
     );
-    cy.contains("span", label).click();
+    cy.contains(label).click();
     cy.get("@click").should("be.called");
   });
 });
