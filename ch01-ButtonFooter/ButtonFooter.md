@@ -6,7 +6,7 @@ This is what our component might look like eventually. We need a button that wra
 
 Create a branch `feat/button-footer`. Create 2 files under `src/components/` folder; `ButtonFooter.cy.tsx`, `ButtonFooter.tsx`.
 
-We start minimal with a test (Red 1).
+We start minimal with a test that checks that the component mounts (Red 1).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -25,13 +25,13 @@ The compiler complains that there is no such component, let's make it green (Gre
 // src/components/ButtonFooter.tsx
 
 export default function ButtonFooter() {
-  return <div>hello</div>;
+  return <button>hello</button>;
 }
 ```
 
 Start the Cypress component test runner and execute the test; `yarn cy:open-ct`.
 
-Let's test that the string renders (Green 1).
+Let's test that the string renders. **Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor**.
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -61,7 +61,7 @@ export default function ButtonFooter() {
 }
 ```
 
-The test is still green because we are looking for the string somewhere in within a button selector. Let's update that to be more specific (Green 1).
+The test is still green because we are looking for the string somewhere in within a button selector. Let's update that to be more specific (Refactor 1).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -75,7 +75,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-We really want that "hello" string to be a variable, a prop that we can pass in to the component. Let's name the variable for the string `label`, and make it a prop. We mount the component with this new prop. The test still passes, but we get compiler error (Red 2).
+We really want the "hello" string to be a variable, a prop that we can pass in to the component. Let's name the variable for the string `label`, and make it a prop. We mount the component with this new prop. The test still passes, but we get compiler error (Red 2).
 
 ```tsx
 // src/components/ButtonFooter.tsx
@@ -96,7 +96,7 @@ Now we need a passing test. Let's add the prop and its type to the component (Gr
 // src/components/ButtonFooter.tsx
 
 type ButtonFooterProps = {
-  label: string;
+  label: 'Cancel' | 'Save' | 'Edit' | 'Delete';
 };
 
 export default function ButtonFooter({ label }: ButtonFooterProps) {
@@ -108,11 +108,11 @@ export default function ButtonFooter({ label }: ButtonFooterProps) {
 }
 ```
 
-Styling is not a major part of this guide, and we prefer to have global styles for most components. In the case of this one, react-icons make a lot of sense, because for each component we can have a specific styling using [react-icons](https://react-icons.github.io/react-icons/)
+Styling is not a major part of this guide, and we prefer to have global styles for most components. In the case of this one,  [react-icons](https://react-icons.github.io/react-icons/) makes a lot of sense, because for each component we can have a specific styling.
 
 ```bash
 yarn add react-icons
-yard add -D @types/react-icons
+yarn add -D @types/react-icons
 ```
 
 Per the specification, we want to be able to use different kinds of icons within the button; Edit, Delete, Save, Cancel. We can have the button wrap that style, and customize it as a prop. We will call the prop `IconClass` specify the possible types.
@@ -122,7 +122,7 @@ Per the specification, we want to be able to use different kinds of icons within
 import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
 
 type ButtonFooterProps = {
-  label: string;
+  label: 'Cancel' | 'Save' | 'Edit' | 'Delete';
   IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
 };
 
@@ -189,7 +189,7 @@ import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
 import { SyntheticEvent } from "react";
 
 type ButtonFooterProps = {
-  label: string;
+  label: 'Cancel' | 'Save' | 'Edit' | 'Delete';
   IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
   onClick: (e: SyntheticEvent) => void;
 };
@@ -239,7 +239,7 @@ import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
 import { SyntheticEvent } from "react";
 
 type ButtonFooterProps = {
-  label: string;
+  label: 'Cancel' | 'Save' | 'Edit' | 'Delete';
   IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
   onClick: (e: SyntheticEvent) => void;
 };
@@ -344,7 +344,7 @@ import ButtonFooter from "./ButtonFooter";
 import { FaEdit, FaRegSave } from "react-icons/fa";
 
 describe("ButtonFooter", () => {
-  const doAssertions = (label: string) => {
+  const doAssertions = (label: 'Cancel' | 'Save' | 'Edit' | 'Delete') => {
     cy.contains("span", label);
     cy.get("svg").should("be.visible");
 
@@ -388,7 +388,7 @@ We looked at the requirement and wrote a minimal failing test that mounts a comp
 
 We added a minimal component to pass the test (Green 1).
 
-We enhanced the test to check a little more `cy.contains('button', 'hello')` (Green 1).
+We enhanced the test to check a little more `cy.contains('button', 'hello')` (Refactor 1).
 
 <br />
 
@@ -423,3 +423,10 @@ We increased the test coverage by trying a different component; a Save button (G
 And we refactored the test to be leaner (Refactor 6).
 
 <br />
+
+## Takeaways
+
+* Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
+* TypeScript and ESlint can serve as "tests" that give us a Red.
+* The RedGreenRefactor cycles do not always have to be in that order. It can be a few cycles of  Red + Green, and then Refactor. Or it can be a Red, followed by a few Greens, and no Refactor. The key idea is to start with something failing, do the minimal to get it to work, and then make it better.
+* Using `data-cy` attributes for selectors. With template literals and JSX, we can have a precise and effortless way to refer to a component or its variants (ex: save vs edit).
