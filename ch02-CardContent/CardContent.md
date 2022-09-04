@@ -1,6 +1,6 @@
 # CardContent
 
-This is what our component might look like eventually. We need a a div wrapping two other divs.
+This is what our component might look like eventually. We need a div wrapping two other divs.
 
 ![card-content](../img/card-content.png)
 
@@ -40,7 +40,7 @@ import CardContent from "./CardContent";
 describe("CardContent", () => {
   it("should", () => {
     cy.mount(<CardContent />);
-    cy.contains("div", "hello");
+    cy.contains("hello");
   });
 });
 ```
@@ -57,8 +57,8 @@ describe("CardContent", () => {
   it("should", () => {
     cy.mount(<CardContent />);
 
-    cy.contains("div", "Bjorn Ironside");
-    cy.contains("div", "king of 9th century Sweden");
+    cy.contains("Bjorn Ironside");
+    cy.contains("king of 9th century Sweden");
   });
 });
 ```
@@ -89,8 +89,8 @@ describe("CardContent", () => {
     const description = "king of 9th century Sweden";
     cy.mount(<CardContent name={name} description={description} />);
 
-    cy.contains("div", name);
-    cy.contains("div", description);
+    cy.contains(name);
+    cy.contains(description);
   });
 });
 ```
@@ -167,15 +167,13 @@ This finalizes our work with the component.
 
 ## Summary
 
-Here are the Red Green Refactor cycles we went through while creating the component.
-
 <br />
 
 We started with a minimal test that renders the component (Red 1)
 
 We added the function component to make it green (Green1)
 
-We added a test to `cy.contains("div", "hello")` verify the render (Green 1)
+We added a test to verify the render (Green 1)
 
 <br />
 
@@ -192,3 +190,11 @@ We added the props and their types to the component (Green 3).
 We added styles and classes to the component (Refactor 3).
 
 <br />
+
+## Takeaways
+
+* It is encouraged to use hard coded values to make the tests pass initially.
+
+* Using a `data-cy` attribute in the top tag of the component will make it easier to reference when other components or the app uses it.
+
+  
