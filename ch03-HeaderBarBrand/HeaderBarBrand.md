@@ -214,7 +214,7 @@ export default function HeaderBarBrand() {
 
 ## Link to the `/heroes` route
 
-We are going to using `react-router` for our app. React Router's `Link` component is used to navigate the different routes on the app, and `NavLink` is used to add the style attributes to the active routes so that the user has a visual indication for the route they are on. We will opt to `NavLink`. Here is a sample snap showing the 
+We are going to be using `react-router` as the routing solution in our app. React Router's `Link` component is used to navigate the different routes on the app, and `NavLink` is used to add the style attributes to the active routes so that the user has a visual indication for the route they are on. We will opt to `NavLink`. Here is a sample snap showing the link highlight feature of `NavLink`.
 
 ![NavLink-explained](../img/HeaderBarBrand-NavLink-explained.png)
 
@@ -242,7 +242,7 @@ export default function HeaderBarBrand() {
 }
 ```
 
-We get two failures. One is a compiler warning about missing attribute, the other is the `react-router` being used without wrapping the component in a `Router` component (Red 5). This one is another component test error, regarding `react-router` hooks such as `useLocaton` that we get familiar with.
+We get two failures. One is a compiler warning about a missing attribute, the other is the `react-router` being used without wrapping the component in a `Router` component (Red 5). This one is another component test error we would like to get familiar with.
 
 ![NavLink-red1](../img/HeaderBarBrand-NavLink-red1.png)
 
@@ -270,7 +270,7 @@ export default function HeaderBarBrand() {
 }
 ```
 
-We can address the component test failure by wrapping the mounted component in `BrowserRouter` (Green 1). This is something we will see often see in the future component tests that have to do with routing.
+We can address the component test failure by wrapping the mounted component in `BrowserRouter`. This is something we will see often see in the future component tests that have to do with routing.
 
 ```tsx
 // src/components/HeaderBarBrand.cy.tsx
