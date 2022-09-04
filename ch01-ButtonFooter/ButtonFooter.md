@@ -31,7 +31,7 @@ export default function ButtonFooter() {
 
 Start the Cypress component test runner and execute the test; `yarn cy:open-ct`.
 
-Let's test that the string renders. **Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor**.
+Let's test that the string renders. Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -40,7 +40,7 @@ import ButtonFooter from "./ButtonFooter";
 describe("ButtonFooter", () => {
   it("should", () => {
     cy.mount(<ButtonFooter />);
-    cy.contains("button", "hello");
+    cy.contains("hello");
   });
 });
 ```
@@ -121,9 +121,7 @@ export default function ButtonFooter({ label, IconClass }: ButtonFooterProps) {
 }
 ```
 
-That fails the test because now we have to pass a `IconClass` prop to the component we are mounting. Become familiar with this error; it says we expected some prop but got undefined (Red 3).
-
-> The same failure could also be caught via a TS error in the test.
+That fails the test because now we have to pass a `IconClass` prop to the component we are mounting. Become familiar with this error; it says we expected some prop but got undefined (Red 3). The same failure could also be caught via a TS error in the test. In this case, it is worthwhile to get familiar with the errors we might run into with Cypress component tests.
 
 ![ButtonFooter-error](../img/ButtonFooter-error.png)
 
@@ -195,7 +193,7 @@ export default function ButtonFooter({
 }
 ```
 
-We can now enhance our selector, and base it on the `label` string. We keep `cy.contains(label)` to make sure there is a span, but we will do the clicking with our `data-cy` selector, which should fail the test (Red 5).
+We can now enhance our selector, and base it on the `label` string. We keep `cy.contains(label)` to make sure there is a text being displayed, but we will do the clicking with our `data-cy` selector, which should fail the test (Red 5).
 
 ```tsx
 // src/components/ButtonFooter.cy.tsx
@@ -323,6 +321,8 @@ describe("ButtonFooter", () => {
 
 There are diverging opinions about code duplication in tests. Some prefer to have long tests with duplication, as opposed to using test hooks and helpers, so that failure diagnosis is easier. Always think about how the test may fail and if the refactor will make diagnosis harder. In this case, the two components will most likely fail the same way. If we keep the helper function nearby, we can refactor the test to be drier (Refactor 6).
 
+> ​	Tip: use [`cy.pause()`](https://docs.cypress.io/api/commands/pause#Pause-and-step-through-each-click-command) to step through tests during diagnosis, or demos. Another useful diagnosis command is [ `cy.debug()`](https://docs.cypress.io/api/commands/debug#Syntax).
+
 We can add an additional css check, since in the second test we are adding a style to the component. Import the styles for the final look.
 
 ```tsx
@@ -374,9 +374,7 @@ describe("ButtonFooter", () => {
 
 We looked at the requirement and wrote a minimal failing test that mounts a component (Red 1).
 
-We added a minimal component to pass the test (Green 1).
-
-We enhanced the test to check a little more `cy.contains('button', 'hello')` (Refactor 1).
+We added a component to pass the test (Green 1).
 
 <br />
 
@@ -398,7 +396,7 @@ We enhanced the component to accommodate the new feature (Green 4).
 
 <br />
 
-We decided to a data-cy query for the button click (Red 5).
+We decided to use a data-cy query for the button click (Red 5).
 
 And enhanced the component with the data-cy attribute (Green 5, Refactor 5).
 

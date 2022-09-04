@@ -9,6 +9,7 @@ Create a branch `feat/headerBarBrand`. Create 2 files under `src/components/` fo
 ```tsx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
+import '../styles.scss'
 
 describe("HeaderBarBrand", () => {
   it("should", () => {
@@ -32,6 +33,7 @@ We need a `div` wrapping two links. Let's start with the easier one in a failing
 ```tsx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
+import '../styles.scss'
 
 describe("HeaderBarBrand", () => {
   it("should", () => {
@@ -41,7 +43,7 @@ describe("HeaderBarBrand", () => {
 });
 ```
 
-Add the link to the component (Green 1).
+Add the link to the component to make the test pass (Green 1).
 
 ```tsx
 // src/components/HeaderBarBrand.tsx
@@ -60,6 +62,7 @@ Let's click that link and see if there is any navigation. Cypress runner will co
 ```tsx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
+import '../styles.scss'
 
 describe("HeaderBarBrand", () => {
   it("should", () => {
@@ -71,7 +74,7 @@ describe("HeaderBarBrand", () => {
 
 ![HeaderBarBrand-not-visible](../img/HeaderBarBrand-not-visible.png)
 
-We could add a force to the click operation `.click({force: true})`, but let's do better. Install `react-icons` with `yarn add react-icons` and import `FaReact` (Green 2) .
+We could add a force to the click operation `.click({force: true})`, but let's do better. We installed `react-icons` in the first chapter, therefore we can import `FaReact` (Green 2) .
 
 For now, remove the `.click()` in the test, and just check for visibility.
 
@@ -168,7 +171,7 @@ export default function HeaderBarBrand() {
 }
 ```
 
-We are only checking the link. We could also verify that there is an `svg` inside a div. We want to have a `data-cy` attribute for the `header-bar-brand` instead of a css selector. Let's add a failing test for it (Red 4).
+At the moment we are only checking the link. We could also verify that there is an `svg` inside the component. We want to have a `data-cy` attribute for the component instead of referring to with a css selector. Let's add a failing test for it (Red 4).
 
 ```tsx
 // src/components/HeaderBarBrand.tsx
@@ -211,7 +214,7 @@ export default function HeaderBarBrand() {
 
 ## Link to the `/heroes` route
 
-We are going to using `react-router` for our app. React Router's `Link` component is used to navigate the different routes on the app, and `NavLink` is used to add the style attributes to the active routes so that the user has a visual indication for the route they are on. We will opt to `NavLink`.
+We are going to using `react-router` for our app. React Router's `Link` component is used to navigate the different routes on the app, and `NavLink` is used to add the style attributes to the active routes so that the user has a visual indication for the route they are on. We will opt to `NavLink`. Here is a sample snap showing the 
 
 ![NavLink-explained](../img/HeaderBarBrand-NavLink-explained.png)
 
@@ -239,11 +242,11 @@ export default function HeaderBarBrand() {
 }
 ```
 
-We get two failures. One is a compiler warning about missing attribute, the other is the `react-router` being used without wrapping the component in a `Router` component (Red 1).
+We get two failures. One is a compiler warning about missing attribute, the other is the `react-router` being used without wrapping the component in a `Router` component (Red 5). This one is another component test error, regarding `react-router` hooks such as `useLocaton` that we get familiar with.
 
 ![NavLink-red1](../img/HeaderBarBrand-NavLink-red1.png)
 
-We can address the compiler warning by adding a `to` attribute to `NavLink` (Green 1).
+We can address the compiler warning by adding a `to` attribute to `NavLink` (Green 5).
 
 ```tsx
 // src/components/HeaderBarBrand.tsx
@@ -267,7 +270,7 @@ export default function HeaderBarBrand() {
 }
 ```
 
-We can address the `react-router` by wrapping the mounted component in `BrowserRouter` (Green 1).
+We can address the component test failure by wrapping the mounted component in `BrowserRouter` (Green 1). This is something we will see often see in the future component tests that have to do with routing.
 
 ```tsx
 // src/components/HeaderBarBrand.cy.tsx
@@ -295,7 +298,7 @@ The test is green again, but there is no visual difference. We are using the [An
 
 ![HeaderBarBrand-angular-render](../img/HeaderBarBrand-angular-render.png)
 
-We can write a new failing test checking for this content. We want to check that `NavLink` is rendered, and we want to verify the strings under the spans. We can also verify that when clicking on this link, we are at the home route (Red 2).
+We can write a new failing test checking for this content. We want to check that `NavLink` is rendered, and we want to verify the strings under the spans. We can also verify that when clicking on this link, we are at the home route (Red 6). There is no concept of url in a Cypress component test, however clicking on links does indeed change a url value, which we can verify.
 
 ```tsx
 // src/components/HeaderBarBrand.cy.tsx
@@ -328,7 +331,7 @@ describe("HeaderBarBrand", () => {
 });
 ```
 
-To address the failures, we add the `data-cy` attribute, and copy the DOM structure from the Angular version of the app (Green 2).
+To address the failures, we add the `data-cy` attribute, and copy the DOM structure from the Angular version of the app (Green 6).
 
 ```tsx
 // src/components/HeaderBarBrand.tsx
@@ -362,7 +365,9 @@ There is a possible test refactor at this point, should we segregate the test in
 
 A Cypress component test is a small scale e2e; there is no need to keep the tests short to have a smaller blast radius in case of a failure because the runner makes diagnosis easy. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then usually it is an opportunity for a test enhancement vs partial test duplication.
 
-In our case, it is a simple component, we can either keep the test long or use a before hook for the common state (the mounting of the component) and have 2 distinct tests (Refactor 2). Here are the two versions:
+In our case, it is a simple component, we can either keep the test long or use a before hook for the common state (the mounting of the component) and have 2 distinct tests. Here are the two versions (Refactor 6):
+
+> Tip: In a long test [`cy.log()`](https://docs.cypress.io/api/commands/log#Syntax) can be used for delimitation.
 
 ```tsx
 // src/components/HeaderBarBrand.cy.tsx
@@ -434,8 +439,6 @@ describe("HeaderBarBrand", () => {
 
 ## Summary
 
-### External link
-
 We added a failing test for a link that goes to an href (Red 1).
 
 We added the link to the component (Green 1).
@@ -462,16 +465,23 @@ Subsequently we improved the component to pass the test (Green 4).
 
 <br />
 
-### Internal Link
+We added `react-router` and used `NavLink` for the internal link. We got two failures, one for NavLink not having a `to` attribute, the other about the test not being wrapped by a `Router` component (Red 5).
 
-We added `react-router` and used `NavLink` for the internal link. We got two failures, one for NavLink not having a `to` attribute, the other about the test not being wrapped by a `Router` component (Red 1).
-
-We add the `to` attribute to `NavLink`, and wrapped the mounted component in `BrowserRouter` (Green 1).
+We add the `to` attribute to `NavLink`, and wrapped the mounted component in `BrowserRouter` (Green 5).
 
 <br />
 
-Looking at the [Angular version of the app](https://papa-heroes-angular.azurewebsites.net/heroes), we added new tests for the DOM structure (Red 2).
+Looking at the [Angular version of the app](https://papa-heroes-angular.azurewebsites.net/heroes), we added new tests for the DOM structure (Red 6).
 
-We improved the component to pass the test (Green 2).
+We improved the component to pass the test (Green 6).
 
-We refactored the test (Refactor 2)
+We refactored the test (Refactor 6)
+
+## Takeaways
+
+* There are [3 ways to deal with a 2nd tab](https://glebbahmutov.com/blog/cypress-second-tab/) in Cypress. Most the time it suffices to check for the `href` attribute
+* [`react-router`](https://reactrouter.com/en/main) is a de-facto solution to routing in React apps. We use [ `NavLink`](https://reactrouter.com/en/main/components/nav-link)  with a `to` attribute for navigation.
+* For component tests that have to do with `react-router`, wrap the component in `BrowserRouter`.
+* There is no concept of url in a Cypress component test, however clicking on links does indeed change a url attribute which we can verify.
+* A Cypress component test is a small scale e2e; there is no need to keep the tests short to have a smaller blast radius in case of a failure because the runner makes diagnosis easy. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then usually it is an opportunity for a test enhancement vs partial test duplication. 
+* In a long test [`cy.log()`](https://docs.cypress.io/api/commands/log#Syntax) can be used for delimitation.
