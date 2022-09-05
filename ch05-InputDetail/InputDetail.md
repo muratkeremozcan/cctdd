@@ -374,7 +374,7 @@ export default function InputDetail({
 }
 ```
 
-We can enhance the test to be more specific with the onChange check. It should be called 3 times; upon clear, and when typing 42 (Refactor 5).
+We can enhance the test to be more specific with the onChange check. It should be called 2 times when typing 42 (Refactor 5).
 
 ```tsx
 import InputDetail from './InputDetail'
