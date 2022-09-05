@@ -39,6 +39,8 @@ describe("HeaderBar", () => {
 });
 ```
 
+Insert the child component into the parent.
+
 ```tsx
 // src/components/HeaderBar.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
@@ -58,6 +60,7 @@ We get the same `react-router` related error that we got with the `HeaderBarBran
 // src/components/HeaderBar.cy.tsx
 import HeaderBar from "./HeaderBar";
 import { BrowserRouter } from "react-router-dom";
+import '../styles.scss'
 
 describe("HeaderBar", () => {
   it("should", () => {
@@ -127,8 +130,9 @@ describe("HeaderBar", () => {
 
 The main takeaway in this section is the parent-child relationship between the components.
 
-We can add a `data-cy` attribute to the top tag of the component to make it easier to reference.
-
 If a child component is using `react-router`, when testing the parent component, we also have to wrap the parent in `BrowserRouter`.
 
-When designing the component, we do not necessarily have to go through a traditional RedGreenRefactor cycle. When our test tool is also the design tool, our RGF can as well be incremental visual enhancements to the component whilst adding classes and css.
+In a parent component, we do not need to repeat the tests for the child component, because we covered all of it at the child. The same thought process applies to higher level tests with e2e test.
+
+When designing the component, we do not necessarily have to go through a traditional RedGreenRefactor cycle. When our test tool is also the design tool, our RGR can as well be incremental visual enhancements to the component whilst adding classes and css.
+
