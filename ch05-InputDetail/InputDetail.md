@@ -15,8 +15,10 @@ describe("InputDetail", () => {
     cy.mount(<InputDetail />);
   });
 });
-// src/components/InputDetail.tsx
+```
 
+```tsx
+// src/components/InputDetail.tsx
 export default function InputDetail() {
   return <div>hello</div>;
 }
@@ -62,6 +64,9 @@ describe("InputDetail", () => {
     cy.findByPlaceholderText(placeholder);
   });
 });
+```
+
+```tsx
 // src/components/InputDetail.tsx
 type InputDetailProps = {
   placeholder: string;
@@ -76,9 +81,11 @@ export default function InputDetail({ placeholder }: InputDetailProps) {
 }
 ```
 
+
+
 ![InputDetail-refactor1](../img/InputDetail-refactor1.png)
 
-The next tag we need is `label`. This is a usual pattern in forms, a `div` wrapping a `label` and an `input` with css and attributes. Let's write a failing test (Red 2).
+The next tag we need is `label`. This is a usual pattern in forms, a `div` wrapping a `label` and an `input` with css & attributes. Let's write a failing test (Red 2).
 
 ```tsx
 // src/components/InputDetail.cy.tsx
@@ -115,7 +122,11 @@ export default function InputDetail({ name, placeholder }: InputDetailProps) {
 }
 ```
 
-We can add the css from the specification, alongside the usual form field attributes. `input type="text"` makes an `input` a text input, `label htmlFor={someValue}` reflects the value of the for content property, effectively linking the `label` and `input` tags (Refactor 2).
+We can add the css from the specification, alongside the usual form field attributes.
+
+`input type="text"` makes an `input` a text input. 
+
+`label htmlFor={someValue}` links the `label` and `input` tags (Refactor 2).
 
 ```tsx
 // src/components/InputDetail.tsx
@@ -141,7 +152,7 @@ export default function InputDetail({ name, placeholder }: InputDetailProps) {
 }
 ```
 
-Form fields also have a `value` attribute, which can be used display a `readonly` value from the network . There may also be writable form fields. For now, let's write a failing test checking for the `defaultValue` of a form, while also adding the styles (Red 3).
+Form fields also have a `value` attribute, which can be used display a `readonly` value from the network, or writable form fields. For now, let's write a failing test checking for the `defaultValue` of a form, while also adding the styles (Red 3).
 
 ```tsx
 // src/components/InputDetail.cy.tsx
@@ -222,7 +233,7 @@ describe("InputDetail", () => {
     cy.get("input").should("have.value", newValue);
   });
 
-  it("should not allow the input field to be modified", () => {
+  it("should not allow the input field to be modified when readonly", () => {
     const placeholder = "Aslaug";
     const name = "name";
     const value = "some value";
@@ -304,7 +315,7 @@ describe("InputDetail", () => {
     cy.get("@onChange").should("have.been.called");
   });
 
-  it("should not allow the input field to be modified", () => {
+  it("should not allow the input field to be modified when readonly", () => {
     const placeholder = "Aslaug";
     const name = "name";
     const value = "some value";
@@ -324,7 +335,7 @@ describe("InputDetail", () => {
 });
 ```
 
-To make the test pass, once again we have to add the type for the new prop `onChange`, the prop as the argument to the component, and we need and attribute for the input tag (Green 5).
+To make the test pass, once again we have to add the type for the new prop `onChange`, the prop as the argument to the component, and we need an attribute for the input tag (Green 5).
 
 ```tsx
 import { ChangeEvent } from "react";
@@ -363,51 +374,49 @@ export default function InputDetail({
 }
 ```
 
-We can enhance the test to be more specific with the onChange check. It should be called 3 times; upon clear, and when typing 42 (Refactor 6).
+We can enhance the test to be more specific with the onChange check. It should be called 3 times; upon clear, and when typing 42 (Refactor 5).
 
 ```tsx
-import InputDetail from "./InputDetail";
-import "../styles.scss";
+import InputDetail from './InputDetail'
+import '../styles.scss'
 
-describe("InputDetail", () => {
-  it("should allow the input field to be modified", () => {
-    const placeholder = "Aslaug";
-    const name = "name";
-    const value = "some value";
-    const newValue = "42";
+describe('InputDetail', () => {
+  const placeholder = 'Aslaug'
+  const name = 'name'
+  const value = 'some value'
+  const newValue = '42'
+  
+  it('should allow the input field to be modified', () => {
     cy.mount(
       <InputDetail
         name={name}
         value={value}
         placeholder={placeholder}
-        onChange={cy.stub().as("onChange")}
-      />
-    );
+        onChange={cy.stub().as('onChange')}
+      />,
+    )
 
-    cy.contains("label", name);
-    cy.findByPlaceholderText(placeholder).clear().type(newValue);
-    cy.get("input").should("have.value", newValue);
-    cy.get("@onChange").its("callCount").should("eq", 3);
-  });
+    cy.contains('label', name)
+    cy.findByPlaceholderText(placeholder).clear().type(newValue)
+    cy.get('input').should('have.value', newValue)
+    cy.get('@onChange').should('have.been.calledTwice')
+  })
 
-  it("should not allow the input field to be modified", () => {
-    const placeholder = "Aslaug";
-    const name = "name";
-    const value = "some value";
+  it('should not allow the input field to be modified', () => {
     cy.mount(
       <InputDetail
         name={name}
         value={value}
         placeholder={placeholder}
         readOnly={true}
-      />
-    );
+      />,
+    )
 
-    cy.contains("label", name);
-    cy.findByPlaceholderText(placeholder).should("have.attr", "readOnly");
-    cy.get("input").should("have.value", value);
-  });
-});
+    cy.contains('label', name)
+    cy.findByPlaceholderText(placeholder).should('have.attr', 'readOnly')
+    cy.get('input').should('have.value', value)
+  })
+})
 ```
 
 As a final touch up, we add a `data-cy` selector to make the component easier to reference when it is used as a child.
@@ -455,11 +464,7 @@ We started with an input placeholder text check using Testing Library's `findByP
 
 We hard-coded a value for the placeholder attribute to make the test pass (Green 1).
 
-We refactored the hard-coded value to be instead a prop. We added the prop to the types, to the arguments of the component, and we used that argument for the value of the placeholder attribute (Refactor 1). This became a pattern in the subsequent cycles.
-
-- Add the prop to the types
-- Add it to the arguments or the component
-- Add it with a matching attribute to a tag
+We refactored the hard-coded value to be instead a prop. We added the prop to the types, to the arguments of the component, and we used that argument for the value of the placeholder attribute (Refactor 1). 
 
 <br />
 
@@ -467,7 +472,7 @@ We identified a usual pattern in forms; a `div` wrapping a `label` and an `input
 
 We added the new prop to the types, to the arguments of the component, and to the `label` tag. (Green 2).
 
-We identified key knowledge on forms that `input type="text"` makes an `input` a text input, `label htmlFor={someValue}` reflects the value of the content property, effectively linking the `label` and `input` tags. We enhanced the component with this knowledge (Refactor 2).
+We identified a key knowledge on forms that `input type="text"` makes an `input` a text input, `label htmlFor={someValue}` links the `label` and `input` tags. We enhanced the component with this knowledge (Refactor 2).
 
 <br />
 
@@ -477,14 +482,26 @@ As in the previous cycles, we made the test green by adding defaultValue to the 
 
 <br />
 
-We decided to add support for two variants of the component; one for writable fields, and the other for readonly fields. We added new test verifying that a readonly field should not be modified (Red 4).
+We decided to add support for two variants of the component; one for writable fields, and the other for readonly fields. We added a new test verifying that a readonly field should not be modified (Red 4).
 
-As in the preivous cycles, we added the readOnly type, the argument to the component, and the attribute with a matching prop (Green 4).
+As in the previous cycles, we added the readOnly type, the argument to the component, and the attribute with a matching prop (Green 4).
 
 <br />
 
-Finally, we wanted an `onChange` prop for the field. We added a test checking that the `onChange` event is called while mofidying the field (Red 5).
+Finally, we wanted an `onChange` prop for the field. We added a test checking that the `onChange` event is called while modifying the field (Red 5).
 
 We added the type for the new prop, the argument to the component, and the attribute with a matching prop (Green 5).
 
 We enhanced the test to check for a specific number of `onChange` calls (Refactor 5).
+
+## Takeaways
+
+* When adding a prop to the component test:
+
+  1. Add the prop to the component types.
+
+  2. Add it to the arguments or the component.
+
+  3. Use the prop in the component.
+
+* A  `div` wrapping a `label` and an `input` is a usual pattern to create form fields. `input type="text"` makes an `input` a text input, `label htmlFor={someValue}` links the `label` and `input` tags.
