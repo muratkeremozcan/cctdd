@@ -1,6 +1,6 @@
 # HeroList
 
-`HeroList` is the second of our more complex components that is using child components. In the Angular version of the app, we see a list of heroes. Each item in the list is a `div` that wraps our `CardContent` component and two `ButtonFooter` components for editing or deleting the list item.
+`HeroList` is the second of our more complex components, parent components. In the Angular version of the app, we see a list of heroes. Each item in the list is a `div` that wraps our `CardContent` component and two `ButtonFooter` components for editing or deleting the list item.
 
 ![HeroList-initial](../img/HeroList-initial.png)
 
@@ -143,7 +143,7 @@ export default function HeroList() {
 
 ![HeroList-Refactor2](../img/HeroList-Refactor2.png)
 
-We can create a new test that checks for the render of a `cancel` and `edit` button, which are variants of the `ButtonFooter` component. Checking for the `footer` and making sure that the buttons are inside it is optional; we could just check for the components instead. Testing is always a call between cost and confidence, and how much we test depends. In this case "Will the `footer` tag ever change,"  "Is it a high amount of work to use the `within` api?" "How much more confidence do we get by testing this detail" are some of the questions that can determine our decision (Red 3). 
+We can create a new test that checks for the render of  `cancel` and `edit` buttons, which are variants of the `ButtonFooter` component. Checking for the `footer` and making sure that the buttons are inside it is optional; we could just check for the components instead. Testing is always a call between cost and confidence, and how much we test depends. In this case "Will the `footer` tag ever change,"  "Is it a high amount of work to use the `within` api?" "How much more confidence do we get by testing this detail" are some of the questions that can determine our decision (Red 3). 
 
 ```tsx
 // src/heroes/HeroList.cy.tsx
@@ -502,7 +502,7 @@ export default function HeroList({heroes}: HeroListProps) {
 
 We have addressed the compiler error, but we are still using the hard coded `hero` object in the component and not using the data passed to the component with the `heroes` prop. Removing the `hero` object fails the test and gives compiler errors for the usage of `hero.name` and `hero.description` (Red 6).
 
-To address the failures, we can use `heroes[0]` instead of the `hero` reference (Green 6).
+To address the failures temporarily, we use `heroes[0]` instead of the `hero` reference (Green 6).
 
 ```tsx
 // src/heroes/HeroList.tsx
@@ -546,7 +546,7 @@ export default function HeroList({heroes}: HeroListProps) {
 }
 ```
 
-This begs the question, how do we display multiple list items? Do we have to copy paste the entire `li` and reference `heroes[1]` in it? This works (try it out) but we all know that is not good because it is not DRY and it does not scale. 
+This begs the question; how do we display multiple list items? Do we have to copy paste the entire `li` and reference `heroes[1]` in it? This works (try it out) but we all know that is not good because it is not DRY and it does not scale. 
 
 What we need is to render a list in a smarter way. In React, similar to JS, we do this by mapping over the array / the data. The only difference is the need to use JSX notation  to wrap the `li` with syntax. Think of these `{` `}` like a template literal `${ }` without the dollar sign. Now instead of referencing array indexes, we can reference what the map yields; a single `hero` that maps to each index of the array. If `map` is confusing, think of it like a better version of `forEach` that returns and does not mutate, but creates a new array (Refactor 6).
 
@@ -831,6 +831,21 @@ We contemplated about the `key` attribute in lists, which is used by React to de
 ## Takeaways
 
 * When creating a list component in React, it is easier to start with one item at first, and then build up to the list.
-* In the TDD mindset, when we have green tests, we want to prefer adding more tests or refactoring versus adding additional source code
-* Cypress' fixtures can be imported as json and used in place of data in tests.
+
 * When rendering lists in React and mapping over the data, the recommended value for the key attribute is supposed to be unique, such as `hero.id` as opposed to the index of the mapped array. The index however is useful in a `data-cy` attribute to refer to the nth item to select
+
+* Cypress' fixtures can be imported as json and used in place of data in tests.
+
+* In the TDD mindset, when we have green tests, we want to prefer adding more tests or refactoring versus adding additional source code
+
+*  Testing is always a call between cost and confidence, and how much we test depends. Some of the questions that can determine our decision are:
+
+  * *How often will the code under test change?*
+
+  * *Is it a high amount of work to write the more scrutinizing test code now?*
+
+  * *How much more confidence do we get by testing this detail?*
+
+    
+
+  
