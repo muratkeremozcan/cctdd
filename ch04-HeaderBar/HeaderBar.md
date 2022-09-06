@@ -78,15 +78,15 @@ The child component renders.
 
 ![HeaderBar-Green1](../img/HeaderBar-Green1.png)
 
-The specification shows that the child component is wrapped by a `header` and a `nav` There is also some css that gives it the dark theme. We can copy those off of the browser.
+The specification shows that the child component is wrapped by a `header` and a `nav` There is also some css that gives it the dark theme. We can copy those off of the browser. We also add a `data-cy` selector to the top tag of the component.
 
 ```tsx
 // src/components/HeaderBar.tsx
-import HeaderBarBrand from "./HeaderBarBrand";
+import HeaderBarBrand from './HeaderBarBrand'
 
 export default function HeaderBar() {
   return (
-    <header>
+    <header data-cy="header-bar">
       <nav
         className="navbar has-background-dark is-dark"
         role="navigation"
@@ -95,7 +95,7 @@ export default function HeaderBar() {
         <HeaderBarBrand />
       </nav>
     </header>
-  );
+  )
 }
 ```
 

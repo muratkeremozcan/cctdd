@@ -27,66 +27,66 @@ export default function ModalYesNo() {
 
 ## Modal Portal Recipe
 
-To keep things simple we will use the original recipe from [**React TypeScript Cheatsheet**](https://react-typescript-cheatsheet.netlify.app/), [modal portal](https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/portals/) example. Create `src/components/Modal.tsx ` and paste-in the following code. 
+To keep things simple we will use the original recipe from [**React TypeScript Cheatsheet**](https://react-typescript-cheatsheet.netlify.app/), [modal portal](https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/portals/) example. Create `src/components/Modal.tsx ` and paste-in the following code.
 
 ```tsx
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {useEffect, useRef, ReactNode} from 'react'
-import {createPortal} from 'react-dom'
+import { useEffect, useRef, ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 type ModalProps = {
-  children?: ReactNode
-}
+  children?: ReactNode;
+};
 
-const Modal = ({children}: ModalProps) => {
-  const el = useRef(document.createElement('div'))
+const Modal = ({ children }: ModalProps) => {
+  const el = useRef(document.createElement("div"));
 
-  let modalRoot = document.getElementById('modal-root')
+  let modalRoot = document.getElementById("modal-root");
   if (!modalRoot) {
-    modalRoot = document.createElement('div')
-    modalRoot.setAttribute('id', 'modal-root')
-    document.body.appendChild(modalRoot)
+    modalRoot = document.createElement("div");
+    modalRoot.setAttribute("id", "modal-root");
+    document.body.appendChild(modalRoot);
   }
 
   useEffect(() => {
-    const currentEl = el.current
+    const currentEl = el.current;
 
-    modalRoot!.appendChild(currentEl)
+    modalRoot!.appendChild(currentEl);
 
     return () => {
-      modalRoot!.removeChild(currentEl)
-    }
-  }, [modalRoot])
+      modalRoot!.removeChild(currentEl);
+    };
+  }, [modalRoot]);
 
-  return createPortal(children, el.current)
-}
+  return createPortal(children, el.current);
+};
 
-export default Modal
+export default Modal;
 ```
 
 For the moment we will assume that the modal is always open, and write a failing tests the ensures that an element with an id `modal-root` exists in the DOM (Red 1).
 
 ```tsx
 // src/components/ModalYesNo.cy.tsx
-import ModalYesNo from './ModalYesNo'
+import ModalYesNo from "./ModalYesNo";
 
-describe('ModalYesNo', () => {
-  it('should', () => {
-    cy.mount(<ModalYesNo />)
+describe("ModalYesNo", () => {
+  it("should", () => {
+    cy.mount(<ModalYesNo />);
 
-    cy.get('#modal-root').should('exist')
-  })
-})
+    cy.get("#modal-root").should("exist");
+  });
+});
 ```
 
- We must import and render `Modal` to pass the test (Green 1).
+We must import and render `Modal` to pass the test (Green 1).
 
 ```tsx
 // src/components/ModalYesNo.tsx
-import Modal from './Modal'
+import Modal from "./Modal";
 
 export default function ModalYesNo() {
-  return <Modal></Modal>
+  return <Modal></Modal>;
 }
 ```
 
@@ -94,29 +94,28 @@ We decided on a skeleton of the app with `header`, `section` and `footer` with t
 
 ```tsx
 // src/components/ModalYesNo.cy.tsx
-import ModalYesNo from './ModalYesNo'
+import ModalYesNo from "./ModalYesNo";
 
-describe('ModalYesNo', () => {
-  it('should', () => {
-    cy.mount(<ModalYesNo />)
+describe("ModalYesNo", () => {
+  it("should", () => {
+    cy.mount(<ModalYesNo />);
 
-    cy.get('#modal-root').should('exist')
+    cy.get("#modal-root").should("exist");
 
-    cy.get('div').within(() => {
-      cy.get('header')
-      cy.get('section')
-      cy.get('footer')
-      cy.get('button').should('have.length', 2)
-    })
-  })
-})
-
+    cy.get("div").within(() => {
+      cy.get("header");
+      cy.get("section");
+      cy.get("footer");
+      cy.get("button").should("have.length", 2);
+    });
+  });
+});
 ```
 
 We create the walking skeleton of the modal to make the test pass (Green 2).
 
 ```tsx
-import Modal from './Modal'
+import Modal from "./Modal";
 
 export default function ModalYesNo() {
   return (
@@ -130,9 +129,8 @@ export default function ModalYesNo() {
         </footer>
       </div>
     </Modal>
-  )
+  );
 }
-
 ```
 
 ![ModalYesNo-green2](../img/ModalYesNo-green2.png)
@@ -141,7 +139,7 @@ That is looking a bit bare. Let us copy the styles from the Angular version of t
 
 ```tsx
 // src/components/ModalYesNo.tsx
-import Modal from './Modal'
+import Modal from "./Modal";
 
 export default function ModalYesNo() {
   return (
@@ -160,7 +158,7 @@ export default function ModalYesNo() {
         </div>
       </div>
     </Modal>
-  )
+  );
 }
 ```
 
@@ -168,24 +166,23 @@ The test mostly stays the same, the only difference being the import of styles.
 
 ```tsx
 // src/components/ModalYesNo.cy.tsx
-import ModalYesNo from './ModalYesNo'
-import '../styles.scss'
+import ModalYesNo from "./ModalYesNo";
+import "../styles.scss";
 
-describe('ModalYesNo', () => {
-  it('should', () => {
-    cy.mount(<ModalYesNo />)
+describe("ModalYesNo", () => {
+  it("should", () => {
+    cy.mount(<ModalYesNo />);
 
-    cy.get('#modal-root').should('exist')
+    cy.get("#modal-root").should("exist");
 
-    cy.get('div').within(() => {
-      cy.get('header')
-      cy.get('section')
-      cy.get('footer')
-      cy.get('button').should('have.length', 2)
-    })
-  })
-})
-
+    cy.get("div").within(() => {
+      cy.get("header");
+      cy.get("section");
+      cy.get("footer");
+      cy.get("button").should("have.length", 2);
+    });
+  });
+});
 ```
 
 The visuals are looking like the real thing. Now what is remaining are some text, and onClick handlers for the buttons.
@@ -196,32 +193,31 @@ There are 4 pieces of text in the modal; the title, the message, and the buttons
 
 ```tsx
 // src/components/ModalYesNo.cy.tsx
-import ModalYesNo from './ModalYesNo'
-import '../styles.scss'
+import ModalYesNo from "./ModalYesNo";
+import "../styles.scss";
 
-describe('ModalYesNo', () => {
-  it('should', () => {
-    cy.mount(<ModalYesNo />)
+describe("ModalYesNo", () => {
+  it("should", () => {
+    cy.mount(<ModalYesNo />);
 
-    cy.get('#modal-root').should('exist')
+    cy.get("#modal-root").should("exist");
 
-    cy.get('div').within(() => {
-      cy.get('header').contains('Confirm')
-      cy.get('section').contains('Are you sure?')
-      cy.get('footer')
-      cy.getByCy('button-yes').contains('Yes')
-      cy.getByCy('button-no').contains('No')
-    })
-  })
-})
-
+    cy.get("div").within(() => {
+      cy.get("header").contains("Confirm");
+      cy.get("section").contains("Are you sure?");
+      cy.get("footer");
+      cy.getByCy("button-yes").contains("Yes");
+      cy.getByCy("button-no").contains("No");
+    });
+  });
+});
 ```
 
 We add the hard-coded strings into respective tags to pass the test (Green 3).
 
 ```tsx
 // src/components/ModalYesNo.tsx
-import Modal from './Modal'
+import Modal from "./Modal";
 
 export default function ModalYesNo() {
   return (
@@ -247,7 +243,7 @@ export default function ModalYesNo() {
         </div>
       </div>
     </Modal>
-  )
+  );
 }
 ```
 
@@ -259,38 +255,38 @@ We will tweak the test to accept a prop for the message. The test passes, but th
 
 ```tsx
 // src/components/ModalYesNo.cy.tsx
-import ModalYesNo from './ModalYesNo'
-import '../styles.scss'
+import ModalYesNo from "./ModalYesNo";
+import "../styles.scss";
 
-describe('ModalYesNo', () => {
-  it('should', () => {
-    const message = 'Are you sure?'
-    cy.mount(<ModalYesNo message={message} />)
+describe("ModalYesNo", () => {
+  it("should", () => {
+    const message = "Are you sure?";
+    cy.mount(<ModalYesNo message={message} />);
 
-    cy.get('#modal-root').should('exist')
+    cy.get("#modal-root").should("exist");
 
-    cy.get('div').within(() => {
-      cy.get('header').contains('Confirm')
-      cy.get('section').contains(message)
-      cy.get('footer')
-      cy.getByCy('button-yes').contains('Yes')
-      cy.getByCy('button-no').contains('No')
-    })
-  })
-})
+    cy.get("div").within(() => {
+      cy.get("header").contains("Confirm");
+      cy.get("section").contains(message);
+      cy.get("footer");
+      cy.getByCy("button-yes").contains("Yes");
+      cy.getByCy("button-no").contains("No");
+    });
+  });
+});
 ```
 
-We follow the well established pattern of adding a prop type, an argument to the component and using the value in the component (Green 4). 
+We follow the well established pattern of adding a prop type, an argument to the component and using the value in the component (Green 4).
 
 ```tsx
 // src/components/ModalYesNo.tsx
-import Modal from './Modal'
+import Modal from "./Modal";
 
 type ModalYesNoProps = {
-  message: string
-}
+  message: string;
+};
 
-export default function ModalYesNo({message}: ModalYesNoProps) {
+export default function ModalYesNo({ message }: ModalYesNoProps) {
   return (
     <Modal>
       <div className="modal is-active">
@@ -314,7 +310,7 @@ export default function ModalYesNo({message}: ModalYesNoProps) {
         </div>
       </div>
     </Modal>
-  )
+  );
 }
 ```
 
@@ -322,43 +318,43 @@ Let's add click handlers for the Yes and No buttons. We are going to need to pas
 
 ```tsx
 // src/components/ModalYesNo.cy.tsx
-import ModalYesNo from './ModalYesNo'
-import '../styles.scss'
+import ModalYesNo from "./ModalYesNo";
+import "../styles.scss";
 
-describe('ModalYesNo', () => {
-  it('should', () => {
-    const message = 'Are you sure?'
-    cy.mount(<ModalYesNo message={message} onYes={cy.stub().as('onYes')} />)
+describe("ModalYesNo", () => {
+  it("should", () => {
+    const message = "Are you sure?";
+    cy.mount(<ModalYesNo message={message} onYes={cy.stub().as("onYes")} />);
 
-    cy.get('#modal-root').should('exist')
+    cy.get("#modal-root").should("exist");
 
-    cy.get('div').within(() => {
-      cy.get('header').contains('Confirm')
-      cy.get('section').contains(message)
-      cy.get('footer')
-      cy.getByCy('button-yes').contains('Yes')
-      cy.getByCy('button-no').contains('No')
-    })
+    cy.get("div").within(() => {
+      cy.get("header").contains("Confirm");
+      cy.get("section").contains(message);
+      cy.get("footer");
+      cy.getByCy("button-yes").contains("Yes");
+      cy.getByCy("button-no").contains("No");
+    });
 
-    cy.getByCy('button-yes').click()
-    cy.get('@onYes').should('be.called')
-  })
-})
+    cy.getByCy("button-yes").click();
+    cy.get("@onYes").should("be.called");
+  });
+});
 ```
 
 Add the `onYes` prop type, add it as an argument to the component, and add it alongside a `onClick` attribute to the button.
 
 ```tsx
 // src/components/ModalYesNo.tsx
-import Modal from './Modal'
-import {MouseEvent} from 'react'
+import Modal from "./Modal";
+import { MouseEvent } from "react";
 
 type ModalYesNoProps = {
-  message: string
-  onYes: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  message: string;
+  onYes: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
-export default function ModalYesNo({message, onYes}: ModalYesNoProps) {
+export default function ModalYesNo({ message, onYes }: ModalYesNoProps) {
   return (
     <Modal>
       <div className="modal is-active">
@@ -383,7 +379,7 @@ export default function ModalYesNo({message, onYes}: ModalYesNoProps) {
         </div>
       </div>
     </Modal>
-  )
+  );
 }
 ```
 
@@ -391,50 +387,50 @@ For the next cycle, repeat the same for the No button. As always, we write the f
 
 ```tsx
 // src/components/ModalYesNo.cy.tsx
-import ModalYesNo from './ModalYesNo'
-import '../styles.scss'
+import ModalYesNo from "./ModalYesNo";
+import "../styles.scss";
 
-describe('ModalYesNo', () => {
-  it('should render the modal and call onClick handlers', () => {
-    const message = 'Are you sure?'
+describe("ModalYesNo", () => {
+  it("should render the modal and call onClick handlers", () => {
+    const message = "Are you sure?";
     cy.mount(
       <ModalYesNo
         message={message}
-        onYes={cy.stub().as('onYes')}
-        onNo={cy.stub().as('onNo')}
-      />,
-    )
+        onYes={cy.stub().as("onYes")}
+        onNo={cy.stub().as("onNo")}
+      />
+    );
 
-    cy.get('#modal-root').should('exist')
+    cy.get("#modal-root").should("exist");
 
-    cy.get('div').within(() => {
-      cy.get('header').contains('Confirm')
-      cy.get('section').contains(message)
-      cy.get('footer')
-      cy.getByCy('button-yes').contains('Yes')
-      cy.getByCy('button-no').contains('No')
-    })
+    cy.get("div").within(() => {
+      cy.get("header").contains("Confirm");
+      cy.get("section").contains(message);
+      cy.get("footer");
+      cy.getByCy("button-yes").contains("Yes");
+      cy.getByCy("button-no").contains("No");
+    });
 
-    cy.getByCy('button-yes').click()
-    cy.get('@onYes').should('be.called')
+    cy.getByCy("button-yes").click();
+    cy.get("@onYes").should("be.called");
 
-    cy.getByCy('button-no').click()
-    cy.get('@onNo').should('be.called')
-  })
-})
+    cy.getByCy("button-no").click();
+    cy.get("@onNo").should("be.called");
+  });
+});
 ```
 
 ```tsx
-import Modal from './Modal'
-import {MouseEvent} from 'react'
+import Modal from "./Modal";
+import { MouseEvent } from "react";
 
 type ModalYesNoProps = {
-  message: string
-  onYes: (e: MouseEvent<HTMLButtonElement>) => void
-  onNo: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  message: string;
+  onYes: (e: MouseEvent<HTMLButtonElement>) => void;
+  onNo: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
-export default function ModalYesNo({message, onYes, onNo}: ModalYesNoProps) {
+export default function ModalYesNo({ message, onYes, onNo }: ModalYesNoProps) {
   return (
     <Modal>
       <div className="modal is-active">
@@ -463,78 +459,77 @@ export default function ModalYesNo({message, onYes, onNo}: ModalYesNoProps) {
         </div>
       </div>
     </Modal>
-  )
+  );
 }
-
 ```
 
 The final feature to ponder about is the usage of the modal. It can either be open or closed. Usually this is handled by a `useState` hook, but we can replicate the usage of it with a test. We need a parent component that includes a boolean conditional render. We add a test, with a helper function that allows us to check for this edge case. The only thing we have to do make it work is to add a `data-cy` attribute to the top div of the component (Refactor 6).
 
 ```tsx
 // src/components/ModalYesNo.cy.tsx
-import ModalYesNo from './ModalYesNo'
-import '../styles.scss'
+import ModalYesNo from "./ModalYesNo";
+import "../styles.scss";
 
-describe('ModalYesNo', () => {
-  it('should render the modal and call onClick handlers', () => {
-    const message = 'Are you sure?'
+describe("ModalYesNo", () => {
+  it("should render the modal and call onClick handlers", () => {
+    const message = "Are you sure?";
     cy.mount(
       <ModalYesNo
         message={message}
-        onYes={cy.stub().as('onYes')}
-        onNo={cy.stub().as('onNo')}
-      />,
-    )
+        onYes={cy.stub().as("onYes")}
+        onNo={cy.stub().as("onNo")}
+      />
+    );
 
-    cy.get('#modal-root').should('exist')
+    cy.get("#modal-root").should("exist");
 
-    cy.get('div').within(() => {
-      cy.get('header').contains('Confirm')
-      cy.get('section').contains(message)
-      cy.get('footer')
-      cy.getByCy('button-yes').contains('Yes')
-      cy.getByCy('button-no').contains('No')
-    })
+    cy.get("div").within(() => {
+      cy.get("header").contains("Confirm");
+      cy.get("section").contains(message);
+      cy.get("footer");
+      cy.getByCy("button-yes").contains("Yes");
+      cy.getByCy("button-no").contains("No");
+    });
 
-    cy.getByCy('button-yes').click()
-    cy.get('@onYes').should('be.called')
+    cy.getByCy("button-yes").click();
+    cy.get("@onYes").should("be.called");
 
-    cy.getByCy('button-no').click()
-    cy.get('@onNo').should('be.called')
-  })
+    cy.getByCy("button-no").click();
+    cy.get("@onNo").should("be.called");
+  });
 
-  it('should not render the modal with if conditional render is false', () => {
+  it("should not render the modal with if conditional render is false", () => {
     function ParentComponent(): JSX.Element | boolean {
       return (
         false && (
           <ModalYesNo
-            message={'yo'}
-            onYes={cy.stub().as('onYes')}
-            onNo={cy.stub().as('onNo')}
+            message={"yo"}
+            onYes={cy.stub().as("onYes")}
+            onNo={cy.stub().as("onNo")}
           />
         )
-      )
+      );
     }
 
     // @ts-expect-error: replicating useState
-    cy.mount(<ParentComponent />)
-    cy.getByCy('modal-yes-no').should('not.exist')
-  })
-})
+    cy.mount(<ParentComponent />);
+    cy.getByCy("modal-yes-no").should("not.exist");
+  });
+});
 ```
 
 ```tsx
 // src/components/ModalYesNo.tsx
-import Modal from './Modal'
-import {MouseEvent} from 'react'
+import Modal from "./Modal";
+import { MouseEvent } from "react";
 
 type ModalYesNoProps = {
-  message: string
-  onYes: (e: MouseEvent<HTMLButtonElement>) => void
-  onNo: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  message: string;
+  onYes: (e: MouseEvent<HTMLButtonElement>) => void;
+  onNo: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
-export default function ModalYesNo({message, onYes, onNo}: ModalYesNoProps) {
+export default function ModalYesNo({ message, onYes, onNo }: ModalYesNoProps) {
   return (
     <Modal>
       <div data-cy="modal-yes-no" className="modal is-active">
@@ -563,9 +558,8 @@ export default function ModalYesNo({message, onYes, onNo}: ModalYesNoProps) {
         </div>
       </div>
     </Modal>
-  )
+  );
 }
-
 ```
 
 ## Summary
@@ -598,8 +592,9 @@ We followed the pattern of adding a prop type, an argument to the component and 
 
 We added click handler tests for the Yes and No buttons (Red 5, 6), and added the props to the component with types, args and onClick attributes (Green 5, 6).
 
-To ensure that the component can be used with conditional rendering, we created a helper function, a parent component that includes a boolean conditional render, in the component test (Refactor 6).  
+To ensure that the component can be used with conditional rendering, we created a helper function, a parent component that includes a boolean conditional render, in the component test (Refactor 6).
 
 ## Takeaway
 
-* The visual results of the component test can aid with refactoring the component as well as designing it.
+- The visual results of the component test can aid with refactoring the component as well as designing it.
+- As we also saw in chapter one, TypeScript and ESlint can also serve as "tests" that give us a Red.
