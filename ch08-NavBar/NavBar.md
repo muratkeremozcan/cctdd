@@ -126,7 +126,7 @@ We have a walking skeleton of the component.
 
 ![NavBar-Refactor1](../img/NavBar-Refactor1.png)
 
-Any time we have a green test, _we can either refactor or add additional tests until we get another red_. Let's add some tests which verify that clicking on these routes takes us to the respective urls. The test is similar to what was done in `HeaderBarBrand` and `ListHeader` components. We can use Cypress' selector playground for this enhancement. `cy.get` targeting an `href` is a good selector in this case, which will not change unless the route changes (Green 3).
+Any time we have a green test, we can either refactor or add additional tests until we get another red. Let's add some tests which verify that clicking on these routes takes us to the respective urls. The test is similar to what was done in `HeaderBarBrand` and `ListHeader` components. We can use Cypress' selector playground for this enhancement. `cy.get` targeting an `href` is a good selector in this case, which will not change unless the route changes (Green 3).
 
 ![NavBar-selector-playground](../img/NavBar-selector-playground.png)
 
@@ -251,7 +251,7 @@ Adding the styles, we realize an issue in the visuals; every link is active all 
 
 .![NavLink-Red4](../img/NavLink-Red4.png)
 
-Of significance here is component testing aiding us as the design tool to create a new failing test. What we need is the active node to have the class `active-link` and the other nodes not to have it. Let's write a failing test (Red 4).
+Of significance here is component test aiding us as the design tool to create a new failing test. What we need is the active node to have the class `active-link` and the other nodes not to have it. Let's write a failing test (Red 4).
 
 ```tsx
 // src/components/NavBar.cy.tsx
@@ -403,7 +403,7 @@ We had a test failure, aided by TS errors, about a missing an attribute from the
 
 The `to` attributes and their routes got added to the NavLinks (Green 2).
 
-Of significance here was TS also aiding us, alongside a failing test.
+Similar to the previous chapters, of significance here was TS also aiding us, alongside a failing test.
 
 <br />
 
@@ -417,8 +417,6 @@ We added tests for route checks (Green 3), and refactored the test further (Refa
 
 Once we exhausted the tests we can think of, we added styles to the component and realized something off with visuals. Every link was active (Red 4).
 
-Of significance here was component testing aiding us as the design tool to create a new failing test.
-
 We wrote a failing test to double check the styles, using `have.class` vs `not.have.class` assertions (Red 4).
 
 We added logic to the component css to determine the style of active vs inactive links (Green 4).
@@ -426,3 +424,9 @@ We added logic to the component css to determine the style of active vs inactive
 We refactored the logic to be more DRY (Refactor 4).
 
 Finally, we refactored the component test to take advantage of Cypress' chaining syntax and use less magic numbers (Refactor 4).
+
+
+
+## Takeaway
+
+Of significance here was component testing aiding us as the design tool to create a new failing test. We wrote as many test as we could think of, but only when we saw that all links are always active, we thought about an additional feature.
