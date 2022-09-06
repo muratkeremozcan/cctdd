@@ -30,15 +30,15 @@ export default function ModalYesNo() {
 To keep things simple we will use the original recipe from [**React TypeScript Cheatsheet**](https://react-typescript-cheatsheet.netlify.app/), [modal portal](https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/portals/) example. Create `src/components/Modal.tsx ` and paste-in the following code. 
 
 ```tsx
-// src/components/Modal.tsx
-import { useEffect, useRef, ReactNode } from 'react'
-import { createPortal } from 'react-dom'
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import {useEffect, useRef, ReactNode} from 'react'
+import {createPortal} from 'react-dom'
 
 type ModalProps = {
   children?: ReactNode
 }
 
-const Modal = ({ children }: ModalProps) => {
+const Modal = ({children}: ModalProps) => {
   const el = useRef(document.createElement('div'))
 
   let modalRoot = document.getElementById('modal-root')
@@ -52,14 +52,16 @@ const Modal = ({ children }: ModalProps) => {
     const currentEl = el.current
 
     modalRoot!.appendChild(currentEl)
-    return () => void modalRoot!.removeChild(currentEl)
+
+    return () => {
+      modalRoot!.removeChild(currentEl)
+    }
   }, [modalRoot])
 
   return createPortal(children, el.current)
 }
 
 export default Modal
-
 ```
 
 For the moment we will assume that the modal is always open, and write a failing tests the ensures that an element with an id `modal-root` exists in the DOM (Red 1).
@@ -135,7 +137,7 @@ export default function ModalYesNo() {
 
 ![ModalYesNo-green2](../img/ModalYesNo-green2.png)
 
-That is looking a bit bare. Let us copy the styles from the Angular version of the app, and add a few more tags (Refactor 2). It is significant that we are able to do a RedGreenRefactor cycle with visual aids for refactor increments.
+That is looking a bit bare. Let us copy the styles from the Angular version of the app, and add a few more tags (Refactor 2). Similar to the previous chapter, we are able to do a RedGreenRefactor cycle with visual aids for refactor increments.
 
 ```tsx
 // src/components/ModalYesNo.tsx
@@ -278,7 +280,7 @@ describe('ModalYesNo', () => {
 })
 ```
 
-We follow the well established pattern of adding a prop type, an argument to the component and using the value in the function render / return (Green 4). 
+We follow the well established pattern of adding a prop type, an argument to the component and using the value in the component (Green 4). 
 
 ```tsx
 // src/components/ModalYesNo.tsx
@@ -349,11 +351,11 @@ Add the `onYes` prop type, add it as an argument to the component, and add it al
 ```tsx
 // src/components/ModalYesNo.tsx
 import Modal from './Modal'
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 
 type ModalYesNoProps = {
   message: string
-  onYes: (e: SyntheticEvent) => void
+  onYes: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ModalYesNo({message, onYes}: ModalYesNoProps) {
@@ -424,12 +426,12 @@ describe('ModalYesNo', () => {
 
 ```tsx
 import Modal from './Modal'
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 
 type ModalYesNoProps = {
   message: string
-  onYes: (e: SyntheticEvent) => void
-  onNo: (e: SyntheticEvent) => void
+  onYes: (e: MouseEvent<HTMLButtonElement>) => void
+  onNo: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ModalYesNo({message, onYes, onNo}: ModalYesNoProps) {
@@ -466,7 +468,7 @@ export default function ModalYesNo({message, onYes, onNo}: ModalYesNoProps) {
 
 ```
 
-The final feature to ensure is about the usage of the modal. It can either be open or closed. Usually this is handled by a `useState` hook, but we can replicate the usage of it with a test. We need a parent component that includes a boolean conditional render. We add a test, with a helper function that allows us to check for this edge case. The only thing we have to do make it work is to add a `data-cy` attribute to the top div of the component (Refactor 6).
+The final feature to ponder about is the usage of the modal. It can either be open or closed. Usually this is handled by a `useState` hook, but we can replicate the usage of it with a test. We need a parent component that includes a boolean conditional render. We add a test, with a helper function that allows us to check for this edge case. The only thing we have to do make it work is to add a `data-cy` attribute to the top div of the component (Refactor 6).
 
 ```tsx
 // src/components/ModalYesNo.cy.tsx
@@ -524,12 +526,12 @@ describe('ModalYesNo', () => {
 ```tsx
 // src/components/ModalYesNo.tsx
 import Modal from './Modal'
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 
 type ModalYesNoProps = {
   message: string
-  onYes: (e: SyntheticEvent) => void
-  onNo: (e: SyntheticEvent) => void
+  onYes: (e: MouseEvent<HTMLButtonElement>) => void
+  onNo: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ModalYesNo({message, onYes, onNo}: ModalYesNoProps) {
@@ -566,7 +568,7 @@ export default function ModalYesNo({message, onYes, onNo}: ModalYesNoProps) {
 
 ```
 
-## Summary and takeaways
+## Summary
 
 We started with a simple test that checks that the modal-root is rendered (Red 1).
 
@@ -576,7 +578,7 @@ We used a modal recipe and imported it to our component (Green 1).
 
 We decided on the skeleton of the component and wrote a test for it (Red 2).
 
-We refactored the component by adding styles. The significance here was RedGreenRefactor cycle with visual aids for refactor increments (Refactor 3).
+We refactored the component by adding styles. As in the previous chapters, we used visual aids for refactor increments (Refactor 3).
 
 <br />
 
@@ -584,8 +586,7 @@ We wrote a failing test with the 4 pieces of text in the modal, using hard coded
 
 We added the hard-coded strings into respective tags to pass the test (Green 3).
 
-Aided by the visuals of the component, we made a design choice to parameterize one of the strings, and leave the rest unchanged. 
-It was of significance to be aided by the tool in the refactoring of the component as well as the design.
+Aided by the visuals of the component, we made a design choice to parameterize one of the strings, and leave the rest unchanged. It was of significance to be aided by the tool in the refactoring of the component as well as the design.
 
 <br />
 
@@ -598,3 +599,7 @@ We followed the pattern of adding a prop type, an argument to the component and 
 We added click handler tests for the Yes and No buttons (Red 5, 6), and added the props to the component with types, args and onClick attributes (Green 5, 6).
 
 To ensure that the component can be used with conditional rendering, we created a helper function, a parent component that includes a boolean conditional render, in the component test (Refactor 6).  
+
+## Takeaway
+
+* The visual results of the component test can aid with refactoring the component as well as designing it.
