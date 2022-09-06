@@ -171,12 +171,12 @@ We can immediately tell that we need an `onClick` prop. Let's enhance our compon
 ```tsx
 // src/components/ButtonFooter.tsx
 import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
-import { SyntheticEvent } from "react";
+import { MouseEvent } from "react";
 
 type ButtonFooterProps = {
   label: "Cancel" | "Save" | "Edit" | "Delete";
   IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
-  onClick: (e: SyntheticEvent) => void;
+  onClick: (e: MouseEvent<HTMLButtonElement>) => void;
 };
 
 export default function ButtonFooter({
@@ -221,12 +221,12 @@ Now we can add the `data-cy` selector to the button attributes. While we are her
 ```tsx
 // src/components/ButtonFooter.tsx
 import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
-import { SyntheticEvent } from "react";
+import { MouseEvent } from "react";
 
 type ButtonFooterProps = {
   label: "Cancel" | "Save" | "Edit" | "Delete";
   IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
-  onClick: (e: SyntheticEvent) => void;
+  onClick: (e: MouseEvent<HTMLButtonElement>) => void;
 };
 
 export default function ButtonFooter({
@@ -321,7 +321,7 @@ describe("ButtonFooter", () => {
 
 There are diverging opinions about code duplication in tests. Some prefer to have long tests with duplication, as opposed to using test hooks and helpers, so that failure diagnosis is easier. Always think about how the test may fail and if the refactor will make diagnosis harder. In this case, the two components will most likely fail the same way. If we keep the helper function nearby, we can refactor the test to be drier (Refactor 6).
 
-> ​	Tip: use [`cy.pause()`](https://docs.cypress.io/api/commands/pause#Pause-and-step-through-each-click-command) to step through tests during diagnosis, or demos. Another useful diagnosis command is [ `cy.debug()`](https://docs.cypress.io/api/commands/debug#Syntax).
+> ​ Tip: use [`cy.pause()`](https://docs.cypress.io/api/commands/pause#Pause-and-step-through-each-click-command) to step through tests during diagnosis, or demos. Another useful diagnosis command is [ `cy.debug()`](https://docs.cypress.io/api/commands/debug#Syntax).
 
 We can add an additional css check, since in the second test we are adding a style to the component. Import the styles for the final look.
 
@@ -329,7 +329,7 @@ We can add an additional css check, since in the second test we are adding a sty
 // src/components/ButtonFooter.cy.tsx
 import ButtonFooter from "./ButtonFooter";
 import { FaEdit, FaRegSave } from "react-icons/fa";
-import '../styles.scss'
+import "../styles.scss";
 
 describe("ButtonFooter", () => {
   const doAssertions = (label: "Cancel" | "Save" | "Edit" | "Delete") => {
