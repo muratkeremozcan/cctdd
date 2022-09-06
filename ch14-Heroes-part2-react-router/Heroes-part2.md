@@ -670,34 +670,34 @@ Let's add a failing e2e test for edit hero cancel flow (Red 5). Create a file `c
 
 ```tsx
 // cypress/e2e/edit-hero.cy.ts
-describe('Edit hero', () => {
-  beforeEach(() => cy.visit('/'))
-  it('should go through the cancel flow', () => {
-    cy.location('pathname').should('eq', '/heroes')
+describe("Edit hero", () => {
+  beforeEach(() => cy.visit("/"));
+  it("should go through the cancel flow", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('edit-button').first().click()
-    cy.location('pathname').should('eq', '/heroes/edit-hero/HeroAslaug')
-  })
-})
+    cy.getByCy("edit-button").first().click();
+    cy.location("pathname").should("eq", "/heroes/edit-hero/HeroAslaug");
+  });
+});
 ```
 
 When it was not certain what to do with click handlers in our app, we started them off with `console.log`. In the console of the e2e test we can see `handleSelectHero`. This function resides in `HeroList` component. We just need to enhance it to utilize `useNavigate` like we did so in the parent `Heroes` component (Green 5).
 
 ```tsx
 // src/heroes/HeroList.tsx
-import {useNavigate} from 'react-router-dom'
-import CardContent from '../components/CardContent'
-import ButtonFooter from '../components/ButtonFooter'
-import {FaEdit, FaRegSave} from 'react-icons/fa'
-import type {Hero} from './HeroDetail'
+import { useNavigate } from "react-router-dom";
+import CardContent from "../components/CardContent";
+import ButtonFooter from "../components/ButtonFooter";
+import { FaEdit, FaRegSave } from "react-icons/fa";
+import { Hero } from "models/Hero";
 type HeroListProps = {
-  heroes: Hero[]
-  handleDeleteHero: () => void // TODO: consider better type
-}
+  heroes: Hero[];
+  handleDeleteHero: () => void; // TODO: consider better type
+};
 
-export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
-  const navigate = useNavigate()
-  const handleSelectHero = () => navigate('/heroes/edit-hero/HeroAslaug')
+export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
+  const navigate = useNavigate();
+  const handleSelectHero = () => navigate("/heroes/edit-hero/HeroAslaug");
 
   return (
     <ul data-cy="hero-list" className="list">
@@ -721,7 +721,7 @@ export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
         </li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
@@ -748,30 +748,30 @@ One of our components now needs to know to display the `HeroDetail` component wh
 
 ```tsx
 // src/heroes/Heroes.tsx
-import {useNavigate, Routes, Route} from 'react-router-dom'
-import ListHeader from '../components/ListHeader'
-import ModalYesNo from 'components/ModalYesNo'
-import HeroList from './HeroList'
-import heroes from './heroes.json'
-import {useState} from 'react'
-import HeroDetail from './HeroDetail'
+import { useNavigate, Routes, Route } from "react-router-dom";
+import ListHeader from "../components/ListHeader";
+import ModalYesNo from "components/ModalYesNo";
+import HeroList from "./HeroList";
+import heroes from "./heroes.json";
+import { useState } from "react";
+import HeroDetail from "./HeroDetail";
 
 export default function Heroes() {
-  const [showModal, setShowModal] = useState<boolean>(false)
-  const navigate = useNavigate()
-  const addNewHero = () => navigate('/heroes/add-hero')
-  const handleRefresh = () => navigate('/heroes')
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const addNewHero = () => navigate("/heroes/add-hero");
+  const handleRefresh = () => navigate("/heroes");
 
   const handleCloseModal = () => {
-    setShowModal(false)
-  }
+    setShowModal(false);
+  };
   const handleDeleteHero = () => {
-    setShowModal(true)
-  }
+    setShowModal(true);
+  };
   const handleDeleteFromModal = () => {
-    setShowModal(false)
-    console.log('handleDeleteFromModal')
-  }
+    setShowModal(false);
+    console.log("handleDeleteFromModal");
+  };
 
   return (
     <div data-cy="heroes">
@@ -812,76 +812,76 @@ export default function Heroes() {
         />
       )}
     </div>
-  )
+  );
 }
 ```
 
 ## ![HeroesPart2-Green6](../img/HeroesPart2-Green6.png)
 
-We can now enhance the test by checking that the `heroId` field displays, since this is an existing character (Refactor 6). Next, when we hit cancel, we should have the  `HeroList` display, mirroring the add hero e2e flow   (Red 7).
+We can now enhance the test by checking that the `heroId` field displays, since this is an existing character (Refactor 6). Next, when we hit cancel, we should have the `HeroList` display, mirroring the add hero e2e flow (Red 7).
 
 ```tsx
 // cypress/e2e/edit-hero.cy.ts
-describe('Edit hero', () => {
-  beforeEach(() => cy.visit('/'))
-  it('should go through the cancel flow', () => {
-    cy.location('pathname').should('eq', '/heroes')
+describe("Edit hero", () => {
+  beforeEach(() => cy.visit("/"));
+  it("should go through the cancel flow", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('edit-button').first().click()
-    cy.location('pathname').should('eq', '/heroes/edit-hero/HeroAslaug')
-    cy.getByCy('hero-detail').should('be.visible')
-    cy.getByCy('input-detail-id').should('be.visible')
+    cy.getByCy("edit-button").first().click();
+    cy.location("pathname").should("eq", "/heroes/edit-hero/HeroAslaug");
+    cy.getByCy("hero-detail").should("be.visible");
+    cy.getByCy("input-detail-id").should("be.visible");
 
-    cy.getByCy('cancel-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list').should('be.visible')
-  })
-})
+    cy.getByCy("cancel-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list").should("be.visible");
+  });
+});
 ```
 
 If we check the console, we see that `handleCancel` is called. That function lives in `HeroDetail` component. We can once again utilize `useNavigate` to change the url to `/heroes` on clicking cancel.
 
 ```tsx
 // src/heroes/HeroDetail.tsx
-import {useNavigate} from 'react-router-dom'
-import InputDetail from '../components/InputDetail'
-import {useState, ChangeEvent} from 'react'
-import ButtonFooter from '../components/ButtonFooter'
-import {FaUndo, FaRegSave} from 'react-icons/fa'
+import { useNavigate } from "react-router-dom";
+import InputDetail from "../components/InputDetail";
+import { useState, ChangeEvent } from "react";
+import ButtonFooter from "../components/ButtonFooter";
+import { FaUndo, FaRegSave } from "react-icons/fa";
 
 export type Hero = {
-  id: string
-  name: string
-  description: string
-}
+  id: string;
+  name: string;
+  description: string;
+};
 type HeroDetailProps = {
-  hero?: Hero
-}
+  hero?: Hero;
+};
 
 export default function HeroDetail({
   hero: initHero = {
-    id: '',
-    name: '',
-    description: '',
+    id: "",
+    name: "",
+    description: "",
   },
 }: HeroDetailProps) {
-  const [hero, setHero] = useState<Hero>({...initHero})
+  const [hero, setHero] = useState<Hero>({ ...initHero });
 
-  const navigate = useNavigate()
-  const handleCancel = () => navigate('/heroes')
-  const updateHero = () => console.log('updateHero')
-  const saveHero = () => console.log('saveHero')
+  const navigate = useNavigate();
+  const handleCancel = () => navigate("/heroes");
+  const updateHero = () => console.log("updateHero");
+  const saveHero = () => console.log("saveHero");
   const handleSave = () => {
-    console.log('handleSave')
-    return hero.name ? updateHero() : saveHero()
-  }
+    console.log("handleSave");
+    return hero.name ? updateHero() : saveHero();
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setHero({...hero, name: e.target.value})
-  }
+    setHero({ ...hero, name: e.target.value });
+  };
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setHero({...hero, description: e.target.value})
-  }
+    setHero({ ...hero, description: e.target.value });
+  };
 
   return (
     <div data-cy="hero-detail" className="card edit-detail">
@@ -893,19 +893,19 @@ export default function HeroDetail({
         <div className="content">
           {hero.id && (
             <InputDetail
-              name={'id'}
+              name={"id"}
               value={hero.id}
               readOnly={true}
             ></InputDetail>
           )}
           <InputDetail
-            name={'name'}
+            name={"name"}
             value={hero.name}
             placeholder="e.g. Colleen"
             onChange={handleNameChange}
           ></InputDetail>
           <InputDetail
-            name={'description'}
+            name={"description"}
             value={hero.description}
             placeholder="e.g. dance fight!"
             onChange={handleDescriptionChange}
@@ -921,9 +921,8 @@ export default function HeroDetail({
         <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
       </footer>
     </div>
-  )
+  );
 }
-
 ```
 
 At this point we are very eager to begin refactoring those hard coded values, but first we realize a greater need for a real server where the data comes from. We will end this section here and setup our backend server in the next chapter.
@@ -934,209 +933,206 @@ In `src/heroes/HeroList.cy.tsx` we wrap the mounts in `BrowserRouter`. We remove
 
 ```tsx
 // src/heroes/HeroList.cy.tsx
-import {BrowserRouter} from 'react-router-dom'
-import HeroList from './HeroList'
-import '../styles.scss'
-import heroes from '../../cypress/fixtures/heroes.json'
+import { BrowserRouter } from "react-router-dom";
+import HeroList from "./HeroList";
+import "../styles.scss";
+import heroes from "../../cypress/fixtures/heroes.json";
 
-describe('HeroList', () => {
-  it('should render the item layout', () => {
+describe("HeroList", () => {
+  it("should render the item layout", () => {
     cy.mount(
       <BrowserRouter>
         <HeroList
           heroes={heroes}
-          handleDeleteHero={cy.stub().as('handleDeleteHero')}
+          handleDeleteHero={cy.stub().as("handleDeleteHero")}
         />
-      </BrowserRouter>,
-    )
+      </BrowserRouter>
+    );
 
-    cy.getByCyLike('hero-list-item').should('have.length', heroes.length)
+    cy.getByCyLike("hero-list-item").should("have.length", heroes.length);
 
-    cy.getByCy('card-content')
-    cy.contains(heroes[0].name)
-    cy.contains(heroes[0].description)
+    cy.getByCy("card-content");
+    cy.contains(heroes[0].name);
+    cy.contains(heroes[0].description);
 
-    cy.get('footer').within(() => {
-      cy.getByCy('delete-button')
-      cy.getByCy('edit-button')
-    })
-  })
+    cy.get("footer").within(() => {
+      cy.getByCy("delete-button");
+      cy.getByCy("edit-button");
+    });
+  });
 
-  context('handleDelete, handleEdit', () => {
+  context("handleDelete, handleEdit", () => {
     beforeEach(() => {
       cy.mount(
         <BrowserRouter>
           <HeroList
             heroes={heroes}
-            handleDeleteHero={cy.stub().as('handleDeleteHero')}
+            handleDeleteHero={cy.stub().as("handleDeleteHero")}
           />
-        </BrowserRouter>,
-      )
-    })
-    it('should handle delete', () => {
-      cy.getByCy('delete-button').first().click()
-      cy.get('@handleDeleteHero').should('have.been.called')
-    })
-    it('should handle edit', () => {
-      cy.getByCy('edit-button').first().click()
-      cy.location('pathname').should('eq', '/heroes/edit-hero/' + heroes[0].id)
-    })
-  })
-})
-
+        </BrowserRouter>
+      );
+    });
+    it("should handle delete", () => {
+      cy.getByCy("delete-button").first().click();
+      cy.get("@handleDeleteHero").should("have.been.called");
+    });
+    it("should handle edit", () => {
+      cy.getByCy("edit-button").first().click();
+      cy.location("pathname").should("eq", "/heroes/edit-hero/" + heroes[0].id);
+    });
+  });
+});
 ```
 
 Similarly, here is the updated test for `src/heroes/HeroDetail.cy.tsx`:
 
 ```tsx
 // src/heroes/HeroDetail.cy.tsx
-import HeroDetail, {Hero} from './HeroDetail'
-import '../styles.scss'
-import React from 'react'
-import {BrowserRouter} from 'react-router-dom'
+import HeroDetail, { Hero } from "./HeroDetail";
+import "../styles.scss";
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
 
-describe('HeroDetail', () => {
-  context('handleSave, handleCancel', () => {
-    let hero: Hero
+describe("HeroDetail", () => {
+  context("handleSave, handleCancel", () => {
+    let hero: Hero;
     beforeEach(() => {
       cy.window()
-        .its('console')
-        .then(console => cy.spy(console, 'log').as('log'))
+        .its("console")
+        .then((console) => cy.spy(console, "log").as("log"));
 
-      hero = {id: '', name: '', description: ''}
+      hero = { id: "", name: "", description: "" };
       cy.mount(
         <BrowserRouter>
           <HeroDetail hero={hero} />
-        </BrowserRouter>,
-      )
-    })
-    it('should handle Save', () => {
-      cy.getByCy('save-button').click()
-      cy.get('@log').should('have.been.calledWith', 'handleSave')
-    })
+        </BrowserRouter>
+      );
+    });
+    it("should handle Save", () => {
+      cy.getByCy("save-button").click();
+      cy.get("@log").should("have.been.calledWith", "handleSave");
+    });
 
-    it('should handle Cancel', () => {
-      cy.getByCy('cancel-button').click()
-      cy.location('pathname').should('eq', '/heroes')
-    })
-  })
+    it("should handle Cancel", () => {
+      cy.getByCy("cancel-button").click();
+      cy.location("pathname").should("eq", "/heroes");
+    });
+  });
 
-  context('handleNameChange, handleDescriptionChange', () => {
-    let hero: Hero
+  context("handleNameChange, handleDescriptionChange", () => {
+    let hero: Hero;
     beforeEach(() => {
-      cy.spy(React, 'useState').as('useState')
+      cy.spy(React, "useState").as("useState");
 
-      hero = {id: '', name: '', description: ''}
+      hero = { id: "", name: "", description: "" };
       cy.mount(
         <BrowserRouter>
           <HeroDetail hero={hero} />
-        </BrowserRouter>,
-      )
-    })
+        </BrowserRouter>
+      );
+    });
 
-    it('should handle name change', () => {
-      const newHeroName = 'abc'
-      cy.getByCy('input-detail-name').type(newHeroName)
-      cy.get('@useState')
-        .should('have.been.calledWith', hero)
-        .its('returnValues')
+    it("should handle name change", () => {
+      const newHeroName = "abc";
+      cy.getByCy("input-detail-name").type(newHeroName);
+      cy.get("@useState")
+        .should("have.been.calledWith", hero)
+        .its("returnValues")
         .its(newHeroName.length + 1)
         .its(0)
-        .should('deep.eq', {...hero, name: newHeroName})
-    })
+        .should("deep.eq", { ...hero, name: newHeroName });
+    });
 
-    it('should handle description change', () => {
-      const newHeroDescription = '123'
-      cy.getByCy('input-detail-description').type(newHeroDescription)
-      cy.get('@useState')
-        .should('have.been.calledWith', hero)
-        .its('returnValues')
+    it("should handle description change", () => {
+      const newHeroDescription = "123";
+      cy.getByCy("input-detail-description").type(newHeroDescription);
+      cy.get("@useState")
+        .should("have.been.calledWith", hero)
+        .its("returnValues")
         .its(newHeroDescription.length + 1)
         .its(0)
-        .should('deep.eq', {...hero, description: newHeroDescription})
-    })
-  })
+        .should("deep.eq", { ...hero, description: newHeroDescription });
+    });
+  });
 
-  context('state: should verify the layout of the component', () => {
+  context("state: should verify the layout of the component", () => {
     const shouldNotRenderName = () =>
-      cy.get('p').then($el => cy.wrap($el.text()).should('equal', ''))
+      cy.get("p").then(($el) => cy.wrap($el.text()).should("equal", ""));
 
     const shouldNotRenderId = () => {
-      cy.getByCyLike('input-detail').should('have.length', 2)
-      cy.getByCy('input-detail-id').should('not.exist')
-    }
+      cy.getByCyLike("input-detail").should("have.length", 2);
+      cy.getByCy("input-detail-id").should("not.exist");
+    };
 
     const shouldRenderName = (hero: Hero) => {
-      cy.contains('p', hero.name)
-      cy.findByDisplayValue(hero.name)
-    }
+      cy.contains("p", hero.name);
+      cy.findByDisplayValue(hero.name);
+    };
 
     const shouldRenderId = (hero: Hero) => {
-      cy.findByDisplayValue(hero.id)
-      cy.getByCyLike('input-detail').should('have.length', 3)
-    }
+      cy.findByDisplayValue(hero.id);
+      cy.getByCyLike("input-detail").should("have.length", 3);
+    };
 
-    it('id: false, name: false - should verify the minimal state of the component', () => {
-      const hero = {id: '', name: '', description: ''}
+    it("id: false, name: false - should verify the minimal state of the component", () => {
+      const hero = { id: "", name: "", description: "" };
       cy.mount(
         <BrowserRouter>
           <HeroDetail hero={hero} />
-        </BrowserRouter>,
-      )
+        </BrowserRouter>
+      );
 
-      shouldNotRenderName()
-      shouldNotRenderId()
+      shouldNotRenderName();
+      shouldNotRenderId();
 
-      cy.findByPlaceholderText('e.g. Colleen')
-      cy.findByPlaceholderText('e.g. dance fight!')
+      cy.findByPlaceholderText("e.g. Colleen");
+      cy.findByPlaceholderText("e.g. dance fight!");
 
-      cy.getByCy('save-button').should('be.visible')
-      cy.getByCy('cancel-button').should('be.visible')
-    })
+      cy.getByCy("save-button").should("be.visible");
+      cy.getByCy("cancel-button").should("be.visible");
+    });
 
-    it('id: false, name: true - should display hero title and field name, and not display id field', () => {
-      const hero = {id: '', name: 'Aslaug', description: ''}
+    it("id: false, name: true - should display hero title and field name, and not display id field", () => {
+      const hero = { id: "", name: "Aslaug", description: "" };
       cy.mount(
         <BrowserRouter>
           <HeroDetail hero={hero} />
-        </BrowserRouter>,
-      )
+        </BrowserRouter>
+      );
 
-      shouldRenderName(hero)
-      shouldNotRenderId()
-    })
+      shouldRenderName(hero);
+      shouldNotRenderId();
+    });
 
-    it('id: true, name: false - should not display hero name, and display all fields', () => {
-      const hero = {id: 'HeroAslaug', name: '', description: ''}
+    it("id: true, name: false - should not display hero name, and display all fields", () => {
+      const hero = { id: "HeroAslaug", name: "", description: "" };
       cy.mount(
         <BrowserRouter>
           <HeroDetail hero={hero} />
-        </BrowserRouter>,
-      )
+        </BrowserRouter>
+      );
 
-      shouldNotRenderName()
-      shouldRenderId(hero)
-    })
+      shouldNotRenderName();
+      shouldRenderId(hero);
+    });
 
-    it('id: true, name: true - should display hero name, id  ', () => {
-      const hero = {id: 'HeroAslaug', name: 'Aslaug', description: ''}
+    it("id: true, name: true - should display hero name, id  ", () => {
+      const hero = { id: "HeroAslaug", name: "Aslaug", description: "" };
       cy.mount(
         <BrowserRouter>
           <HeroDetail hero={hero} />
-        </BrowserRouter>,
-      )
+        </BrowserRouter>
+      );
 
-      shouldRenderName(hero)
-      shouldRenderId(hero)
+      shouldRenderName(hero);
+      shouldRenderId(hero);
 
-      cy.getByCy('input-detail-description').type('hero description')
-      cy.findByDisplayValue('hero description')
-    })
-  })
-})
+      cy.getByCy("input-detail-description").type("hero description");
+      cy.findByDisplayValue("hero description");
+    });
+  });
+});
 ```
-
-
 
 ## Summary
 
@@ -1162,7 +1158,7 @@ Recalling `react-router` chapter that routing is best tested with e2e, we added 
 
 Next, we saw a similarity in the edit hero cancel flow and added a failing e2e test for it When the edit button is clicked, we wanted to land on a route such as `/heroes/edit-hero/HeroAslaug`(Red 5)
 
-We utilized `useNavigate` in the already existing `handleSelectHero` function of `HeroList` component, hard coding the same url (*Green* 5).
+We utilized `useNavigate` in the already existing `handleSelectHero` function of `HeroList` component, hard coding the same url (_Green_ 5).
 
 <br />
 
