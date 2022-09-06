@@ -1,6 +1,6 @@
 # Heroes
 
-Heroes component utilizes the other hero components and is the most complex so far. Looking at the Angular version of the app, we can come up with a bullet list of the DOM elements.
+`Heroes` component utilizes the other hero components and is the most complex so far. Looking at the Angular version of the app, we can come up with a bullet list of the DOM elements.
 
 - `ListHeader` child component
 - `div`
@@ -117,7 +117,7 @@ describe("Heroes", () => {
 });
 ```
 
-To make the test pass, we use need to add functions that `console.log` with the respective strings (Green 2).
+To make the test pass, we need to add functions that `console.log` with the respective strings (Green 2).
 
 ```tsx
 // src/components/Heroes.tsx
@@ -203,9 +203,9 @@ describe("Heroes", () => {
 });
 ```
 
-We add the child `HeroList` to our component. It requires a heroes prop. One good idea is to look at the component tests for children, see how they are used, and work off of that documentation when writing the tests for the parent component. We do not need to repeat any tests at the parent, but we can use the help to give an idea about how the child should be mounted. Take a look at `HeroList.cy.tsx`. We are importing a Cypress fixture and passing it as a prop. We can repeat a similar process, and delay the decisions about data and state to a later time until we have to make them (Green 3).
+We add the child `HeroList` to our component. It requires a heroes prop. One  idea is to look at the component tests for children, see how they are used, and work off of that documentation when writing the tests for the parent component. We do not need to repeat any tests at the parent, but we can use the help to give an idea about how the child should be mounted. Take a look at `HeroList.cy.tsx`. We are importing a Cypress fixture and passing it as a prop. We can repeat a similar process, and delay the decisions about data and state to a later time until we have to make them (Green 3).
 
-If a component is importing a file from outside the source folder, the component will work in isolation but the greater app will not compile. Make a copy of `heroes.json` from `cypress/fixtures/` in `src/heroes` and update `Heroes` component to use this file instead. We will handle this gracefully later.
+If a component is importing a file from outside the source folder, the component will work in isolation but the greater app will not compile. Make a copy of `heroes.json` from `cypress/fixtures/` in `src/heroes` and update `Heroes` component to use this file instead. We will handle this gracefully later when working with network data.
 
 ```tsx
 // src/components/Heroes.tsx
@@ -1041,10 +1041,20 @@ We added a function that toggles the modal off and console.logs the string `hand
 
 ## Takeaways
 
+* As we repeatedly saw in the previous chapters, while designing the component, you can delay the decisions about network state and use hard coded data. For event handlers we can use functions that console.log. These will help when components that share state get used in other components. Note that per the [React docs](https://reactjs.org/docs/handling-events.html) when using JSX you pass a function as the event handler, rather than a string.
+
 * Look at the component tests for child components, see how they are used, and work off of that documentation when writing the tests for the parent component. We do not need to repeat any tests at the parent, but we can use the help to give an idea about how the child should be mounted. 
-* As we repeatedly saw in the previous chapters, while designing the component, you can delay the decisions about network state and use hard coded data. For event handlers we can use functions that console.log. These will help when components that share state get used in other components. Note that per the [React docs](https://reactjs.org/docs/handling-events.html) when using JSX you pass a function as the event handler, rather than a string
+
+* In a Cypress component test, the error `func.apply is not a function` usually means the click handlers are not doing anything.
+
+* In React, all the click handlers have to be functions. Per the [React docs](https://reactjs.org/docs/handling-events.html) when using JSX you pass a function as the event handler, rather than a string.
+
+* When testing child components in isolation (ex: `ListHeader`), we can mock the click events with `cy.stub`. When the child component is being consumed by a parent, React obviously cannot mock anything. Therefore The parent / the consumer of the child has to implement the handler function and test it. Again, `console.log` is acceptable until more about the component is known.
+
 * From Kent C. Dodds:
+
   * If components are sharing state, lift the state up to their closest common ancestor.
   * If the common ancestor is too deep and lifting state results in prop-drilling, use React's context api.
   * Beyond that, use state management libraries.
-* When testing child components in isolation (ex: `ListHeader`), we can mock the click events with `cy.stub`. When the child component is being consumed by a parent, React obviously cannot mock anything. Therefore The parent / the consumer of the child has to implement the handler function and test it. Again, `console.log` is acceptable until more about the component is known.
+
+  
