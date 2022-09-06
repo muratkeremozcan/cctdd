@@ -1,6 +1,6 @@
 # ListHeader
 
-In the Angular version of the app, we can see that the component will be a `div` wrapping a link and two buttons.
+In the Angular version of the app, we can see that the component will be a `div` wrapping a link and two buttons for add and refresh.
 
 ![ListHeader-initial](../img/ListHeader-initial.png)
 
@@ -75,16 +75,16 @@ We recall from the previous chapters the flow when adding new props to a compone
 
 \* Add it to the arguments or the component
 
-\* Use it in the component return / render.
+\* Use it in the component.
 
 Here the attribute is `onClick` and it gets added to the `button` tag. We have our first passing test (Green 2).
 
 ```tsx
 // src/components/ListHeader.tsx
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 
 type ListHeaderProps = {
-  handleAdd: (e: SyntheticEvent) => void
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ListHeader({handleAdd}: ListHeaderProps) {
@@ -128,11 +128,11 @@ Adding the prop type, prop argument, and the `onClick` attribute is a mirror of 
 
 ```tsx
 // src/components/ListHeader.tsx
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 
 type ListHeaderProps = {
-  handleAdd: (e: SyntheticEvent) => void
-  handleRefresh: (e: SyntheticEvent) => void
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ListHeader({
@@ -152,11 +152,11 @@ We can conveniently copy the aria labels from the Angular app (Refactor 3).
 
 ```tsx
 // src/components/ListHeader.tsx
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 
 type ListHeaderProps = {
-  handleAdd: (e: SyntheticEvent) => void
-  handleRefresh: (e: SyntheticEvent) => void
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ListHeader({
@@ -180,17 +180,17 @@ export default function ListHeader({
 }
 ```
 
-The visuals show that we are missing the icons for the buttons. For this example, let's use [react-icons](https://react-icons.github.io/react-icons). Install with `yarn add  react-icons @types/react-icons`. We can pick any refresh and add icon (Refactor 4). This is another example of our testing tool serving as the design tool in order to aid RedGreenRefactor cycles with incremental visual enhancements.
+The visuals show that we are missing the icons for the buttons. We can use [react-icons](https://react-icons.github.io/react-icons) to pick any refresh and add icon (Refactor 4). This is another example of our testing tool serving as the design tool in order to aid RedGreenRefactor cycles with incremental visual enhancements.
 
 ```tsx
 // src/components/ListHeader.tsx
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 import {FiRefreshCcw} from 'react-icons/fi'
 import {GrAdd} from 'react-icons/gr'
 
 type ListHeaderProps = {
-  handleAdd: (e: SyntheticEvent) => void
-  handleRefresh: (e: SyntheticEvent) => void
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ListHeader({
@@ -248,13 +248,13 @@ We make the test pass with a hard-coded title in a link (Green 5).
 
 ```tsx
 // src/components/ListHeader.tsx
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 import {FiRefreshCcw} from 'react-icons/fi'
 import {GrAdd} from 'react-icons/gr'
 
 type ListHeaderProps = {
-  handleAdd: (e: SyntheticEvent) => void
-  handleRefresh: (e: SyntheticEvent) => void
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ListHeader({
@@ -314,14 +314,14 @@ We also recall the pattern of passing the prop as a  type, a component argument,
 
 ```tsx
 // src/components/ListHeader.tsx
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 import {FiRefreshCcw} from 'react-icons/fi'
 import {GrAdd} from 'react-icons/gr'
 
 type ListHeaderProps = {
   title: string
-  handleAdd: (e: SyntheticEvent) => void
-  handleRefresh: (e: SyntheticEvent) => void
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ListHeader({
@@ -349,19 +349,19 @@ export default function ListHeader({
 }
 ```
 
-In the previous component `HeaderBarBrand` we used a `NavLink` from `react-router`.The application hints that this `a` link is in fact a route in our app that can either be Heroes, Villians or About. We use `NavLink` instead of `a`, and for the `to` attribute, it is  one of the routes / titles. We can enhance the string type to be a union of the 3 possibilities as well (Refactor 6).	
+In the previous component `HeaderBarBrand` we used a `NavLink` from `react-router`.The application hints that this `a` link is in fact a route in our app that can either be Heroes, Villians or About. We use `NavLink` instead of `a`, and `to` attribute is one of the routes. We can enhance the string type to be a union of the 3 possibilities as well (Refactor 6).	
 
 ```tsx
 // src/components/ListHeader.tsx
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 import {NavLink} from 'react-router-dom'
 import {FiRefreshCcw} from 'react-icons/fi'
 import {GrAdd} from 'react-icons/gr'
 
 type ListHeaderProps = {
   title: 'Heroes' | 'Villains' | 'About'
-  handleAdd: (e: SyntheticEvent) => void
-  handleRefresh: (e: SyntheticEvent) => void
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ListHeader({
@@ -461,15 +461,15 @@ Our test is looking great with high coverage. The render is lacking though. We c
 
 ```tsx
 // src/components/ListHeader.tsx
-import {SyntheticEvent} from 'react'
+import {MouseEvent} from 'react'
 import {NavLink} from 'react-router-dom'
 import {FiRefreshCcw} from 'react-icons/fi'
 import {GrAdd} from 'react-icons/gr'
 
 type ListHeaderProps = {
   title: 'Heroes' | 'Villains' | 'About'
-  handleAdd: (e: SyntheticEvent) => void
-  handleRefresh: (e: SyntheticEvent) => void
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function ListHeader({
@@ -505,14 +505,6 @@ We started with a failing test for a button click (Red 1, 2).
 
 We enhanced the component to have button with a `data-cy` selector (Green 1) and an onClick handler (Green 2).
 
-We recalled the pattern of adding props to a component:
-
-* Add the prop to the types
-
-* Add it to the arguments or the component
-
-* Use it in the component return / render.
-
 <br />
 
 We repeated the same for a refresh button (Red 3, Green 3).
@@ -520,8 +512,6 @@ We repeated the same for a refresh button (Red 3, Green 3).
 We enhanced the component with aria labels (Refactor 3).
 
 We used the test tool as the visual design tool, and added icons for add and refresh (Refactor 4).
-
-Once again recalling the test tool serving as the design tool in order to aid RedGreenRefactor cycles with incremental visual enhancements.
 
 <br />
 
@@ -531,12 +521,28 @@ We made the test pass with a hard-coded title in a link (Green 5).
 
 <br />
 
-We recalled that we pass hard-coded values as props, we added the prop to the component mount in the test (Red 6).
+We recalled that we prefer to pass hard-coded values as props instead. We added the prop to the component mount in the test (Red 6).
 
-Once again, we added the new prop to the component; types, arguments, and used it in the return / render (Green 6).
+Once again, we added the new prop to the component; types, arguments, and used it in the component (Green 6).
 
 We refactored the `a` tag to be a `NavLink` as in the `HeaderBarBrand` component (Refactor 6).
 
 We enhanced the test with a route url check (Refactor 7).
 
 We enhance the visuals with additional css (Refactor 8).
+
+## Takeaways
+
+* We recalled the pattern of adding props to a component:
+
+  * Add the prop to the types
+
+
+  * Add it to the arguments or the component
+
+
+  * Use it in the component.
+
+* The test tool can serve as the design tool in order to aid RedGreenRefactor cycles with incremental visual enhancements.
+
+* Like we saw in chapter one, the key idea is to start with something failing, do the minimal to get it to work, and then make it better. In this chapter, to make things better at the end, we kept improving the test and the visuals.
