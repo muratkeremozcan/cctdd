@@ -1,6 +1,8 @@
 # HeroDetail
 
-In the Angular version of the app, we see a component slightly more involved than the others so far. When a component is looking complicated, it is easier to make sense out of it starting at the top level, and moving down layer by layer.
+We are done with the simpler, child components. From now on we will be focusing on higher level components that use the child components and consider application state.
+
+ In the Angular version of the app, we see a component slightly more involved than the others so far. When a component is looking complicated, it is easier to make sense out of it starting at the top level, and moving down layer by layer.
 
 * header
   * `p` with the hero name.
@@ -162,7 +164,7 @@ describe('HeroDetail', () => {
 })
 ```
 
-We need to make the test pass. We can  grab the field names from the initial application screen shot; the names of the fields should be `id`, `name`, `description`. The value of the first field `id`  can be hard-coded for now. The second and third fields hav an empty value, and `placeholder` instead. This is the minimal to get a green test (Green 4).
+We need to make the test pass. We can  grab the field names from the initial application screen shot; the names of the fields should be `id`, `name`, `description`. The value of the first field `id`  can be hard-coded for now. The second and third fields have an empty value, and `placeholder` instead. This is the minimal to get a green test (Green 4).
 
 ```tsx
 // src/heroes/HeroDetail.tsx
@@ -587,7 +589,7 @@ export default function HeroDetail() {
 
 ![HeroDetail-Green5](../img/HeroDetail-Green5.png)
 
-When saving or cancelling this form, we will be modifying the state, therefore an event should occur. We can write failing tests that spy on `console.log` for now (Red 6).
+When saving or cancelling this form, we will be modifying the state, therefore an event should occur. We can write failing tests that spies on `console.log` for now (Red 6).
 
 ```tsx
 // src/heroes/HeroDetail.cy.tsx
@@ -697,7 +699,7 @@ export default function HeroDetail() {
 }
 ```
 
-We can refactor the functions out of the component return (Refactor 6)
+We can refactor the console.logs into helper functions (Refactor 6)
 
 ```tsx
 // src/heroes/HeroDetail.tsx
@@ -819,7 +821,7 @@ export default function HeroDetail() {
 }
 ```
 
-Before we move on to the topic of state, we can add the styles (Refactor 6).
+Before we move on to the topic of state, let's add styles (Refactor 6).
 
 ```tsx
 // src/heroes/HeroDetail.tsx
@@ -894,7 +896,7 @@ Quoting Kent C. Dodds, in React we can simplify our UI state management into two
 
 2) Server data 
 
-Before implementing any state, we can write tests that scrutinize the layout of the component. Instead of the hard coded `hero` object in the component, we can pass in data with a prop. We either manipulate our components via props or what wraps them, and a prop is the easier choice at the moment. The shape of the prop is just our hero object (Red 7).
+Before implementing any state, we can write tests that scrutinize the layout of the component. Instead of the hard coded `hero` object in the component, we can pass in data with a prop. We either manipulate our components via props or what wraps them, and a prop is the easier choice at the moment. The value of the prop is just our hero object (Red 7).
 
 ```tsx
 // src/heroes/HeroDetail.cy.tsx
@@ -963,7 +965,7 @@ In our case this can be:
 const [hero, setHero] = useState(someInitialHeroData)
 ```
 
-The variable name `someInitialHeroData` is problematic. From the perspective of whoever is using `HeroDetail` component, it is just `hero`. From the perspective within the component, it is also `hero`. To resolve this we can alias the name, and create copy of the hero being passed in, using object destructuring. 
+The variable name `someInitialHeroData` is a mouthful. From the perspective of whoever is using `HeroDetail` component, it is just `hero`. From the perspective within the component, it is also `hero`. To resolve this we can alias the name, and create copy of the hero being passed in, using object destructuring. 
 
 Like we laid out in the tests, the simplest way to pass in any data to our component is a prop. We can refactor our component to get ready for state management. This way we do not have to have a hard-coded piece of `hero` data in the component, and we can let that be determined by whoever is using the component. Once the prop is passed in, we can use the `useState` hook to handle component state (Green 7). 
 
@@ -1030,7 +1032,7 @@ export default function HeroDetail({hero: initHero}: HeroDetailProps) {
 }
 ```
 
-ESLint is warning us that `setHero` is not being used. Notice that `InputDetail`  has an `onChange` handler, used for writable fields, and that is where `setHero` fits. Let's write two more tests for handling name change and description change. Also, TS is giving us a warning in the handleSave and handleCancel tests that we are missing props. For all these handleSomething tests, we can just pass in a hero object with empty properties (Red 8).
+ESLint is warning us that `setHero` is not being used. Notice that `InputDetail`  has an `onChange` handler, used for writable fields, and that is where `setHero` fits. Let's write two more tests for handling name change and description change. Also, TS is giving us a warning in the handleSave and handleCancel tests about missing props. For all these handleSomething tests, we can just use in a hero object with empty properties as the prop we are passing in to the component (Red 8).
 
 ```tsx
 // src/heroes/HeroDetail.cy.tsx
@@ -1292,27 +1294,27 @@ describe('HeroDetail', () => {
     cy.get('@log').should('have.been.calledWith', 'handleCancel')
   })
 
-  context('handleNameChange, handleDescriptionChange', () => {
-    beforeEach(() => {
-      cy.spy(React, 'useState').as('useState')
-      const hero: Hero = {id: '', name: '', description: ''}
-      cy.mount(<HeroDetail hero={hero} />)
-    })
+  it('should handle name change', () => {
+    cy.spy(React, 'useState').as('useState')
+    const hero: Hero = {id: '', name: '', description: ''}
+    cy.mount(<HeroDetail hero={hero} />)
 
-    it('should handle name change', () => {
-      const newHeroName = 'abc'
-      cy.getByCy('input-detail-name').type(newHeroName)
+    const newHeroName = 'abc'
+    cy.getByCy('input-detail-name').type(newHeroName)
 
-      cy.get('@useState').should('have.been.called')
-    })
-
-    it('should handle description change', () => {
-      const newHeroDescription = '123'
-      cy.getByCy('input-detail-description').type(newHeroDescription)
-      cy.get('@useState').should('have.been.called')
-    })
+    cy.get('@useState').should('have.been.called')
   })
 
+  it('should handle description change', () => {
+    cy.spy(React, 'useState').as('useState')
+    const hero: Hero = {id: '', name: '', description: ''}
+    cy.mount(<HeroDetail hero={hero} />)
+
+    const newHeroDescription = '123'
+    cy.getByCy('input-detail-description').type(newHeroDescription)
+    cy.get('@useState').should('have.been.called')
+  })
+  
   context('state: should verify the layout of the component', () => {
     it('id: false, name: false - should verify the minimal state of the component', () => {
       const hero: Hero = {id: '', name: '', description: ''}
@@ -1331,7 +1333,7 @@ describe('HeroDetail', () => {
 })
 ```
 
-We can make the two `it` blocks drier with a `beforeEach` hook in a new `context` block. The same idea applies to `handleSave` and `handleCancel` tests as well. We can also make some of the assertions about drier (Refactor 8). 
+We can make the two `it` blocks drier with a `beforeEach` hook in a new `context` block. The same idea applies to `handleSave` and `handleCancel` tests as well  (Refactor 8). 
 
 ```tsx
 // src/heroes/HeroDetail.cy.tsx
@@ -1529,14 +1531,6 @@ We refactored the component, and added styles (Refactor 6).
 
 ### State
 
-In React, we can simplify our UI state management into two categories:
-
-1) UI state: modal is open, item is highlighted, etc.
-
-2) Server data 
-
-We either manipulate our components via props or what wraps them, and a prop was deemed to be the easier choice moving forward.
-
 We scrutinized the shape of the `hero` object, and decided to pass it in as a prop to the component.
 
 We wrote tests for the 4 states the component, based on the variations of the `hero` object (Red 7)
@@ -1552,3 +1546,15 @@ We added the missing handlers to the component to make the test pass (Green 8).
 We enhanced the usage of `setHero` via object destructuring (Refactor 8).
 
 We enhanced the tests to spy on `useState` when setHero is triggered via name change and description change handlers. We made the test drier (Refactor 8).
+
+## Takeaways
+
+* When features are not certain and we want to delay important decisions until there is more clarity (ex: state management), we can opt to not to use the tests. The fact that the component test is a mini UI application helps us progress with satisfactory spot checks.
+* Until we decide what the event handlers should be doing, it is acceptable to use `console.log`.
+* We either manipulate our components via props or what wraps them.
+* In React, we can simplify our UI state management into two categories (quoting Kent C. Dodds):
+
+  1) UI state: modal is open, item is highlighted, etc.
+
+  2) Server data 
+
