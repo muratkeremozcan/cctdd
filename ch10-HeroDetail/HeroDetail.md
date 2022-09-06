@@ -1387,8 +1387,9 @@ describe('HeroDetail', () => {
       const hero: Hero = {id: '', name: '', description: ''}
       cy.mount(<HeroDetail hero={hero} />)
 
-      cy.getByCy('hero-detail')
+      cy.get('p').then($el => cy.wrap($el.text()).should('equal', ''))
       cy.getByCyLike('input-detail').should('have.length', 2)
+      cy.getByCy('input-detail-id').should('not.exist')
 
       cy.findByPlaceholderText('e.g. Colleen').should('be.visible')
       cy.findByPlaceholderText('e.g. dance fight!').should('be.visible')
@@ -1403,7 +1404,7 @@ describe('HeroDetail', () => {
 Here is the final form of the component. We are leaving the server side of state management for later.
 
 ```tsx
-// src/heroes/HeroDetail.tsx
+// src/heroes/HeroDetail.cy.tsx
 import InputDetail from 'components/InputDetail'
 import {useState, ChangeEvent} from 'react'
 import ButtonFooter from 'components/ButtonFooter'
@@ -1424,6 +1425,7 @@ export default function HeroDetail({hero: initHero}: HeroDetailProps) {
     console.log('handleSave')
     return hero.name ? updateHero() : saveHero()
   }
+
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     console.log('handleNameChange')
     setHero({...hero, name: e.target.value})
