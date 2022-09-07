@@ -1,12 +1,12 @@
 # [`react-router`](https://reactrouter.com/en/v6.3.0/getting-started/overview) 
 
-Our `Heroes` component is needing to take advantage of routes, but we have not set that up in our app yet. Until now, every component has been designed in isolation. Meanwhile, the real app launches on the generic page, and a user cannot do much with it. During this section we will be setting up [`react-router`](https://reactrouter.com/en/v6.3.0/getting-started/overview) using e2e to test it. 
+Our `Heroes` component is needing to take advantage of routes, but we have not set that up in our app yet. Until now, every component has been designed in isolation. Meanwhile, the real app launches on the generic page, and a user cannot do much with it. During this section we will be setting up [`react-router`](https://reactrouter.com/en/v6.3.0/getting-started/overview) and we will be using e2e to test it. 
 
 >  `react-router-dom` and `react-router-native` are included in `react-router`. We will be referring to `react-router-dom` as `react-router` since we are in working on a web app.
 
 ## Using e2e
 
-We can test some of the routing capability in components, if those components have navigation links in them. We implemented examples of these in `HeaderBar` and `NavBar` components. Moving past that, the most confident way to test routing is using e2e tests because it lets us cover the app's routing features and possible flows entirely. 
+We can test some of the routing capability in components in a component test, if those components have navigation links in them. We implemented examples of these in `HeaderBar` and `NavBar` components. Moving past that, the most confident way to test routing is using e2e tests because it lets us cover the app's routing features and possible flows entirely. 
 
 We start the e2e runner with  `yarn cy:open-e2e`. This command internally runs `yarn start` which also serves the app on `localhost:3000`. At the moment we are seeing the generic React app when running the `spec` file. We can rename that to `routes-nav.cy.ts`.
 
@@ -110,7 +110,7 @@ export default App
 
 Looking at `NavBar.cy.tsx` we see that we already covered click navigation to heroes, villains, and about. We do not have to repeat this test in e2e. Always check the test coverage of lower level tests and prefer not to duplicate the effort at a higher level, because it will have extra cost but might not provide extra confidence. 
 
- Whether using e2e or component tests, the flow of TDD is the same; start with something failing, do the minimal to get it to work, and then make it better. The main distinction is scale; with e2e we need to be even more careful to have small incremental steps because the impact in the large scale of the app can be higher, failures harder to diagnose. The obvious, but hard to implement, practice in test driven design is to write very small incremental tests at a time.
+ Whether using e2e or component tests, the flow of TDD is the same; start with something failing, do the minimal to get it to work, and then make it better. The main distinction is scale; with e2e we need to be even more careful to have small incremental steps because the impact on the large scale of the app can be higher, making failures harder to diagnose. The obvious, but hard to implement, practice in test driven design is to write very small incremental tests at a time.
 
 ## Routing
 
@@ -204,7 +204,7 @@ const About = () => (
         using Cypress component and e2e testing to develop a React application.
         There are many versions of Angular's Tour of Heroes tutorial and John
         Papa has re-created them in Angular, Vue and React. The 3 apps are
-        consistent in their styles and design decisions. This up inspires from
+        consistent in their styles and design decisions. This one inspires from
         them, uses CCTDD and takes variances along the way.
       </p>
 
@@ -380,7 +380,7 @@ function App() {
 export default App
 ```
 
-We can tweak the initial test that checks for `HeaderBar` and  `NavBar`render, which are true in all routing tests. Here it is preferred to add on to the test rather than writing a new one for redirect. Always look for opportunities to tweak what test is already existing as opposed to writing partially duplicated tests for new specs. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then it is an opportunity for a test enhancement vs partial test duplication. We can also add a new test checking the direct-navigation functionality for `/heroes` route (Refactor 5).
+We can tweak the initial test that checks for `HeaderBar` and  `NavBar` render, which are true in all routing tests. Here it is preferred to add on to the test rather than writing a new one for redirect. Always look for opportunities to tweak what test is already existing as opposed to writing partially duplicated tests for new specs. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then it is an opportunity for a test enhancement vs partial test duplication. We can also add a new test checking the direct-navigation functionality for `/heroes` route (Refactor 5).
 
 ```tsx
 // cypress/e2e/routes-nav.cy.ts
@@ -601,9 +601,9 @@ We updated the App RTL test to mirror the App sanity component test.
 
 ### Takeaways
 
-* E2e testing lets us cover the app's routing features and possible flows entirely. 
-* Whether using e2e or component tests, the flow of TDD is the same; start with something failing, do the minimal to get it to work, and then make it better
-* Whenever we are testing a component that includes other components, take a look at the child component source and the component test. The same rule applies to e2e as well. Always check the test coverage of lower level tests and prefer not to duplicate the effort at a higher level, because it will have extra cost but might not provide extra confidence.
+* E2e testing lets us cover the app's routing features and possible flows in a better way. 
+* Whether using e2e or component tests, the main idea of TDD is the same; start with something failing, do the minimal to get it to work, and then make it better.
 * The obvious, but hard to implement, practice in test driven design is to write very small incremental tests at a time. Be more considerate about smaller increments with e2e tests, because of the higher impact radius of the changes.
+* Whenever we are testing a component that includes other components, take a look at the child component source and the component test. The same rule applies to e2e as well. Always check the test coverage of lower level tests and prefer not to duplicate the effort at a higher level, because it will have extra cost but might not provide extra confidence.
 * Any time we have passing tests, we want to prefer to refactor or add more tests before adding more source code. 
 * Always look for opportunities to tweak what test is already existing as opposed to writing partially duplicated tests for new specs. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then it is an opportunity for a test enhancement vs partial test duplication.
