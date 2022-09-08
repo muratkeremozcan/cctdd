@@ -318,7 +318,7 @@ We used the e2e test to to drive the design of http requests in the `Heroes` com
 
 ![HeroesPart3-HeroesCT-failure](../img/HeroesPart3-HeroesCT-failure.png)
 
-We need to be stubbing the network with some data, so that the component can render it. Add a `cy.intercept` using a fixture file for the network data to `src/heroes/Heroes.cy.tsx` and `src/App.cy,tsx` files, which both use the `Heroes` component. The intercept will ensure that all `GET` requests to `http://localhost:4000/api/heroes` will respond with the stubbed data from `heroes.json` file in Cypress fixtures
+We need to be stubbing the network with some data, so that the component can render it. Add a `cy.intercept` using a fixture file for the network data to `src/heroes/Heroes.cy.tsx` and `src/App.cy,tsx` files, which both use the `Heroes` component. The intercept will ensure that all `GET` requests to `http://localhost:4000/api/heroes` will respond with the stubbed data from `heroes.json` file in Cypress fixtures.
 
 ```tsx
 // src/heroes/Heroes.cy.tsx
@@ -404,7 +404,7 @@ describe('ct sanity', () => {
 })
 ```
 
-We also have to update the unit test `src/App.test.tsx` that which mirrors `App.tsx`. Note that running the unit test it does not fail but the error will be a merge blocker. We only know what the problem is because either we have seen this before, or because we saw the network call happen on component mount in the component test runner using the real browser. **Component testing with Cypress, using the real browser, can help diagnose issues in the app that may be harder to do so using Jest / RTL.**
+We also have to update the RTL unit test `src/App.test.tsx` which mirrors `App.cy.tsx`. Note that running the unit test it does not fail but the error will be a merge blocker. We only know what the problem is because either we have seen this before, or because we saw the network call happen on component mount in the component test runner using the real browser. **Component testing with Cypress, using the real browser, can help diagnose issues in the app that may be harder to do so using Jest / RTL.**
 
 ![HeroesPart3-RTL-fail](../img/HeroesPart3-RTL-fail.png)
 
@@ -578,7 +578,7 @@ export default function InputDetail({
 }
 ```
 
-Similar to routing, when our concerns about the app are higher level as in state management and flows, e2e tests are effective at catching defects that we cannot test with component tests. The e2e test now works, and the component test serves as a regression assurance. The `onChange` now gets called twice vs thrice, and that is the only update.
+Similar to routing, when our concerns about the app are higher level as in state management and flows, e2e tests are effective at catching defects that we might not be able to test with component tests. The e2e test now works, and the component test serves as a regression assurance. The `onChange` now gets called twice vs thrice, and that is the only update.
 
 ```tsx
 // src/components/InputDetail.cy.tsx
@@ -769,7 +769,7 @@ export default function useAxios(url: string) {
 }
 ```
 
-At `Heroes` component, we do not need to utilize `useState` because now we get the data from `useAxios`. We just have to rename and initialize `data` variable into `heroes` which is initially an empty array.
+At `Heroes` component, we do not need to utilize `useState` because now we get the data from `useAxios`. We just have to rename and initialize `data` variable into `heroes` .
 
 ```tsx
 // src/heroes/Heroes.tsx
@@ -842,15 +842,17 @@ export default function Heroes() {
 
 ## Summary
 
-We wrote a failing e2e test spying on an expected http GET call to /heroes route as the application loads (Red 1).
+We wrote a failing e2e test spying on an expected http GET call to `/heroes` route as the application loads (Red 1).
 
-We added a `useEffect` that gets the data with an `axios.get` call targeting the /heroes route (Green 1).
+We added a `useEffect` that gets the data with an `axios.get` call targeting the `/heroes` route (Green 1).
+
+<br />
+
+We removed the json file import to get the data, utilized `useState`, while setting the hero array within the `useEffect` (Red 2, Green 2).
 
 <br />
 
-We removed the json file import to get the data utilized `useState`, while setting the hero array within the `useEffect` (Red 2, Green 2).
-
-<br />
+Refactors:
 
 We used an empty array to have the http GET effect occur only once. We showcased `useCallback` to wrap expensive functions. 
 
@@ -866,7 +868,11 @@ To address the failure, we managed the state where it is most relevant; `InputDe
 
 <br />
 
-We refactored the hard coded api route to an environment variable. We used a hook `useAxios` to yield the data at the component in an abstracted way.
+Refactors:
+
+We refactored the hard coded api route to an environment variable. 
+
+We used a hook `useAxios` to yield the data at the component in an abstracted way.
 
 <br />
 
@@ -880,6 +886,8 @@ We refactored the hard coded api route to an environment variable. We used a hoo
 	* `useEffect(fn, [a])` -> run the effect when a changes
 	* `useEffect(fn, [])` -> run the effect when... nothing changes, that's why it runs just once
 	* `useEffect(fn)` -> run the effect at every render
-* We can manage most http state with `useState` & `useEffect`, however the implementation can grow as with scale.
 * Wrap expensive functions in `useCallback` to memoize repeated calls.
-* Similar to routing, when our concerns about the app are higher level as in state management and flows, e2e tests are effective at catching defects that we might not be able to cover with component tests.
+* We can manage most http state with `useState` & `useEffect`, however the implementation can grow as the app scales.
+* Component testing with Cypress, using the real browser, can help diagnose issues in the app that may be harder to do so using Jest/RTL.
+* If component tests are making network calls, we can stub the network with the [`cy.intercept`](https://docs.cypress.io/api/commands/intercept) api. The contrast to `cy.intercept` is [`msw`](https://mswjs.io/docs/) for Jest/RTL .
+* Similar to routing, when our concerns about the app are higher level as in state management and flows, e2e tests are effective at catching edge cases that we might not be able to cover with component tests.
