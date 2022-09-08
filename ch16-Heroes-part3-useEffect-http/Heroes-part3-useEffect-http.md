@@ -112,7 +112,7 @@ The test passes, but looking at the console we see that the component gets mount
 - `useEffect(fn, [])` -> run the effect when... nothing changes, that's why it runs just once
 - `useEffect(fn)` -> run the effect at every render
 
-
+![HeroesPart3-green1](/Users/murat/Desktop/HeroesPart3-green1.png)
 
 ## Removing the hard-coded json data
 
