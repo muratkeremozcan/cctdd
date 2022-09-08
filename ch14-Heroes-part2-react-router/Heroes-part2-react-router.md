@@ -1364,8 +1364,6 @@ We have a passing test. The hero state is taken entirely from the url. The flow 
 * `HeroList` navigates to a url with this data: `/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`
 * `HeroDetail` grabs the data/state from the url with `useParams` and `useSearchParams`, and displays it.
 
-
-
 ![HeroesPart2-Green10](../img/HeroesPart2-Green10.png)
 
 ## [`useNavigate`](https://reactrouter.com/en/main/hooks/use-navigate) to cancel changes
