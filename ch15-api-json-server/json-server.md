@@ -68,7 +68,7 @@ Create a `db.json` file in the project root and copy the below content to it.
 }
 ```
 
-Add a script to `package.json` near to the `"start"` script. This will us the `db.json` file and respond with that content at `localhost:4000`, with a 1 second simulated network delay. 
+Add a script to `package.json` near to the `"start"` script. This will usr the `db.json` file and respond with that content at `localhost:4000`, with a 1 second simulated network delay. 
 
 ```json
 {
@@ -78,7 +78,7 @@ Add a script to `package.json` near to the `"start"` script. This will us the `d
 }
 ```
 
-Browsing to http://localhost:4000/heroes or http://localhost:4000/villains, we should see some content
+`yarn start:api` and browse to http://localhost:4000/heroes or http://localhost:4000/villains. We should see some data.
 
 ![json-server](/Users/murat/cctdd/book/img/json-server.png)
 
@@ -111,7 +111,7 @@ For CI, update `.github/workflows/main.yml` `cypress-e2e-test` section > Cypress
 cypress-e2e-test:
     needs: [install-dependencies]
     runs-on: ubuntu-latest
-    container: cypress/included:10.4.0 
+    container: cypress/included:10.7.0 # or whatever is the latest 
     steps:
       - uses: actions/checkout@v3
 
@@ -129,8 +129,6 @@ cypress-e2e-test:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
-
-
 
 ## Backend-e2e
 
@@ -154,7 +152,7 @@ describe('Backend e2e', () => {
 })
 ```
 
-If we scrutinize the console, we can view the array of 6 heroes in the `body`.
+Start the runner with `yarn cy:open-e2e` and execute the test. If we scrutinize the console, we can view the array of 6 heroes in the `body`.
 
 ![json-server-backend-e2e-initial](../img/json-server-backend-e2e-initial.png)
 
@@ -207,7 +205,7 @@ describe('Backend e2e', () => {
 })
 ```
 
-For this, we need 2 modifications. First, create a file `routes.json` at the project root:
+To satisfy the change, we need 2 modifications. First, create a file `routes.json` at the project root:
 
 ```tsx
 {
@@ -218,7 +216,7 @@ For this, we need 2 modifications. First, create a file `routes.json` at the pro
 Modify the `package.json` script by appending `--routes routes.json` so that this file is used.
 
 ```json
-"start:api": "json-server --watch db.json --port 4000 --delay 1000 --routes routes.json"
+"start:api": "json-server --watch db.json --port 4000 --delay 1000 --routes routes.json",
 ```
 
 ![json-server-Green1](../img/json-server-Green1.png)
@@ -349,12 +347,22 @@ The test initially seems to work, alas rerunning it we get a 500 error, because 
 
 ![json-server-Red2](../img/json-server-Red2.png)
 
-There are a few ways to handle this. We could randomize the entity, and or we could delete the entity at the end of the test. We will do those to demo best practices, however the sure proof way to deal with it is to reset the server state at the beginning of the test, and if we can also whenever the server is launched.
+There are a few ways to handle this. We could randomize the entity, and or we could delete the entity at the end of the test. We will do those to demo best practices, however the sure proof way to deal with it is to reset the server state at the beginning of the test. We could additionally ensure that the test cleans up after itself, later.
 
 Install [json-server-reset](https://github.com/bahmutov/json-server-reset) with `yarn add -D json-server-reset`. Modify the `package.json` by appending the middleware, which enables a `/reset` route for our api. Any time a `POST` request is made to the `reset` route with a payload, the `db.json` file resets to that payload. 
 
 ```json
 "start:api": "json-server --watch db.json --port 4000 --delay 1000 --routes routes.json --middlewares ./node_modules/json-server-reset"
+```
+
+Make sure to remove the additional entity added to db.json in our initial test, and reset the db to its original state. Remove:
+
+```json
+{
+  "id": "Ragnarok",
+  "name": "Ragnar",
+  "description": "Lothbrok"
+}
 ```
 
 Now all we need is a payload, however if we import `db.json` to our test and also use it to reset itself, reset call will keep repeating infinitely. Make a copy of `db.json` to `cypress/fixtures/db.json`, so that we can import from there and also fully be able to stub our network later. We can modify our script to reset the data before each test as shown below (Green 2).
@@ -793,7 +801,7 @@ describe('Backend e2e', () => {
 })
 ```
 
-That is a better readable api, but there is some duplication between the CRUD functions. Consider the below function that can do any crud operation, with type safety. `method` and `route` are required. `body` and `allowedToFail` flag are optional, if they are not passed in then `body` is empty but `allowedToFail` still is `false`. If the body is passed in and the method is `POST` or `PUT`, the payload will be taken, otherwise undefined for `GET` and `DELETE`. This kind of an api for the Cypress command gives us an idea about how we should design our client api.
+That is a better readable api, but there is some duplication between the CRUD functions. Consider the below function that can do any crud operation, with type safety. `method` and `route` are required. `body` and `allowedToFail` flag are optional, if they are not passed in then `body` is empty but `allowedToFail` still is `false`. If the body is passed in and the method is `POST` or `PUT`, the payload will be taken, otherwise undefined for `GET` and `DELETE`. 
 
 ```ts
   const crud = (
