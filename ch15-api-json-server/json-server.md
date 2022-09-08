@@ -80,7 +80,7 @@ Add a script to `package.json` near to the `"start"` script. This will usr the `
 
 `yarn start:api` and browse to http://localhost:4000/heroes or http://localhost:4000/villains. We should see some data.
 
-![json-server](/Users/murat/cctdd/book/img/json-server.png)
+![json-server](../img/json-server.png)
 
 Update `package.json` scripts as below. The changes make it so that the UI server is always served together with the api server. This way the repo user can abstract away the backend needs while using the repo.
 
@@ -262,20 +262,20 @@ We can refactor that further to be DRYer.
 ```ts
 // cypress/e2e/backend/crud.cy.ts
 describe('Backend e2e', () => {
-	const apiUrl = 'http://localhost:4000/api'
-	type Hero = {id: string; name: string; description: string}
+  const apiUrl = 'http://localhost:4000/api'
+  type Hero = {id: string; name: string; description: string}
 
-	const assertProperties = (entity: Hero) => {
-		expect(entity.id).to.be.a('string')
-		expect(entity.name).to.be.a('string')
-		expect(entity.description).to.be.a('string')
-	}
+  const assertProperties = (entity: Hero) => {
+    expect(entity.id).to.be.a('string')
+    expect(entity.name).to.be.a('string')
+    expect(entity.description).to.be.a('string')
+  }
 
-	const getRoute = (route: string) =>
-		cy.request({
-			method: 'GET',
-			url: `${apiUrl}/${route}`,
-		})
+  const getRoute = (route: string) =>
+  cy.request({
+    method: 'GET',
+    url: `${apiUrl}/${route}`,
+  })
   
   it('should GET heroes and villains ', () => {
     getRoute('heroes')
