@@ -73,7 +73,7 @@ describe("Heroes", () => {
 });
 ```
 
-To pass the test, we add the `HeroDetail` near `HeroList`. It has a prop `hero`, which can temporarily be index 0 of the `heroes` array  (Green 1).
+To pass the test, we add the `HeroDetail` near `HeroList`. It has a prop `hero`, which can temporarily be index 0 of the `heroes` array (Green 1).
 
 ```tsx
 // src/heroes/Heroes.tsx
@@ -394,30 +394,30 @@ If the route is `/heroes/add-hero`, we display the `HeroDetail`.
 
 ```tsx
 // src/heroes/Heroes.tsx
-import {Route, Routes, useNavigate} from 'react-router-dom'
-import ListHeader from 'components/ListHeader'
-import ModalYesNo from 'components/ModalYesNo'
-import HeroList from './HeroList'
-import heroes from './heroes.json'
-import {useState} from 'react'
-import HeroDetail from './HeroDetail'
+import { Route, Routes, useNavigate } from "react-router-dom";
+import ListHeader from "components/ListHeader";
+import ModalYesNo from "components/ModalYesNo";
+import HeroList from "./HeroList";
+import heroes from "./heroes.json";
+import { useState } from "react";
+import HeroDetail from "./HeroDetail";
 
 export default function Heroes() {
-  const [showModal, setShowModal] = useState<boolean>(false)
-  const navigate = useNavigate()
-  const addNewHero = () => navigate('/heroes/add-hero')
-  const handleRefresh = () => navigate('/heroes')
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const addNewHero = () => navigate("/heroes/add-hero");
+  const handleRefresh = () => navigate("/heroes");
 
   const handleCloseModal = () => {
-    setShowModal(false)
-  }
+    setShowModal(false);
+  };
   const handleDeleteHero = () => {
-    setShowModal(true)
-  }
+    setShowModal(true);
+  };
   const handleDeleteFromModal = () => {
-    setShowModal(false)
-    console.log('handleDeleteFromModal')
-  }
+    setShowModal(false);
+    console.log("handleDeleteFromModal");
+  };
 
   return (
     <div data-cy="heroes">
@@ -449,55 +449,55 @@ export default function Heroes() {
         />
       )}
     </div>
-  )
+  );
 }
 ```
 
-With that setup we have 2 failures; our test fails because it doesn't render anything, TS gives an error because `HeroDetail` wants to have a `hero` prop with a defined `hero` (Red 4). 
+With that setup we have 2 failures; our test fails because it doesn't render anything, TS gives an error because `HeroDetail` wants to have a `hero` prop with a defined `hero` (Red 4).
 
 We had setup the `HeroDetail` to be used in two conditions; render the heroId field if `heroId` exists or not. Therefore we should be able to use the component for adding a new hero. For now we can make the prop optional, and have a default hero object with empty `id`, `name` and `description` properties. Here is how `HeroDetail` should look for the time being:
 
 ```tsx
 // src/heroes/HeroDetail.tsx
-import InputDetail from 'components/InputDetail'
-import {useState, ChangeEvent} from 'react'
-import ButtonFooter from 'components/ButtonFooter'
-import {FaUndo, FaRegSave} from 'react-icons/fa'
+import InputDetail from "components/InputDetail";
+import { useState, ChangeEvent } from "react";
+import ButtonFooter from "components/ButtonFooter";
+import { FaUndo, FaRegSave } from "react-icons/fa";
 
 export type Hero = {
-  id: string
-  name: string
-  description: string
-}
+  id: string;
+  name: string;
+  description: string;
+};
 type HeroDetailProps = {
-  hero?: Hero
-}
+  hero?: Hero;
+};
 
 export default function HeroDetail({
   hero: initHero = {
-    id: '',
-    name: '',
-    description: '',
+    id: "",
+    name: "",
+    description: "",
   },
 }: HeroDetailProps) {
-  const [hero, setHero] = useState<Hero>({...initHero})
+  const [hero, setHero] = useState<Hero>({ ...initHero });
 
-  const handleCancel = () => console.log('handleCancel')
-  const updateHero = () => console.log('updateHero')
-  const saveHero = () => console.log('saveHero')
+  const handleCancel = () => console.log("handleCancel");
+  const updateHero = () => console.log("updateHero");
+  const createHero = () => console.log("createHero");
   const handleSave = () => {
-    console.log('handleSave')
-    return hero.name ? updateHero() : saveHero()
-  }
+    console.log("handleSave");
+    return hero.name ? updateHero() : createHero();
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleNameChange')
-    setHero({...hero, name: e.target.value})
-  }
+    console.log("handleNameChange");
+    setHero({ ...hero, name: e.target.value });
+  };
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleDescriptionChange')
-    setHero({...hero, description: e.target.value})
-  }
+    console.log("handleDescriptionChange");
+    setHero({ ...hero, description: e.target.value });
+  };
 
   return (
     <div data-cy="hero-detail" className="card edit-detail">
@@ -509,19 +509,19 @@ export default function HeroDetail({
         <div className="content">
           {hero.id && (
             <InputDetail
-              name={'id'}
+              name={"id"}
               value={hero.id}
               readOnly={true}
             ></InputDetail>
           )}
           <InputDetail
-            name={'name'}
+            name={"name"}
             value={hero.name}
             placeholder="e.g. Colleen"
             onChange={handleNameChange}
           ></InputDetail>
           <InputDetail
-            name={'description'}
+            name={"description"}
             value={hero.description}
             placeholder="e.g. dance fight!"
             onChange={handleDescriptionChange}
@@ -537,9 +537,8 @@ export default function HeroDetail({
         <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
       </footer>
     </div>
-  )
+  );
 }
-
 ```
 
 It is great that `HeroDetail.cy.tsx` passes after that change. Our only concern is that we broke our `Heroes` test.
@@ -711,7 +710,7 @@ describe("Heroes", () => {
 });
 ```
 
-In the `react-router` chapter, we concluded  that the best way to test routing is with e2e tests. We are testing the pathnames in the component here, but we cannot test that the right child component is being rendered when the route changes. We can start the e2e test covering a similar flow, which will also serve as a larger test that covers the CRUD hero flow in the future. **When there is functionality that we cannot test, or cannot test confidently at a lower level, we move up in the test pyramid**, in this case from a component test to an e2e test. Start the e2e runner with `yarn cy:open-e2e`. Create a new e2e test `cypress/e2e/create-hero.cy.ts`.
+In the `react-router` chapter, we concluded that the best way to test routing is with e2e tests. We are testing the pathnames in the component here, but we cannot test that the right child component is being rendered when the route changes. We can start the e2e test covering a similar flow, which will also serve as a larger test that covers the CRUD hero flow in the future. **When there is functionality that we cannot test, or cannot test confidently at a lower level, we move up in the test pyramid**, in this case from a component test to an e2e test. Start the e2e runner with `yarn cy:open-e2e`. Create a new e2e test `cypress/e2e/create-hero.cy.ts`.
 
 ```tsx
 // cypress/e2e/create-hero.cy.ts
@@ -798,47 +797,48 @@ We can navigate to the first hero, but can we navigate to another and end up on 
 
 ```tsx
 // cypress/e2e/edit-hero.cy.ts
-describe('Edit hero', () => {
-  beforeEach(() => cy.visit('/'))
-  it('should go through the cancel flow', () => {
-    cy.location('pathname').should('eq', '/heroes')
+describe("Edit hero", () => {
+  beforeEach(() => cy.visit("/"));
+  it("should go through the cancel flow", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('edit-button').first().click()
-    cy.location('pathname').should('eq', '/heroes/edit-hero/HeroAslaug')
-  })
-  it('should go through the cancel flow for another hero', () => {
-    cy.location('pathname').should('eq', '/heroes')
+    cy.getByCy("edit-button").first().click();
+    cy.location("pathname").should("eq", "/heroes/edit-hero/HeroAslaug");
+  });
+  it("should go through the cancel flow for another hero", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('edit-button').eq(1).click()
-    cy.location('pathname').should('eq', '/heroes/edit-hero/HeroBjorn')
-  })
-})
-
+    cy.getByCy("edit-button").eq(1).click();
+    cy.location("pathname").should("eq", "/heroes/edit-hero/HeroBjorn");
+  });
+});
 ```
 
 The test fails, because `react-router` needs a way to know the route parameter. We need to be able to do something better than a hardcoded `heroId` navigation. When we are editing the hero, we should be able to acquire that `heroId` from the `heroes` prop that gets passed to this component. `handleSelectHero` should take the `id` as an argument, and nav to it.
 
 ```tsx
-const handleSelectHero = (heroId: string) => navigate(`/heroes/edit-hero/${heroId}`)
+const handleSelectHero = (heroId: string) =>
+  navigate(`/heroes/edit-hero/${heroId}`);
 ```
 
 That change causes a type error in the `ButtonFooer` because now `handleSelectHero` expects an argument. We can update the component like so (Green 6):
 
 ```tsx
 // src/heroes/HeroList.tsx
-import {useNavigate} from 'react-router-dom'
-import CardContent from 'components/CardContent'
-import ButtonFooter from 'components/ButtonFooter'
-import {FaEdit, FaRegSave} from 'react-icons/fa'
-import {Hero} from 'models/Hero'
+import { useNavigate } from "react-router-dom";
+import CardContent from "components/CardContent";
+import ButtonFooter from "components/ButtonFooter";
+import { FaEdit, FaRegSave } from "react-icons/fa";
+import { Hero } from "models/Hero";
 type HeroListProps = {
-  heroes: Hero[]
-  handleDeleteHero: () => void // TODO: consider better type
-}
+  heroes: Hero[];
+  handleDeleteHero: () => void; // TODO: consider better type
+};
 
-export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
-  const navigate = useNavigate()
-  const handleSelectHero = (heroId: string) => navigate(`/heroes/edit-hero/${heroId}`)
+export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
+  const navigate = useNavigate();
+  const handleSelectHero = (heroId: string) =>
+    navigate(`/heroes/edit-hero/${heroId}`);
 
   return (
     <ul data-cy="hero-list" className="list">
@@ -862,7 +862,7 @@ export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
         </li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
@@ -870,30 +870,26 @@ Let us enhance the test and check that when were are editing a hero, not only we
 
 ```tsx
 // cypress/e2e/edit-hero.cy.ts
-describe('Edit hero', () => {
-  beforeEach(() => cy.visit('/'))
-  it('should go through the cancel flow', () => {
-    cy.location('pathname').should('eq', '/heroes')
+describe("Edit hero", () => {
+  beforeEach(() => cy.visit("/"));
+  it("should go through the cancel flow", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('edit-button').first().click()
-    cy.location('pathname').should('eq', '/heroes/edit-hero/HeroAslaug')
-    cy.location('pathname').should('include', '/heroes/edit-hero/')
-    cy.getByCy('hero-detail').should('be.visible')
+    cy.getByCy("edit-button").first().click();
+    cy.location("pathname").should("eq", "/heroes/edit-hero/HeroAslaug");
+    cy.location("pathname").should("include", "/heroes/edit-hero/");
+    cy.getByCy("hero-detail").should("be.visible");
+  });
+  it("should go through the cancel flow for another hero", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-  })
-  it('should go through the cancel flow for another hero', () => {
-    cy.location('pathname').should('eq', '/heroes')
-
-    cy.getByCy('edit-button').eq(1).click()
-    cy.location('pathname').should('eq', '/heroes/edit-hero/HeroBjorn')
-    cy.location('pathname').should('include', '/heroes/edit-hero/')
-    cy.getByCy('hero-detail').should('be.visible')
-
-  })
-})
+    cy.getByCy("edit-button").eq(1).click();
+    cy.location("pathname").should("eq", "/heroes/edit-hero/HeroBjorn");
+    cy.location("pathname").should("include", "/heroes/edit-hero/");
+    cy.getByCy("hero-detail").should("be.visible");
+  });
+});
 ```
-
-
 
 ## Path attributes & [`useParams`](https://reactrouter.com/en/main/hooks/use-params)
 
@@ -947,30 +943,30 @@ Modify the `HeroDetail` route in Heroes component by adding a route parameter `:
 
 ```tsx
 // src/heroes/Heroes.tsx
-import {useNavigate, Routes, Route} from 'react-router-dom'
-import ListHeader from 'components/ListHeader'
-import ModalYesNo from 'components/ModalYesNo'
-import HeroList from './HeroList'
-import heroes from './heroes.json'
-import {useState} from 'react'
-import HeroDetail from './HeroDetail'
+import { useNavigate, Routes, Route } from "react-router-dom";
+import ListHeader from "components/ListHeader";
+import ModalYesNo from "components/ModalYesNo";
+import HeroList from "./HeroList";
+import heroes from "./heroes.json";
+import { useState } from "react";
+import HeroDetail from "./HeroDetail";
 
 export default function Heroes() {
-  const [showModal, setShowModal] = useState<boolean>(false)
-  const navigate = useNavigate()
-  const addNewHero = () => navigate('/heroes/add-hero')
-  const handleRefresh = () => navigate('/heroes')
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const addNewHero = () => navigate("/heroes/add-hero");
+  const handleRefresh = () => navigate("/heroes");
 
   const handleCloseModal = () => {
-    setShowModal(false)
-  }
+    setShowModal(false);
+  };
   const handleDeleteHero = () => {
-    setShowModal(true)
-  }
+    setShowModal(true);
+  };
   const handleDeleteFromModal = () => {
-    setShowModal(false)
-    console.log('handleDeleteFromModal')
-  }
+    setShowModal(false);
+    console.log("handleDeleteFromModal");
+  };
 
   return (
     <div data-cy="heroes">
@@ -1008,7 +1004,7 @@ export default function Heroes() {
         />
       )}
     </div>
-  )
+  );
 }
 ```
 
@@ -1020,74 +1016,74 @@ We write one more line of a test to ensure that the `heroId` field is visible wh
 
 ```tsx
 // cypress/e2e/edit-hero.cy.ts
-describe('Edit hero', () => {
-  beforeEach(() => cy.visit('/'))
-  it('should go through the cancel flow', () => {
-    cy.location('pathname').should('eq', '/heroes')
+describe("Edit hero", () => {
+  beforeEach(() => cy.visit("/"));
+  it("should go through the cancel flow", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('edit-button').first().click()
-    cy.location('pathname').should('eq', '/heroes/edit-hero/HeroAslaug')
-    cy.location('pathname').should('include', '/heroes/edit-hero/')
-    cy.getByCy('hero-detail').should('be.visible')
-    cy.getByCy('input-detail-id').should('be.visible')
-  })
-  it('should go through the cancel flow for another hero', () => {
-    cy.location('pathname').should('eq', '/heroes')
+    cy.getByCy("edit-button").first().click();
+    cy.location("pathname").should("eq", "/heroes/edit-hero/HeroAslaug");
+    cy.location("pathname").should("include", "/heroes/edit-hero/");
+    cy.getByCy("hero-detail").should("be.visible");
+    cy.getByCy("input-detail-id").should("be.visible");
+  });
+  it("should go through the cancel flow for another hero", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('edit-button').eq(1).click()
-    cy.location('pathname').should('eq', '/heroes/edit-hero/HeroBjorn')
-    cy.location('pathname').should('include', '/heroes/edit-hero/')
-    cy.getByCy('hero-detail').should('be.visible')
-    cy.getByCy('input-detail-id').should('be.visible')
-  })
-})
+    cy.getByCy("edit-button").eq(1).click();
+    cy.location("pathname").should("eq", "/heroes/edit-hero/HeroBjorn");
+    cy.location("pathname").should("include", "/heroes/edit-hero/");
+    cy.getByCy("hero-detail").should("be.visible");
+    cy.getByCy("input-detail-id").should("be.visible");
+  });
+});
 ```
 
 In order to use the path attribute, destructure the `id` out of `useParams()` with `const { id } = useParams()`, this is what binds the route setup to the component. Instead of relying on the hero data, we want to rely on the path attribute that we get from the url, and `useParams` is the hook for that. We also have side benefit of being able to directly navigate to a url (Green 8).
 
 ```tsx
 // src/heroes/HeroDetail.tsx
-import {useState, ChangeEvent} from 'react'
-import {useParams} from 'react-router-dom'
-import {FaUndo, FaRegSave} from 'react-icons/fa'
-import InputDetail from 'components/InputDetail'
-import ButtonFooter from 'components/ButtonFooter'
+import { useState, ChangeEvent } from "react";
+import { useParams } from "react-router-dom";
+import { FaUndo, FaRegSave } from "react-icons/fa";
+import InputDetail from "components/InputDetail";
+import ButtonFooter from "components/ButtonFooter";
 
 export type Hero = {
-  id: string
-  name: string
-  description: string
-}
+  id: string;
+  name: string;
+  description: string;
+};
 type HeroDetailProps = {
-  hero?: Hero
-}
+  hero?: Hero;
+};
 
 export default function HeroDetail({
   hero: initHero = {
-    id: '',
-    name: '',
-    description: '',
+    id: "",
+    name: "",
+    description: "",
   },
 }: HeroDetailProps) {
-  const {id} = useParams()
-  const [hero, setHero] = useState<Hero>({...initHero})
+  const { id } = useParams();
+  const [hero, setHero] = useState<Hero>({ ...initHero });
 
-  const handleCancel = () => console.log('handleCancel')
-  const updateHero = () => console.log('updateHero')
-  const saveHero = () => console.log('saveHero')
+  const handleCancel = () => console.log("handleCancel");
+  const updateHero = () => console.log("updateHero");
+  const createHero = () => console.log("createHero");
   const handleSave = () => {
-    console.log('handleSave')
-    return hero.name ? updateHero() : saveHero()
-  }
+    console.log("handleSave");
+    return hero.name ? updateHero() : createHero();
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleNameChange')
-    setHero({...hero, name: e.target.value})
-  }
+    console.log("handleNameChange");
+    setHero({ ...hero, name: e.target.value });
+  };
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleDescriptionChange')
-    setHero({...hero, description: e.target.value})
-  }
+    console.log("handleDescriptionChange");
+    setHero({ ...hero, description: e.target.value });
+  };
 
   return (
     <div data-cy="hero-detail" className="card edit-detail">
@@ -1098,16 +1094,16 @@ export default function HeroDetail({
       <div className="card-content">
         <div className="content">
           {id && (
-            <InputDetail name={'id'} value={id} readOnly={true}></InputDetail>
+            <InputDetail name={"id"} value={id} readOnly={true}></InputDetail>
           )}
           <InputDetail
-            name={'name'}
+            name={"name"}
             value={hero.name}
             placeholder="e.g. Colleen"
             onChange={handleNameChange}
           ></InputDetail>
           <InputDetail
-            name={'description'}
+            name={"description"}
             value={hero.description}
             placeholder="e.g. dance fight!"
             onChange={handleDescriptionChange}
@@ -1123,7 +1119,7 @@ export default function HeroDetail({
         <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
       </footer>
     </div>
-  )
+  );
 }
 ```
 
@@ -1135,90 +1131,92 @@ If we can get the id of the hero from the url, why should we not be able to get 
 
 ```tsx
 // cypress/e2e/edit-hero.cy.ts
-describe('Edit hero', () => {
-  beforeEach(() => cy.visit('/'))
-  it('should go through the cancel flow', () => {
-    cy.location('pathname').should('eq', '/heroes')
+describe("Edit hero", () => {
+  beforeEach(() => cy.visit("/"));
+  it("should go through the cancel flow", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.fixture('heroes').then(heroes => {
-      cy.getByCy('edit-button').eq(0).click()
-      cy.location('pathname').should(
-        'include',
-        `/heroes/edit-hero/${heroes[0].id}`,
-      )
-      cy.getByCy('hero-detail').should('be.visible')
-      cy.getByCy('input-detail-id').should('be.visible')
-      cy.findByDisplayValue(heroes[0].id)
-      cy.findByDisplayValue(heroes[0].name)
-      cy.findByDisplayValue(heroes[0].description)
-    })
-  })
+    cy.fixture("heroes").then((heroes) => {
+      cy.getByCy("edit-button").eq(0).click();
+      cy.location("pathname").should(
+        "include",
+        `/heroes/edit-hero/${heroes[0].id}`
+      );
+      cy.getByCy("hero-detail").should("be.visible");
+      cy.getByCy("input-detail-id").should("be.visible");
+      cy.findByDisplayValue(heroes[0].id);
+      cy.findByDisplayValue(heroes[0].name);
+      cy.findByDisplayValue(heroes[0].description);
+    });
+  });
 
-  it('should go through the cancel flow for another hero', () => {
-    cy.location('pathname').should('eq', '/heroes')
+  it("should go through the cancel flow for another hero", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.fixture('heroes').then(heroes => {
-      cy.getByCy('edit-button').eq(1).click()
-      cy.location('pathname').should(
-        'include',
-        `/heroes/edit-hero/${heroes[1].id}`,
-      )
-      cy.getByCy('hero-detail').should('be.visible')
-      cy.getByCy('input-detail-id').should('be.visible')
-      cy.findByDisplayValue(heroes[1].id)
-      cy.findByDisplayValue(heroes[1].name)
-      cy.findByDisplayValue(heroes[1].description)
-    })
-  })
-})
+    cy.fixture("heroes").then((heroes) => {
+      cy.getByCy("edit-button").eq(1).click();
+      cy.location("pathname").should(
+        "include",
+        `/heroes/edit-hero/${heroes[1].id}`
+      );
+      cy.getByCy("hero-detail").should("be.visible");
+      cy.getByCy("input-detail-id").should("be.visible");
+      cy.findByDisplayValue(heroes[1].id);
+      cy.findByDisplayValue(heroes[1].name);
+      cy.findByDisplayValue(heroes[1].description);
+    });
+  });
+});
 ```
 
 `HeroList` component knows about all the heroes, and clicking on the `Edit` can take us to the relevant hero. Previously we expressed this with:
 
 ```tsx
 const handleSelectHero = (heroId: string) => {
-  navigate(`/heroes/edit-hero/${heroId}`)
-}
+  navigate(`/heroes/edit-hero/${heroId}`);
+};
 ```
 
-We could add more route parameters by modifying `Heroes` route path like so : ` <Route *path*="/edit-hero/:id/:name/:description" *element*={<HeroDetail />} />.  ` 
+We could add more route parameters by modifying `Heroes` route path like so : `<Route *path*="/edit-hero/:id/:name/:description" *element*={<HeroDetail />} />. `
 
- However, it would be better if we used search parameters and not have to change the `react-router` setup. Here is how `handleSelectHero` would look with search parameters:
+However, it would be better if we used search parameters and not have to change the `react-router` setup. Here is how `handleSelectHero` would look with search parameters:
 
 ```ts
 const handleSelectHero = (heroId: string) => {
-  navigate(`/heroes/edit-hero/${heroId}?name=${hero.name}&description=${hero.description}`)
-}
+  navigate(
+    `/heroes/edit-hero/${heroId}?name=${hero.name}&description=${hero.description}`
+  );
+};
 ```
 
-Given the `heroes` array which gets passed as a prop to the component, we need a way to extract the `hero.name` and `hero.description` from a `heroId`,  Array.find method could get us the hero we need :
+Given the `heroes` array which gets passed as a prop to the component, we need a way to extract the `hero.name` and `hero.description` from a `heroId`, Array.find method could get us the hero we need :
 
 ```ts
-const hero = heroes.find((h: Hero) => h.id === heroId)
+const hero = heroes.find((h: Hero) => h.id === heroId);
 ```
 
 Update `HeroList` accordingly.
 
 ```tsx
 // src/heroes/HeroList.tsx
-import {useNavigate} from 'react-router-dom'
-import CardContent from 'components/CardContent'
-import ButtonFooter from 'components/ButtonFooter'
-import {FaEdit, FaRegSave} from 'react-icons/fa'
-import {Hero} from 'models/Hero'
+import { useNavigate } from "react-router-dom";
+import CardContent from "components/CardContent";
+import ButtonFooter from "components/ButtonFooter";
+import { FaEdit, FaRegSave } from "react-icons/fa";
+import { Hero } from "models/Hero";
 type HeroListProps = {
-  heroes: Hero[]
-  handleDeleteHero: () => void // TODO: consider better type
-}
+  heroes: Hero[];
+  handleDeleteHero: () => void; // TODO: consider better type
+};
 
-export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
-  const navigate = useNavigate()
+export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
+  const navigate = useNavigate();
   const handleSelectHero = (heroId: string) => {
-    const hero = heroes.find((h: Hero) => h.id === heroId)
+    const hero = heroes.find((h: Hero) => h.id === heroId);
     navigate(
-      `/heroes/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`,
-    )
-  }
+      `/heroes/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`
+    );
+  };
 
   return (
     <ul data-cy="hero-list" className="list">
@@ -1242,7 +1240,7 @@ export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
         </li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
@@ -1260,65 +1258,65 @@ Given a url such as:
 
 `/heroes/edit-hero/${hero.id}?name=${hero.name}&description=${hero.description}`
 
-* `useParams()` -> gets the route parameters -> yields `hero.id.`
-* useSearchParams() -> gets the search params -> `hero.name`, `hero.description`.
+- `useParams()` -> gets the route parameters -> yields `hero.id.`
+- useSearchParams() -> gets the search params -> `hero.name`, `hero.description`.
 
 The interface looks like so:
 
 ```tsx
-const [searchParams] = useSearchParams()
-const name = searchParams.get('name')
-const description = searchParams.get('description')
+const [searchParams] = useSearchParams();
+const name = searchParams.get("name");
+const description = searchParams.get("description");
 ```
 
 Modify the `HeroDetail` component with this knowledge (Green 9).
 
 ```tsx
 // src/heroes/HeroDetail.tsx
-import {useState, ChangeEvent} from 'react'
-import {useParams, useSearchParams} from 'react-router-dom'
-import {FaUndo, FaRegSave} from 'react-icons/fa'
-import InputDetail from 'components/InputDetail'
-import ButtonFooter from 'components/ButtonFooter'
+import { useState, ChangeEvent } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+import { FaUndo, FaRegSave } from "react-icons/fa";
+import InputDetail from "components/InputDetail";
+import ButtonFooter from "components/ButtonFooter";
 
 export type Hero = {
-  id: string
-  name: string
-  description: string
-}
+  id: string;
+  name: string;
+  description: string;
+};
 type HeroDetailProps = {
-  hero?: Hero
-}
+  hero?: Hero;
+};
 
 export default function HeroDetail({
   hero: initHero = {
-    id: '',
-    name: '',
-    description: '',
+    id: "",
+    name: "",
+    description: "",
   },
 }: HeroDetailProps) {
-  const {id} = useParams()
-  const [searchParams] = useSearchParams()
-  const name = searchParams.get('name')
-  const description = searchParams.get('description')
-  const [hero, setHero] = useState<Hero>({...initHero})
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const name = searchParams.get("name");
+  const description = searchParams.get("description");
+  const [hero, setHero] = useState<Hero>({ ...initHero });
 
-  const handleCancel = () => console.log('handleCancel')
-  const updateHero = () => console.log('updateHero')
-  const saveHero = () => console.log('saveHero')
+  const handleCancel = () => console.log("handleCancel");
+  const updateHero = () => console.log("updateHero");
+  const createHero = () => console.log("createHero");
   const handleSave = () => {
-    console.log('handleSave')
-    return hero.name ? updateHero() : saveHero()
-  }
+    console.log("handleSave");
+    return hero.name ? updateHero() : createHero();
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleNameChange')
-    setHero({...hero, name: e.target.value})
-  }
+    console.log("handleNameChange");
+    setHero({ ...hero, name: e.target.value });
+  };
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleDescriptionChange')
-    setHero({...hero, description: e.target.value})
-  }
+    console.log("handleDescriptionChange");
+    setHero({ ...hero, description: e.target.value });
+  };
 
   return (
     <div data-cy="hero-detail" className="card edit-detail">
@@ -1329,17 +1327,17 @@ export default function HeroDetail({
       <div className="card-content">
         <div className="content">
           {id && (
-            <InputDetail name={'id'} value={id} readOnly={true}></InputDetail>
+            <InputDetail name={"id"} value={id} readOnly={true}></InputDetail>
           )}
           <InputDetail
-            name={'name'}
-            value={name ? name : ''}
+            name={"name"}
+            value={name ? name : ""}
             placeholder="e.g. Colleen"
             onChange={handleNameChange}
           ></InputDetail>
           <InputDetail
-            name={'description'}
-            value={description ? description : ''}
+            name={"description"}
+            value={description ? description : ""}
             placeholder="e.g. dance fight!"
             onChange={handleDescriptionChange}
           ></InputDetail>
@@ -1354,119 +1352,119 @@ export default function HeroDetail({
         <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
       </footer>
     </div>
-  )
+  );
 }
 ```
 
 We have a passing test. The hero state is taken entirely from the url. The flow of data was as such:
 
-* `Heroes` component gets the data `hero`, and passes it to `HeroList` as a prop.
-* `HeroList` navigates to a url with this data: `/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`
-* `HeroDetail` grabs the data/state from the url with `useParams` and `useSearchParams`, and displays it.
+- `Heroes` component gets the data `hero`, and passes it to `HeroList` as a prop.
+- `HeroList` navigates to a url with this data: `/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`
+- `HeroDetail` grabs the data/state from the url with `useParams` and `useSearchParams`, and displays it.
 
 ![HeroesPart2-Green10](../img/HeroesPart2-Green10.png)
 
 ## [`useNavigate`](https://reactrouter.com/en/main/hooks/use-navigate) to cancel changes
 
- When we hit `Cancel` on `HeroDetails`, we should have the `HeroList` display. Here is our failing test (Red 10).
+When we hit `Cancel` on `HeroDetails`, we should have the `HeroList` display. Here is our failing test (Red 10).
 
 ```tsx
 // cypress/e2e/edit-hero.cy.ts
-describe('Edit hero', () => {
-  beforeEach(() => cy.visit('/'))
-  it('should go through the cancel flow', () => {
-    cy.location('pathname').should('eq', '/heroes')
+describe("Edit hero", () => {
+  beforeEach(() => cy.visit("/"));
+  it("should go through the cancel flow", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.fixture('heroes').then(heroes => {
-      cy.getByCy('edit-button').eq(0).click()
-      cy.location('pathname').should(
-        'include',
-        `/heroes/edit-hero/${heroes[0].id}`,
-      )
-      cy.getByCy('hero-detail').should('be.visible')
-      cy.getByCy('input-detail-id').should('be.visible')
-      cy.findByDisplayValue(heroes[0].id)
-      cy.findByDisplayValue(heroes[0].name)
-      cy.findByDisplayValue(heroes[0].description)
+    cy.fixture("heroes").then((heroes) => {
+      cy.getByCy("edit-button").eq(0).click();
+      cy.location("pathname").should(
+        "include",
+        `/heroes/edit-hero/${heroes[0].id}`
+      );
+      cy.getByCy("hero-detail").should("be.visible");
+      cy.getByCy("input-detail-id").should("be.visible");
+      cy.findByDisplayValue(heroes[0].id);
+      cy.findByDisplayValue(heroes[0].name);
+      cy.findByDisplayValue(heroes[0].description);
 
-      cy.getByCy('cancel-button').click()
-      cy.location('pathname').should('eq', '/heroes')
-      cy.getByCy('hero-list').should('be.visible')
-    })
-  })
+      cy.getByCy("cancel-button").click();
+      cy.location("pathname").should("eq", "/heroes");
+      cy.getByCy("hero-list").should("be.visible");
+    });
+  });
 
-  it('should go through the cancel flow for another hero', () => {
-    cy.location('pathname').should('eq', '/heroes')
+  it("should go through the cancel flow for another hero", () => {
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.fixture('heroes').then(heroes => {
-      cy.getByCy('edit-button').eq(1).click()
-      cy.location('pathname').should(
-        'include',
-        `/heroes/edit-hero/${heroes[1].id}`,
-      )
-      cy.getByCy('hero-detail').should('be.visible')
-      cy.getByCy('input-detail-id').should('be.visible')
-      cy.findByDisplayValue(heroes[1].id)
-      cy.findByDisplayValue(heroes[1].name)
-      cy.findByDisplayValue(heroes[1].description)
+    cy.fixture("heroes").then((heroes) => {
+      cy.getByCy("edit-button").eq(1).click();
+      cy.location("pathname").should(
+        "include",
+        `/heroes/edit-hero/${heroes[1].id}`
+      );
+      cy.getByCy("hero-detail").should("be.visible");
+      cy.getByCy("input-detail-id").should("be.visible");
+      cy.findByDisplayValue(heroes[1].id);
+      cy.findByDisplayValue(heroes[1].name);
+      cy.findByDisplayValue(heroes[1].description);
 
-      cy.getByCy('cancel-button').click()
-      cy.location('pathname').should('eq', '/heroes')
-      cy.getByCy('hero-list').should('be.visible')
-    })
-  })
-})
+      cy.getByCy("cancel-button").click();
+      cy.location("pathname").should("eq", "/heroes");
+      cy.getByCy("hero-list").should("be.visible");
+    });
+  });
+});
 ```
 
 If we check the console, we see that `handleCancel` is called. That function lives in `HeroDetail` component as well. We can once again utilize `useNavigate` to change the url to `/heroes` on clicking cancel (Green 10).
 
 ```tsx
 // src/heroes/HeroDetail.tsx
-import {useState, ChangeEvent} from 'react'
-import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
-import {FaUndo, FaRegSave} from 'react-icons/fa'
-import InputDetail from 'components/InputDetail'
-import ButtonFooter from 'components/ButtonFooter'
+import { useState, ChangeEvent } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { FaUndo, FaRegSave } from "react-icons/fa";
+import InputDetail from "components/InputDetail";
+import ButtonFooter from "components/ButtonFooter";
 
 export type Hero = {
-  id: string
-  name: string
-  description: string
-}
+  id: string;
+  name: string;
+  description: string;
+};
 type HeroDetailProps = {
-  hero?: Hero
-}
+  hero?: Hero;
+};
 
 export default function HeroDetail({
   hero: initHero = {
-    id: '',
-    name: '',
-    description: '',
+    id: "",
+    name: "",
+    description: "",
   },
 }: HeroDetailProps) {
-  const {id} = useParams()
-  const [searchParams] = useSearchParams()
-  const name = searchParams.get('name')
-  const description = searchParams.get('description')
-  const navigate = useNavigate()
-  const [hero, setHero] = useState<Hero>({...initHero})
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const name = searchParams.get("name");
+  const description = searchParams.get("description");
+  const navigate = useNavigate();
+  const [hero, setHero] = useState<Hero>({ ...initHero });
 
-  const handleCancel = () => navigate('/heroes')
-  const updateHero = () => console.log('updateHero')
-  const saveHero = () => console.log('saveHero')
+  const handleCancel = () => navigate("/heroes");
+  const updateHero = () => console.log("updateHero");
+  const createHero = () => console.log("createHero");
   const handleSave = () => {
-    console.log('handleSave')
-    return hero.name ? updateHero() : saveHero()
-  }
+    console.log("handleSave");
+    return hero.name ? updateHero() : createHero();
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleNameChange')
-    setHero({...hero, name: e.target.value})
-  }
+    console.log("handleNameChange");
+    setHero({ ...hero, name: e.target.value });
+  };
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleDescriptionChange')
-    setHero({...hero, description: e.target.value})
-  }
+    console.log("handleDescriptionChange");
+    setHero({ ...hero, description: e.target.value });
+  };
 
   return (
     <div data-cy="hero-detail" className="card edit-detail">
@@ -1477,17 +1475,17 @@ export default function HeroDetail({
       <div className="card-content">
         <div className="content">
           {id && (
-            <InputDetail name={'id'} value={id} readOnly={true}></InputDetail>
+            <InputDetail name={"id"} value={id} readOnly={true}></InputDetail>
           )}
           <InputDetail
-            name={'name'}
-            value={name ? name : ''}
+            name={"name"}
+            value={name ? name : ""}
             placeholder="e.g. Colleen"
             onChange={handleNameChange}
           ></InputDetail>
           <InputDetail
-            name={'description'}
-            value={description ? description : ''}
+            name={"description"}
+            value={description ? description : ""}
             placeholder="e.g. dance fight!"
             onChange={handleDescriptionChange}
           ></InputDetail>
@@ -1502,39 +1500,37 @@ export default function HeroDetail({
         <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
       </footer>
     </div>
-  )
+  );
 }
-
 ```
 
 The cancel flow in `edit-hero` e2e test also applies to the `add-hero` flow. We can add a test to `add-hero` without duplicating the checks in refresh flow, and by using direct navigation instead of click navigation (Refactor 10).
 
 ```tsx
 // cypress/e2e/create-hero.cy.ts
-describe('Create hero', () => {
-  it('should go through the refresh flow', () => {
-    cy.visit('/')
-    cy.location('pathname').should('eq', '/heroes')
+describe("Create hero", () => {
+  it("should go through the refresh flow", () => {
+    cy.visit("/");
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('add-button').click()
-    cy.location('pathname').should('eq', '/heroes/add-hero')
-    cy.getByCy('hero-detail').should('be.visible')
-    cy.getByCy('input-detail-id').should('not.exist')
+    cy.getByCy("add-button").click();
+    cy.location("pathname").should("eq", "/heroes/add-hero");
+    cy.getByCy("hero-detail").should("be.visible");
+    cy.getByCy("input-detail-id").should("not.exist");
 
-    cy.getByCy('refresh-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list').should('be.visible')
-  })
+    cy.getByCy("refresh-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list").should("be.visible");
+  });
 
-  it('should go through the cancel flow and perform direct navigation', () => {
-    cy.visit('/heroes/add-hero')
+  it("should go through the cancel flow and perform direct navigation", () => {
+    cy.visit("/heroes/add-hero");
 
-    cy.getByCy('cancel-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list').should('be.visible')
-  })
-})
-
+    cy.getByCy("cancel-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list").should("be.visible");
+  });
+});
 ```
 
 ## Final refactors
@@ -1543,36 +1539,36 @@ Having a look at the `HeroDetail` component, we are getting all the data we need
 
 ```tsx
 // src/heroes/HeroDetail.tsx
-import {useState, ChangeEvent} from 'react'
-import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
-import {FaUndo, FaRegSave} from 'react-icons/fa'
-import InputDetail from 'components/InputDetail'
-import ButtonFooter from 'components/ButtonFooter'
+import { useState, ChangeEvent } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { FaUndo, FaRegSave } from "react-icons/fa";
+import InputDetail from "components/InputDetail";
+import ButtonFooter from "components/ButtonFooter";
 
 export default function HeroDetail() {
-  const {id} = useParams()
-  const [searchParams] = useSearchParams()
-  const name = searchParams.get('name')
-  const description = searchParams.get('description')
-  const navigate = useNavigate()
-  const [hero, setHero] = useState({id, name, description})
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const name = searchParams.get("name");
+  const description = searchParams.get("description");
+  const navigate = useNavigate();
+  const [hero, setHero] = useState({ id, name, description });
 
-  const handleCancel = () => navigate('/heroes')
-  const updateHero = () => console.log('updateHero')
-  const saveHero = () => console.log('saveHero')
+  const handleCancel = () => navigate("/heroes");
+  const updateHero = () => console.log("updateHero");
+  const createHero = () => console.log("createHero");
   const handleSave = () => {
-    console.log('handleSave')
-    return hero.name ? updateHero() : saveHero()
-  }
+    console.log("handleSave");
+    return hero.name ? updateHero() : createHero();
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleNameChange')
-    setHero({...hero, name: e.target.value})
-  }
+    console.log("handleNameChange");
+    setHero({ ...hero, name: e.target.value });
+  };
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleDescriptionChange')
-    setHero({...hero, description: e.target.value})
-  }
+    console.log("handleDescriptionChange");
+    setHero({ ...hero, description: e.target.value });
+  };
 
   return (
     <div data-cy="hero-detail" className="card edit-detail">
@@ -1583,17 +1579,17 @@ export default function HeroDetail() {
       <div className="card-content">
         <div className="content">
           {id && (
-            <InputDetail name={'id'} value={id} readOnly={true}></InputDetail>
+            <InputDetail name={"id"} value={id} readOnly={true}></InputDetail>
           )}
           <InputDetail
-            name={'name'}
-            value={name ? name : ''}
+            name={"name"}
+            value={name ? name : ""}
             placeholder="e.g. Colleen"
             onChange={handleNameChange}
           ></InputDetail>
           <InputDetail
-            name={'description'}
-            value={description ? description : ''}
+            name={"description"}
+            value={description ? description : ""}
             placeholder="e.g. dance fight!"
             onChange={handleDescriptionChange}
           ></InputDetail>
@@ -1608,138 +1604,138 @@ export default function HeroDetail() {
         <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
       </footer>
     </div>
-  )
+  );
 }
 ```
 
-We get a type error because `HeroDetail` component tests are still passing in the `hero` prop. Looking at `HeroDetail.cy.tsx` and `HeroList.cy.tsx` component tests with, we also get an error about `useNavigate` needing to be used under a `<Router>` component. In `src/heroes/HeroList.cy.tsx` we wrap the mounts in `BrowserRouter`. We remove the `console.log`, and now can actually assert the url when `edit-button` is clicked, which should be `/heroes/edit-hero/<someHeroId>`.  
+We get a type error because `HeroDetail` component tests are still passing in the `hero` prop. Looking at `HeroDetail.cy.tsx` and `HeroList.cy.tsx` component tests with, we also get an error about `useNavigate` needing to be used under a `<Router>` component. In `src/heroes/HeroList.cy.tsx` we wrap the mounts in `BrowserRouter`. We remove the `console.log`, and now can actually assert the url when `edit-button` is clicked, which should be `/heroes/edit-hero/<someHeroId>`.
 
 We also realize an anti-pattern; we have been spying on `useState` when typing hero name and description into the fields. This is an implementation detail, and if we change state management, the test would need maintenance. We could lean more towards black box to avoid testing an implementation detail and have better confidence about how the component should work. Here is the updated test:
 
 ```tsx
 // src/heroes/HeroList.cy.tsx
-import {BrowserRouter} from 'react-router-dom'
-import HeroList from './HeroList'
-import '../styles.scss'
-import heroes from '../../cypress/fixtures/heroes.json'
+import { BrowserRouter } from "react-router-dom";
+import HeroList from "./HeroList";
+import "../styles.scss";
+import heroes from "../../cypress/fixtures/heroes.json";
 
-describe('HeroList', () => {
-  it('should render the item layout', () => {
+describe("HeroList", () => {
+  it("should render the item layout", () => {
     cy.mount(
       <BrowserRouter>
         <HeroList
           heroes={heroes}
-          handleDeleteHero={cy.stub().as('handleDeleteHero')}
+          handleDeleteHero={cy.stub().as("handleDeleteHero")}
         />
-      </BrowserRouter>,
-    )
+      </BrowserRouter>
+    );
 
-    cy.getByCyLike('hero-list-item').should('have.length', heroes.length)
+    cy.getByCyLike("hero-list-item").should("have.length", heroes.length);
 
-    cy.getByCy('card-content')
-    cy.contains(heroes[0].name)
-    cy.contains(heroes[0].description)
+    cy.getByCy("card-content");
+    cy.contains(heroes[0].name);
+    cy.contains(heroes[0].description);
 
-    cy.get('footer').within(() => {
-      cy.getByCy('delete-button')
-      cy.getByCy('edit-button')
-    })
-  })
+    cy.get("footer").within(() => {
+      cy.getByCy("delete-button");
+      cy.getByCy("edit-button");
+    });
+  });
 
-  context('handleDelete, handleEdit', () => {
+  context("handleDelete, handleEdit", () => {
     beforeEach(() => {
       cy.mount(
         <BrowserRouter>
           <HeroList
             heroes={heroes}
-            handleDeleteHero={cy.stub().as('handleDeleteHero')}
+            handleDeleteHero={cy.stub().as("handleDeleteHero")}
           />
-        </BrowserRouter>,
-      )
-    })
-    it('should handle delete', () => {
-      cy.getByCy('delete-button').first().click()
-      cy.get('@handleDeleteHero').should('have.been.called')
-    })
-    it('should handle edit', () => {
-      cy.getByCy('edit-button').first().click()
-      cy.location('pathname').should('eq', '/heroes/edit-hero/' + heroes[0].id)
-    })
-  })
-})
+        </BrowserRouter>
+      );
+    });
+    it("should handle delete", () => {
+      cy.getByCy("delete-button").first().click();
+      cy.get("@handleDeleteHero").should("have.been.called");
+    });
+    it("should handle edit", () => {
+      cy.getByCy("edit-button").first().click();
+      cy.location("pathname").should("eq", "/heroes/edit-hero/" + heroes[0].id);
+    });
+  });
+});
 ```
 
 ```tsx
 // src/heroes/HeroDetail.cy.tsx
-import HeroDetail from './HeroDetail'
-import '../styles.scss'
-import React from 'react'
-import {BrowserRouter} from 'react-router-dom'
+import HeroDetail from "./HeroDetail";
+import "../styles.scss";
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
 
-describe('HeroDetail', () => {
-  context('handleSave, handleCancel', () => {
+describe("HeroDetail", () => {
+  context("handleSave, handleCancel", () => {
     beforeEach(() => {
       cy.mount(
         <BrowserRouter>
           <HeroDetail />
-        </BrowserRouter>,
-      )
-    })
-    it('should handle Save', () => {
-      cy.getByCy('save-button').click()
+        </BrowserRouter>
+      );
+    });
+    it("should handle Save", () => {
+      cy.getByCy("save-button").click();
       // TODO spy on something when the network request is made in the future
-    })
+    });
 
-    it('should handle Cancel', () => {
-      cy.getByCy('cancel-button').click()
-      cy.location('pathname').should('eq', '/heroes')
-    })
-  })
+    it("should handle Cancel", () => {
+      cy.getByCy("cancel-button").click();
+      cy.location("pathname").should("eq", "/heroes");
+    });
+  });
 
-  context('handleNameChange, handleDescriptionChange', () => {
+  context("handleNameChange, handleDescriptionChange", () => {
     beforeEach(() => {
       cy.mount(
         <BrowserRouter>
           <HeroDetail />
-        </BrowserRouter>,
-      )
-    })
+        </BrowserRouter>
+      );
+    });
 
-    it('should handle name change', () => {
-      const newHeroName = 'abc'
-      cy.getByCy('input-detail-name').type(newHeroName)
+    it("should handle name change", () => {
+      const newHeroName = "abc";
+      cy.getByCy("input-detail-name").type(newHeroName);
 
-      cy.findByDisplayValue(newHeroName).should('be.visible')
-    })
+      cy.findByDisplayValue(newHeroName).should("be.visible");
+    });
 
-    it('should handle description change', () => {
-      const newHeroDescription = '123'
-      cy.getByCy('input-detail-description').type(newHeroDescription)
+    it("should handle description change", () => {
+      const newHeroDescription = "123";
+      cy.getByCy("input-detail-description").type(newHeroDescription);
 
-      cy.findByDisplayValue(newHeroDescription).should('be.visible')
-    })
-  })
+      cy.findByDisplayValue(newHeroDescription).should("be.visible");
+    });
+  });
 
-  context('state: should verify the layout of the component', () => {
-    it('id: false, name: false - should verify the minimal state of the component', () => {
+  context("state: should verify the layout of the component", () => {
+    it("id: false, name: false - should verify the minimal state of the component", () => {
       cy.mount(
         <BrowserRouter>
-          <HeroDetail />{' '}
-        </BrowserRouter>,
-      )
+          <HeroDetail />{" "}
+        </BrowserRouter>
+      );
 
-      cy.get('p').then($el => cy.wrap($el.text()).should('equal', ''))
-      cy.getByCyLike('input-detail').should('have.length', 2)
-      cy.getByCy('input-detail-id').should('not.exist')
+      cy.get("p").then(($el) => cy.wrap($el.text()).should("equal", ""));
+      cy.getByCyLike("input-detail").should("have.length", 2);
+      cy.getByCy("input-detail-id").should("not.exist");
 
-      cy.findByPlaceholderText('e.g. Colleen').should('be.visible')
-      cy.findByPlaceholderText('e.g. dance fight!').should('be.visible')
+      cy.findByPlaceholderText("e.g. Colleen").should("be.visible");
+      cy.findByPlaceholderText("e.g. dance fight!").should("be.visible");
 
-      cy.getByCy('save-button').should('be.visible')
-      cy.getByCy('cancel-button').should('be.visible')
-    })
-  })
-})
+      cy.getByCy("save-button").should("be.visible");
+      cy.getByCy("cancel-button").should("be.visible");
+    });
+  });
+});
 ```
 
 ### Currying events
@@ -1753,7 +1749,7 @@ const handleSelectHero = (heroId: string) => {
     `/heroes/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`,
   )
 }
- 
+
 // ....
 
 <ButtonFooter
@@ -1766,7 +1762,7 @@ const handleSelectHero = (heroId: string) => {
   label="Edit"
   IconClass={FaEdit}
   // not pretty
-  onClick={() => handleSelectHero(hero.id)} 
+  onClick={() => handleSelectHero(hero.id)}
 />
 ```
 
@@ -1774,26 +1770,26 @@ This is a nice use case for currying. The outer function can take our custom arg
 
 ```tsx
 // src/heroes/HeroList.tsx
-import {useNavigate} from 'react-router-dom'
-import CardContent from 'components/CardContent'
-import ButtonFooter from 'components/ButtonFooter'
-import {FaEdit, FaRegSave} from 'react-icons/fa'
-import {Hero} from 'models/Hero'
+import { useNavigate } from "react-router-dom";
+import CardContent from "components/CardContent";
+import ButtonFooter from "components/ButtonFooter";
+import { FaEdit, FaRegSave } from "react-icons/fa";
+import { Hero } from "models/Hero";
 
 type HeroListProps = {
-  heroes: Hero[]
-  handleDeleteHero: () => void
-}
+  heroes: Hero[];
+  handleDeleteHero: () => void;
+};
 
-export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
-  const navigate = useNavigate()
+export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
+  const navigate = useNavigate();
   // currying: the outer fn takes our custom arg and returns a fn that takes the event
   const handleSelectHero = (id: string) => () => {
-    const hero = heroes.find((h: Hero) => h.id === id)
+    const hero = heroes.find((h: Hero) => h.id === id);
     navigate(
-      `/heroes/edit-hero/${id}?name=${hero?.name}&description=${hero?.description}`,
-    )
-  }
+      `/heroes/edit-hero/${id}?name=${hero?.name}&description=${hero?.description}`
+    );
+  };
 
   return (
     <ul data-cy="hero-list" className="list">
@@ -1817,7 +1813,7 @@ export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
         </li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
@@ -1825,15 +1821,15 @@ We also update the `ButtonFooter` props for `onClick`:
 
 ```tsx
 // src/components/ButtonFooter.tsx
-import {FaUndo, FaRegSave, FaEdit, FaTrash} from 'react-icons/fa'
-import {MouseEvent} from 'react'
-import '../styles.scss'
+import { FaUndo, FaRegSave, FaEdit, FaTrash } from "react-icons/fa";
+import { MouseEvent } from "react";
+import "../styles.scss";
 
 type ButtonFooterProps = {
-  label: 'Cancel' | 'Save' | 'Edit' | 'Delete'
-  IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash
-  onClick: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  label: "Cancel" | "Save" | "Edit" | "Delete";
+  IconClass: typeof FaUndo | typeof FaRegSave | typeof FaEdit | typeof FaTrash;
+  onClick: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
 export default function ButtonFooter({
   label,
@@ -1850,7 +1846,7 @@ export default function ButtonFooter({
       &nbsp;
       <span>{label}</span>
     </button>
-  )
+  );
 }
 ```
 
@@ -1860,22 +1856,22 @@ We can extract the 3 lines related to `useSearchParams` into a custom hook, whic
 
 ```tsx
 // src/heroes/HeroDetail.tsx
-const [searchParams] = useSearchParams()
-const name = searchParams.get('name')
-const description = searchParams.get('description')
+const [searchParams] = useSearchParams();
+const name = searchParams.get("name");
+const description = searchParams.get("description");
 ```
 
 Create a new file `src/hooks/useHeroParams.ts` and move the code to the hook. The only difference is that we are returning an object with what we need out of this hook.
 
 ```tsx
-import {useSearchParams} from 'react-router-dom'
+import { useSearchParams } from "react-router-dom";
 
 export function useHeroParams() {
-  const [searchParams] = useSearchParams()
-  const name = searchParams.get('name')
-  const description = searchParams.get('description')
+  const [searchParams] = useSearchParams();
+  const name = searchParams.get("name");
+  const description = searchParams.get("description");
 
-  return {name, description}
+  return { name, description };
 }
 ```
 
@@ -1883,35 +1879,35 @@ Import the hook, remove the `useSearchParams` import, and replace the 3 lines wi
 
 ```tsx
 // src/heroes/HeroDetail.tsx
-import {useState, ChangeEvent} from 'react'
-import {useNavigate, useParams} from 'react-router-dom'
-import {FaUndo, FaRegSave} from 'react-icons/fa'
-import InputDetail from 'components/InputDetail'
-import ButtonFooter from 'components/ButtonFooter'
-import {useHeroParams} from 'hooks/useHeroParams'
+import { useState, ChangeEvent } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { FaUndo, FaRegSave } from "react-icons/fa";
+import InputDetail from "components/InputDetail";
+import ButtonFooter from "components/ButtonFooter";
+import { useHeroParams } from "hooks/useHeroParams";
 
 export default function HeroDetail() {
-  const {id} = useParams()
-  const {name, description} = useHeroParams()
-  const navigate = useNavigate()
-  const [hero, setHero] = useState({id, name, description})
+  const { id } = useParams();
+  const { name, description } = useHeroParams();
+  const navigate = useNavigate();
+  const [hero, setHero] = useState({ id, name, description });
 
-  const handleCancel = () => navigate('/heroes')
-  const updateHero = () => console.log('updateHero')
-  const saveHero = () => console.log('saveHero')
+  const handleCancel = () => navigate("/heroes");
+  const updateHero = () => console.log("updateHero");
+  const createHero = () => console.log("createHero");
   const handleSave = () => {
-    console.log('handleSave')
-    return hero.name ? updateHero() : saveHero()
-  }
+    console.log("handleSave");
+    return hero.name ? updateHero() : createHero();
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleNameChange')
-    setHero({...hero, name: e.target.value})
-  }
+    console.log("handleNameChange");
+    setHero({ ...hero, name: e.target.value });
+  };
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleDescriptionChange')
-    setHero({...hero, description: e.target.value})
-  }
+    console.log("handleDescriptionChange");
+    setHero({ ...hero, description: e.target.value });
+  };
 
   return (
     <div data-cy="hero-detail" className="card edit-detail">
@@ -1922,17 +1918,17 @@ export default function HeroDetail() {
       <div className="card-content">
         <div className="content">
           {id && (
-            <InputDetail name={'id'} value={id} readOnly={true}></InputDetail>
+            <InputDetail name={"id"} value={id} readOnly={true}></InputDetail>
           )}
           <InputDetail
-            name={'name'}
-            value={name ? name : ''}
+            name={"name"}
+            value={name ? name : ""}
             placeholder="e.g. Colleen"
             onChange={handleNameChange}
           ></InputDetail>
           <InputDetail
-            name={'description'}
-            value={description ? description : ''}
+            name={"description"}
+            value={description ? description : ""}
             placeholder="e.g. dance fight!"
             onChange={handleDescriptionChange}
           ></InputDetail>
@@ -1947,11 +1943,9 @@ export default function HeroDetail() {
         <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
       </footer>
     </div>
-  )
+  );
 }
 ```
-
-
 
 ## Summary
 
@@ -1983,7 +1977,7 @@ We utilized `useNavigate` in the already existing `handleSelectHero` function of
 
 We added a test to check if we can edit any hero and end up at the correct route (Red 6).
 
-We removed the hard coded /HeroAslaug from the `navigate` at HeroList`, instead made `handleSelectHero` a function driven by a `heroId` argument (Green 6).
+We removed the hard coded /HeroAslaug from the `navigate` at HeroList`, instead made `handleSelectHero`a function driven by a`heroId` argument (Green 6).
 
 <br />
 
@@ -2013,15 +2007,13 @@ We also added a test to the add hero flow, since the `HeroDetails` to `HeroList`
 
 <br />
 
-
-
 ## Takeaways
 
 - It is ideal to test at higher level than implementation details, without extra costs. For example, we can test the consequences of the hooks vs if the hook is called; `useNavigate` & check url instead of spying on `useNavigate`.
 
 - When there is functionality that we cannot test, or cannot test confidently at a lower level, we move up in the test pyramid.
 
-- After having reached a certain milestone, e2e tests, or simply ad-hoc usage of the app can often give us a higher level perspective, with new ideas for features.  This is the scientific method after all, we know more and now we can try for more, and that in essence captures the original mindset behind TDD, as well as agile.
+- After having reached a certain milestone, e2e tests, or simply ad-hoc usage of the app can often give us a higher level perspective, with new ideas for features. This is the scientific method after all, we know more and now we can try for more, and that in essence captures the original mindset behind TDD, as well as agile.
 
 - In TDD, it is encouraged to use hard coded values to make the tests pass.
 
