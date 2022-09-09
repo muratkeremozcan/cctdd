@@ -1,8 +1,6 @@
 ## Caching and [`react-query`](https://react-query-v3.tanstack.com/overview)
 
-Having learned well from Kent C. Dodds, In the previous chapters we stated that we can drastically simplify our UI state management if we split out the server cache into something separate
-
-State can be lumped into two buckets:
+Having learned well from Kent C. Dodds, In the previous chapters we stated that we can drastically simplify our UI state management if we split out the server cache into something separate. State can be lumped into two buckets:
 
 1. UI state: Modal is open, item is highlighted, etc. _(we used `useState` hook for this)_
 
@@ -10,32 +8,26 @@ State can be lumped into two buckets:
 
 Why `react-query`? To prevent duplicated data-fetching, we want to move all the data-fetching code into a central store and access that single source from the components that need it. With React Query, we don’t need to do any of the work involved in creating such a store. It lets us keep the data-fetching code in the components that need the data, but behind the scenes it manages a data cache, passing already-fetched data to components when they ask for them.
 
-React-query's `useQuery` hook is for fetching data by key and caching it, while updating cache. Think of it similar to a `GET` request.
+React-query's [`useQuery`](https://tanstack.com/query/v4/docs/reference/useQuery) hook is for fetching data by key and caching it, while updating cache. Think of it similar to a `GET` request. The key arg is a unique identifier for the query / data in cache; string, array or object. The 2nd arg an async function that returns the data.
 
 `const { data, status, error } = useQuery(key, () => fetch(url))`
 
-The key arg is a unique identifier for the query / data in cache; string, array or object. The 2nd arg an async function that returns the data. `useQuery` can be called with a 3rd arg, a config object with initialData property
-
-`useMutation` is the write mirror of `useQuery`. Think of it similar to our `PUT` and `POST` requests.
-
-`useQuery` fetches state: UI state <- server/url , and caches it.
-
-`useMutation` is just the opposite: UI state -> server , and still caches it.
-
-`useMutation` yields data, status, error just like useQuery.
+`useMutation` is the write mirror of `useQuery`. Think of it similar to our `PUT` and `POST` requests. `useMutation` yields data, status, error just like useQuery. The first arg is a function that that executes a non-idempotent request. The second arg is an object with onMutate property.
 
 `const { dataToMutate, status, error } = useMutation((*url*) => fetch(*url*) {...})`
 
-The first arg is a function that that executes a non-idempotent request. The second arg is an object with onMutate property
+* `useQuery` fetches state: UI state <- server/url , and caches it.
+
+* `useMutation` is just the opposite: UI state -> server , and still caches it.
 
 In this chapter we will be creating our api, creating hooks for CRUD operations on heroes, and we will be using them in the components.
 
 ## API
 
-We will be replicating the `getItem` function in `useAxios` hook, and making it compatible with the rest of the CRUD requests. Create a file `src/hooks/api.ts` and paste in the following code. We have a type protected `client` function which wraps `Axios`, with which we can make any CRUD request. We wrap them again in functions easier to use with less arguments.
+We will be replicating the `getItem` function in the `useAxios` hook, and making it compatible with the rest of the CRUD requests. Create a file `src/hooks/api.ts` and paste in the following code. We have a type protected `client` function which wraps `Axios`, with which we can make any CRUD request. We wrap them again in functions with less arguments, which are easier to use.
 
 ```ts
-// src/hooks/api.t
+// src/hooks/api.ts
 import axios from "axios";
 import { Hero } from "models/Hero";
 
@@ -66,7 +58,7 @@ export const getItem = (route: string) => client(route, "GET");
 
 ## `useGetHeroes`
 
-We can create a simple hook and replace our complex `useAxios`, while showcasing the performance gains of cache management by `react-query`. `yarn add react-query`, and create a file `src/hooks/useGetHeroes.ts`. `react-query`'s [`useQuery`](https://tanstack.com/query/v4/docs/reference/useQuery) is similar to our custom useAxios: takes a url, returns an object of data, status & error. The key arg is a unique identifier for the query / data in cache; string, array or object. The 2nd arg an async function that returns the data.
+We can create a simple hook and replace our complex `useAxios`, while showcasing the performance gains of cache management by `react-query`. `yarn add react-query`, and create a file `src/hooks/useGetHeroes.ts`. `react-query`'s [`useQuery`](https://tanstack.com/query/v4/docs/reference/useQuery) is similar to our custom useAxios: takes a url, returns an object of data, status & error. 
 
 `const { data, status, error } = useQuery(key, () => fetch(url))`
 
@@ -74,9 +66,10 @@ Compare to `useAxios`, which also returns a status and error that we did not use
 
 `const {data: heroes = []} = useAxios('heroes')`
 
-Whenever any component subsequently calls useQuery with the key, React Query will return the previously fetched data from its cache and then fetch the latest data in the background (very similar to PWAs and service workers). Our query key here is the string `heroes` and the callback function is `getItem` from our api, calling the `/heroes` route.
+Whenever any component subsequently calls useQuery with the key, `react-query` will return the previously fetched data from its cache and then fetch the latest data in the background (very similar to PWAs and service workers). Our query key here is the string `heroes` and the callback function is `getItem` from our api, calling the `/heroes` route.
 
 ```tsx
+// src/hooks/useGetHeroes.ts
 import { useQuery } from "react-query";
 import { getItem } from "./api";
 
@@ -87,43 +80,43 @@ import { getItem } from "./api";
 export const useGetHeroes = () => useQuery("heroes", () => getItem("heroes"));
 ```
 
-Before replacing `useAxios` in `Heroes` component, we have to wrap our app JSX in a provider component called `QueryClientProvider` , instantiate a `queryClient` and use it as the `client` prop of the provider. This is how we make the cache available for components to access and share.
+Before replacing `useAxios` in `Heroes` component, we have to wrap our app JSX in a provider component called `QueryClientProvider` , instantiate a `queryClient` and use it as the `client` prop of `QueryClientProvider`. This is how we make the cache available for components to access and share.
 
 ```tsx
 // src/App.tsx
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
-import About from "About";
-import HeaderBar from "components/HeaderBar";
-import NavBar from "components/NavBar";
-import NotFound from "components/NotFound";
-import Heroes from "heroes/Heroes";
-import "./styles.scss";
+import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
+import {QueryClient, QueryClientProvider} from 'react-query'
+import About from 'About'
+import HeaderBar from 'components/HeaderBar'
+import NavBar from 'components/NavBar'
+import NotFound from 'components/NotFound'
+import Heroes from 'heroes/Heroes'
+import './styles.scss'
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <HeaderBar />
-        <div className="section columns">
-          <NavBar />
-          <main className="column">
+    <BrowserRouter>
+      <HeaderBar />
+      <div className="section columns">
+        <NavBar />
+        <main className="column">
+          <QueryClientProvider client={queryClient}>
             <Routes>
               <Route path="/" element={<Navigate replace to="/heroes" />} />
               <Route path="/heroes/*" element={<Heroes />} />
               <Route path="/about" element={<About />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </main>
-        </div>
-      </BrowserRouter>
-    </QueryClientProvider>
-  );
+          </QueryClientProvider>
+        </main>
+      </div>
+    </BrowserRouter>
+  )
 }
 
-export default App;
+export default App
 ```
 
 `useGetHeroes` is a drop-in replacement for `useAxios`, and it does not even need an argument.
@@ -316,7 +309,7 @@ There is one final update for the ternary operator in `handleSave`. Currently it
 
 When there is no hero, there are no url search parameters. Therefore we can replace the ternary operator and the `{hero.name}` jsx for `card-header-title` with just `name`.
 
-Here is the updated `HeroDetail` component:
+Here is the updated `HeroDetail` component (Green 1):
 
 ```tsx
 // src/heroes/HeroDetail.tsx
@@ -2110,18 +2103,49 @@ describe('Heroes', () => {
 
 
 
-
-
-
-
 ## Summary
 
+We replaced `useAxios` with `useGetHeroes` and saw performance increases thanks to caching.
 
+<br />
+
+We wrote a e2e test to add a hero with the UI and check the redirect (Red 1).
+
+We wrote the `usePostHero` hook and used it in `HeroDetail` component (Green 1).
+
+<br />
+
+We enhanced the test to check the new hero is in the list (Red 2).
+
+We used `queryClient`'s `setQueryData` to update the cache in the `usePostHero` hook, so that the hero appears in the list upon adding it (Green 2).
+
+We refactored our some of our tests into ui-integration tests since they did not necessarily have to red backend data (Refactor 2).
+
+We created commands to be able to use natural or stubbed data upon loading the baseUrl. We also ensured that the test are stateless; resetting the db before each test, and cleaning up after themselves using the api commands we created previously.
+
+<br />
+
+We wrote an e2e test to navigate to a hero, edit it, verify the redirect and the updated data on the hero list (Red 3).
+
+We wrote the `usePutHero` hook, with caching support for the updated, and used it in `HeroDetail` component (Green 3).
+
+We onced again refactored the tests that do not need the backend into ui-integration tests (Refactor 3).
+
+<br />
+
+We wrote a test to delete a hero (Red 4)
+
+We wrote the `useDeleteHero` hook and used it in `Heroes` component (Green 4).
+
+We refactored the event handlers with currying and updated the component tests (Refactor 4).
 
 ## Takeaways
 
-* When we mutate the backend, we also have to update the new cache.
-* Always evaluate if you need the backend to gain confidence in your app's functionality. You should only use true e2e tests when you need this confidence, and you should not have to repeat the same costly tests everywhere. Instead utilize ui-integration tests. If your backend is tested by its own e2e tests, your true e2e needs at the front end are even less; be careful not to duplicate the backend effort.
-* Always think if you are duplicating the test effort covered elsewhere. If the cost does not add any confidence, then find opportunities to cover different functionalities
-* Use spacing to communicate intent and separate tasks / actions within the e2e test.
-* When using `react-query`, some of your component tests may need to be mounted with `QueryClientProvider`.
+- `useQuery` fetches state: UI state <- server/url , and caches it.
+- `useMutation` is just the opposite: UI state -> server , and still caches it.
+- When we mutate the backend, we also have to update the new cache.
+- When using `react-query`, some of your component tests may need to be mounted wrapped with `QueryClientProvider`.
+- Always evaluate if you need the backend to gain confidence in your app's functionality. You should only use true e2e tests when you need this confidence, and you should not have to repeat the same costly tests everywhere. Instead utilize ui-integration tests. If your backend is tested by its own e2e tests, your true e2e needs at the front end are even less; be careful not to duplicate the backend effort.
+- Order-independent, stateless tests must be fundamental anywhere so that tests can pass and fail in isolation without side effects. This is especially important in e2e tests, where the tests are run in a different environment than the development environment. This is why we reset the db before each test, and clean up after ourselves using the api commands we created previously.
+- When writing tests, always think if you are duplicating the test effort covered elsewhere. If the cost does not add any confidence, then find opportunities to cover different functionalities. We removed a test that was duplicating the coverage that can be provided by another. We used direct navigation to not repeat click navigation.
+- Use spacing to communicate intent and separate tasks / actions within the e2e test.
