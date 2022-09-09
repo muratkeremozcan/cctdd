@@ -193,7 +193,7 @@ Serve the app with `yarn dev`, and toggle `useAxios` vs `useGetHeroes`. Switch b
 
 ## `usePostHero`
 
-Until now we have not had a feature to add hero. Our backend supports it, but our front end does not. Let's start with a failing test which goes through the add hero flow. Our new test simply visits the main route, clicks the add button, verifies the new page, fills in randomized hero name and description, saves the changes (Red 1)
+Until now we have not had a feature to add a hero. Our backend supports it, but our front end does not. Let's start with a failing test which goes through the add hero flow. Our new test simply visits the main route, clicks the add button, verifies the new page, fills in randomized hero name and description, saves the changes (Red 1)
 
 ```tsx
 // cypress/e2e/create-hero.cy.ts
@@ -251,7 +251,7 @@ describe("Create hero", () => {
 
 Let's remember [`useMutation`](https://tanstack.com/query/v4/docs/reference/useMutation) before proceeding further.
 
-- useParams (from `react-router`) and useQuery (from `react-query) fetch state:
+- useParams (from `react-router`) and useQuery (from `react-query`) fetch state:
 
   UI state <- server/url , and caches it
 
@@ -261,7 +261,7 @@ Let's remember [`useMutation`](https://tanstack.com/query/v4/docs/reference/useM
 
 `useMutation` yields data, status, error just like useQuery.
 
-`const { mutate, status, error } = useMutation((item) => createItem(route, item)`
+`const { mutate, status, error } = useMutation((item) => createItem(route, item)), {onSuccess: ...}`
 
 The first arg is a function that that executes a non-idempotent request. The second arg is an object with onSuccess property.
 
@@ -291,7 +291,7 @@ export function usePostHero() {
 }
 ```
 
-In `HeroDetail` component we a `createHero` function that `console.log`s. Our replacement `createHero` function can be the `mutate` value yielded from the hook. We can cast the return values of the hook like so:
+In `HeroDetail` component we have a `createHero` function that `console.log`s. Our replacement `createHero` function can be the `mutate` value yielded from the hook. We can cast the return values of the hook like so:
 
 `const {mutate: createHero, status: postStatus, error: postError} = usePostHero()`
 
@@ -1096,11 +1096,9 @@ We are back again to `HeroDetail`. We can remove our `updateHero` placeholder fu
 
 `const updateHero = () => console.log('updateHero')`
 
-We can instead use the `updateHero` returned from our hook. Similar to `usePostHero,` the `mutate` (which we cast as `createHero` and `updateHero respectively) takes a hero argument, which is what `updateHero` is expecting.
+We can instead use the `updateHero` returned from our hook. Similar to `usePostHero,` the `mutate` (which we cast as `createHero` and `updateHero` respectively) takes a hero argument, which is what `updateHero` is expecting.
 
-`useMutation((item: Hero) => editItem(`heroes/${*item*.id}`, item)`
-
-With the below changes, we are sending out the `PUT` request and changing the hero after having edited it. We can confirm it in the runner, and in `db.json` We also auto-navigate back to heroes list. However, we have a similar cache problem; if we navigate away and come back the edited item is there, but it does not update immediately.
+With the below changes, we are sending out the `PUT` request and changing the hero after having edited it. We can confirm it in the runner, and in `db.json`. We also auto-navigate back to heroes list. However, we have a similar cache problem; if we navigate away and come back the edited item is there, but it does not update immediately.
 
 ```tsx
 // src/heroes/HeroDetail.tsx
@@ -1175,7 +1173,7 @@ export default function HeroDetail() {
 }
 ```
 
-We need a way to replace the hero in the cache with the updated version. First we get all the heroes from the cache. Then we find the index in the cache of the `hero` that's been edited. If the hero is found, replace the pre-edited hero with the updated one, else we do not do anything. With that change, our e2e edit test passes (Green 3)
+We need a way to replace the hero in the cache with the updated version. First we get all the heroes from the cache. Then we find the index in the cache of the hero that's been edited. If the hero is found, replace the pre-edited hero with the updated one, else we do not do anything. With that change, our e2e edit test passes (Green 3)
 
 ```ts
 // src/hooks/usePutHero.ts
@@ -2109,17 +2107,17 @@ We replaced `useAxios` with `useGetHeroes` and saw performance increases thanks 
 
 <br />
 
-We wrote a e2e test to add a hero with the UI and check the redirect (Red 1).
+We wrote an e2e test to add a hero with the UI and check the redirect (Red 1).
 
 We wrote the `usePostHero` hook and used it in `HeroDetail` component (Green 1).
 
 <br />
 
-We enhanced the test to check the new hero is in the list (Red 2).
+We enhanced the test to check that the new hero is in the list (Red 2).
 
 We used `queryClient`'s `setQueryData` to update the cache in the `usePostHero` hook, so that the hero appears in the list upon adding it (Green 2).
 
-We refactored our some of our tests into ui-integration tests since they did not necessarily have to red backend data (Refactor 2).
+We refactored some of our tests into ui-integration tests since they did not necessarily have to read backend data (Refactor 2).
 
 We created commands to be able to use natural or stubbed data upon loading the baseUrl. We also ensured that the test are stateless; resetting the db before each test, and cleaning up after themselves using the api commands we created previously.
 
@@ -2127,7 +2125,7 @@ We created commands to be able to use natural or stubbed data upon loading the b
 
 We wrote an e2e test to navigate to a hero, edit it, verify the redirect and the updated data on the hero list (Red 3).
 
-We wrote the `usePutHero` hook, with caching support for the updated, and used it in `HeroDetail` component (Green 3).
+We wrote the `usePutHero` hook, with caching support for update, and used it in `HeroDetail` component (Green 3).
 
 We onced again refactored the tests that do not need the backend into ui-integration tests (Refactor 3).
 
@@ -2144,8 +2142,8 @@ We refactored the event handlers with currying and updated the component tests (
 - `useQuery` fetches state: UI state <- server/url , and caches it.
 - `useMutation` is just the opposite: UI state -> server , and still caches it.
 - When we mutate the backend, we also have to update the new cache.
-- When using `react-query`, some of your component tests may need to be mounted wrapped with `QueryClientProvider`.
-- Always evaluate if you need the backend to gain confidence in your app's functionality. You should only use true e2e tests when you need this confidence, and you should not have to repeat the same costly tests everywhere. Instead utilize ui-integration tests. If your backend is tested by its own e2e tests, your true e2e needs at the front end are even less; be careful not to duplicate the backend effort.
-- Order-independent, stateless tests must be fundamental anywhere so that tests can pass and fail in isolation without side effects. This is especially important in e2e tests, where the tests are run in a different environment than the development environment. This is why we reset the db before each test, and clean up after ourselves using the api commands we created previously.
-- When writing tests, always think if you are duplicating the test effort covered elsewhere. If the cost does not add any confidence, then find opportunities to cover different functionalities. We removed a test that was duplicating the coverage that can be provided by another. We used direct navigation to not repeat click navigation.
+- When using `react-query`, some of our component test mounts may need to be wrapped with `QueryClientProvider`.
+- Always evaluate if you need the backend to gain confidence in your app's functionality. You should only use true e2e tests when you need this confidence, and you should not have to repeat the same costly e2e tests everywhere. Instead utilize ui-integration tests. If your backend is tested by its own e2e tests, your UI e2e needs at the front end are even less; be careful not to duplicate too much of the backend effort.
+- Order-independent, stateless tests must be fundamental anywhere so that tests can pass and fail in isolation without side effects. This is especially important in e2e tests which make non-idempotent requests. This is why we reset the db before each test, and clean up after ourselves using the api commands we created previously.
+- When writing tests, always think if you are duplicating the test effort covered elsewhere. If the cost does not add any confidence, then find opportunities to cover different functionalities. We removed a test that was duplicating the coverage that can be provided by another test. We used direct navigation to not repeat click navigation.
 - Use spacing to communicate intent and separate tasks / actions within the e2e test.
