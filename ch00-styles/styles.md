@@ -7,7 +7,8 @@ We have some needs to emphasize component test driven design; we do not want sty
 To setup global styles Add `node-sass` and `bulma` to dependencies.
 
 ```bash
-yarn add node-sass bulma
+yarn add -D node-sass
+yarn add bulma
 ```
 
 Create `src/styles.scss` and paste the following. We will be importing this file in the component tests.

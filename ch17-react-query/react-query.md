@@ -66,7 +66,7 @@ Compare to `useAxios`, which also returns a status and error that we did not use
 
 `const {data: heroes = []} = useAxios('heroes')`
 
-Whenever any component subsequently calls useQuery with the key, `react-query` will return the previously fetched data from its cache and then fetch the latest data in the background (very similar to PWAs and service workers). Our query key here is the string `heroes` and the callback function is `getItem` from our api, calling the `/heroes` route.
+Whenever any component subsequently calls useQuery with the key, `react-query` will return the previously fetched data from its cache and then fetch the latest data in the background (very similar to PWAs and service workers). Our query key here is the string `heroes` and the callback function is `getItem` from our api, calling the `/heroes` route. `useQuery` returns `data`, `status`, and `error`, we reshape those nicely for an easier use in our component.
 
 ```tsx
 // src/hooks/useGetHeroes.ts
@@ -75,9 +75,17 @@ import { getItem } from "./api";
 
 /**
  * Helper for GET to `/heroes` route
- * @returns {object} {data, status, error}
+ * @returns {object} {heroes, status, getError}
  */
-export const useGetHeroes = () => useQuery("heroes", () => getItem("heroes"));
+export const useGetHeroes = () => {
+  const query = useQuery('heroes', () => getItem('heroes'))
+
+  return {
+    heroes: query.data,
+    status: query.status,
+    getError: query.error,
+  }
+}
 ```
 
 Before replacing `useAxios` in `Heroes` component, we have to wrap our app JSX in a provider component called `QueryClientProvider` , instantiate a `queryClient` and use it as the `client` prop of `QueryClientProvider`. This is how we make the cache available for components to access and share.
@@ -119,7 +127,7 @@ function App() {
 export default App
 ```
 
-`useGetHeroes` is a drop-in replacement for `useAxios`, and it does not even need an argument.
+`useGetHeroes` is a drop-in replacement for `useAxios`, and it does not even need an argument. We will use `status` and `getError` in the next chapter.
 
 ```tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
@@ -132,7 +140,7 @@ import { useGetHeroes } from "hooks/useGetHeroes";
 
 export default function Heroes() {
   const [showModal, setShowModal] = useState<boolean>(false);
-  const { data: heroes = [] } = useGetHeroes();
+  const {heroes, status, getError} = useGetHeroes()
 
   const navigate = useNavigate();
   const addNewHero = () => navigate("/heroes/add-hero");
@@ -1728,6 +1736,7 @@ const handleDeleteFromModal = () => {
 ```
 
 ```tsx
+// src/heroes/Heroes.tsx
 import {useNavigate, Routes, Route} from 'react-router-dom'
 import ListHeader from 'components/ListHeader'
 import ModalYesNo from 'components/ModalYesNo'
@@ -1740,7 +1749,7 @@ import {Hero} from 'models/Hero'
 
 export default function Heroes() {
   const [showModal, setShowModal] = useState<boolean>(false)
-  const {data: heroes = []} = useGetHeroes()
+  const {heroes, status, getError} = useGetHeroes()
   const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null)
   const {deleteHero, isDeleteError} = useDeleteHero()
 
@@ -1882,7 +1891,7 @@ import {Hero} from 'models/Hero'
 
 export default function Heroes() {
   const [showModal, setShowModal] = useState<boolean>(false)
-  const {data: heroes = []} = useGetHeroes()
+  const {heroes, status, getError} = useGetHeroes()
   const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null)
   const {deleteHero, isDeleteError} = useDeleteHero()
 
