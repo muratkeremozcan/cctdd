@@ -152,23 +152,27 @@ When typing into the search field, we want to filter the heroes data to see if a
 Now we have to set that state with the filtering logic. Here are two functions that help us do that:
 
 ```ts
-const searchExists = (
-  searchField: string,
-  searchProperty: Hero["name"] | Hero["description"]
-) => searchProperty.toLowerCase().indexOf(searchField.toLowerCase()) !== -1;
+/** returns a boolean whether the hero properties exist in the search field */
+type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+/** returns a boolean whether the hero properties exist in the search field */
+const searchExists = (searchProperty: HeroProperty, searchField: string) =>
+  String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
+  -1;
+
+/** given the data and the search field, returns the data in which the search field exists */
+const searchProperties = (searchField: string, data: Hero[]) =>
+  [...data].filter((item: Hero) =>
+    Object.values(item).find((property: HeroProperty) =>
+      searchExists(property, searchField)
+    )
+  );
 
 /** filters the heroes data to see if the name or the description exists in the list */
 const handleSearch =
   (data: Hero[]) => (event: ChangeEvent<HTMLInputElement>) => {
     const searchField = event.target.value;
 
-    return setFilteredHeroes(
-      [...data].filter(
-        ({ name, description }: Hero) =>
-          searchExists(searchField, name) ||
-          searchExists(searchField, description)
-      )
-    );
+    return setFilteredHeroes(searchProperties(searchField, data));
   };
 ```
 
@@ -201,23 +205,26 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
   };
 
   /** returns a boolean whether the hero properties exist in the search field */
-  const searchExists = (
-    searchField: string,
-    searchProperty: Hero["name"] | Hero["description"]
-  ) => searchProperty.toLowerCase().indexOf(searchField.toLowerCase()) !== -1;
+  type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+  /** returns a boolean whether the hero properties exist in the search field */
+  const searchExists = (searchProperty: HeroProperty, searchField: string) =>
+    String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
+    -1;
+
+  /** given the data and the search field, returns the data in which the search field exists */
+  const searchProperties = (searchField: string, data: Hero[]) =>
+    [...data].filter((item: Hero) =>
+      Object.values(item).find((property: HeroProperty) =>
+        searchExists(property, searchField)
+      )
+    );
 
   /** filters the heroes data to see if the name or the description exists in the list */
   const handleSearch =
     (data: Hero[]) => (event: ChangeEvent<HTMLInputElement>) => {
       const searchField = event.target.value;
 
-      return setFilteredHeroes(
-        [...data].filter(
-          ({ name, description }: Hero) =>
-            searchExists(searchField, name) ||
-            searchExists(searchField, description)
-        )
-      );
+      return setFilteredHeroes(searchProperties(searchField, data));
     };
 
   return (
@@ -295,23 +302,26 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
   };
 
   /** returns a boolean whether the hero properties exist in the search field */
-  const searchExists = (
-    searchField: string,
-    searchProperty: Hero["name"] | Hero["description"]
-  ) => searchProperty.toLowerCase().indexOf(searchField.toLowerCase()) !== -1;
+  type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+  /** returns a boolean whether the hero properties exist in the search field */
+  const searchExists = (searchProperty: HeroProperty, searchField: string) =>
+    String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
+    -1;
+
+  /** given the data and the search field, returns the data in which the search field exists */
+  const searchProperties = (searchField: string, data: Hero[]) =>
+    [...data].filter((item: Hero) =>
+      Object.values(item).find((property: HeroProperty) =>
+        searchExists(property, searchField)
+      )
+    );
 
   /** filters the heroes data to see if the name or the description exists in the list */
   const handleSearch =
     (data: Hero[]) => (event: ChangeEvent<HTMLInputElement>) => {
       const searchField = event.target.value;
 
-      return setFilteredHeroes(
-        [...data].filter(
-          ({ name, description }: Hero) =>
-            searchExists(searchField, name) ||
-            searchExists(searchField, description)
-        )
-      );
+      return setFilteredHeroes(searchProperties(searchField, data));
     };
 
   return (
@@ -430,10 +440,19 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
   };
 
   /** returns a boolean whether the hero properties exist in the search field */
-  const searchExists = (
-    searchField: string,
-    searchProperty: Hero["name"] | Hero["description"]
-  ) => searchProperty.toLowerCase().indexOf(searchField.toLowerCase()) !== -1;
+  type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+  /** returns a boolean whether the hero properties exist in the search field */
+  const searchExists = (searchProperty: HeroProperty, searchField: string) =>
+    String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
+    -1;
+
+  /** given the data and the search field, returns the data in which the search field exists */
+  const searchProperties = (searchField: string, data: Hero[]) =>
+    [...data].filter((item: Hero) =>
+      Object.values(item).find((property: HeroProperty) =>
+        searchExists(property, searchField)
+      )
+    );
 
   /** filters the heroes data to see if the name or the description exists in the list */
   const handleSearch =
@@ -441,13 +460,7 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
       const searchField = event.target.value;
 
       return startTransition(() =>
-        setFilteredHeroes(
-          [...data].filter(
-            ({ name, description }: Hero) =>
-              searchExists(searchField, name) ||
-              searchExists(searchField, description)
-          )
-        )
+        setFilteredHeroes(searchProperties(searchField, data))
       );
     };
 
@@ -553,10 +566,19 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
   };
 
   /** returns a boolean whether the hero properties exist in the search field */
-  const searchExists = (
-    searchField: string,
-    searchProperty: Hero["name"] | Hero["description"]
-  ) => searchProperty.toLowerCase().indexOf(searchField.toLowerCase()) !== -1;
+  type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+  /** returns a boolean whether the hero properties exist in the search field */
+  const searchExists = (searchProperty: HeroProperty, searchField: string) =>
+    String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
+    -1;
+
+  /** given the data and the search field, returns the data in which the search field exists */
+  const searchProperties = (searchField: string, data: Hero[]) =>
+    [...data].filter((item: Hero) =>
+      Object.values(item).find((property: HeroProperty) =>
+        searchExists(property, searchField)
+      )
+    );
 
   /** filters the heroes data to see if the name or the description exists in the list */
   const handleSearch =
@@ -564,13 +586,7 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
       const searchField = event.target.value;
 
       return startTransition(() =>
-        setFilteredHeroes(
-          [...data].filter(
-            ({ name, description }: Hero) =>
-              searchExists(searchField, name) ||
-              searchExists(searchField, description)
-          )
-        )
+        setFilteredHeroes(searchProperties(searchField, data))
       );
     };
 
@@ -1025,7 +1041,7 @@ export default function HeroDetail() {
 }
 ```
 
-We do not have any way to check the update scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Any time we are not able to cover a test at a low level with component tests, move up to ui-integration tests. Most the time a ui-integration test will suffice, and when it is not enough we can use a true e2e that hits the backend. In our case ui-integration is sufficient because we do not necessarily have to receive a 500 response from a real network to render the error .  Therefore we can add a ui-integration test to `edit-hero.cy.ts` e2e test that covers the update scenario. We see the boundaries between test types begin to get thinner; we use the least costly kind of test to gain the highest confidence. Where they are in the pyramid is only relevant by the ability to perform that kind of test in the given context (Refactor 3).
+We do not have any way to check the update scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Any time we are not able to cover a test at a low level with component tests, move up to ui-integration tests. Most the time a ui-integration test will suffice, and when it is not enough we can use a true e2e that hits the backend. In our case ui-integration is sufficient because we do not necessarily have to receive a 500 response from a real network to render the error . Therefore we can add a ui-integration test to `edit-hero.cy.ts` e2e test that covers the update scenario. We see the boundaries between test types begin to get thinner; we use the least costly kind of test to gain the highest confidence. Where they are in the pyramid is only relevant by the ability to perform that kind of test in the given context (Refactor 3).
 
 The new test is similar to other ui-integration tests; we stub the network and visit the main route. We go to the edit page for any random hero. We setup the network stub that will happen on update via `cy.intercept`. Finally we repeat a similar spinner -> wait on network -> error flow from the component test. The only distinction here is `PUT` vs `POST`.
 
