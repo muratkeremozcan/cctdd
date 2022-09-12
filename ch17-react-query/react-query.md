@@ -16,9 +16,9 @@ React-query's [`useQuery`](https://tanstack.com/query/v4/docs/reference/useQuery
 
 `const { dataToMutate, status, error } = useMutation((*url*) => fetch(*url*) {...})`
 
-* `useQuery` fetches state: UI state <- server/url , and caches it.
+- `useQuery` fetches state: UI state <- server/url , and caches it.
 
-* `useMutation` is just the opposite: UI state -> server , and still caches it.
+- `useMutation` is just the opposite: UI state -> server , and still caches it.
 
 In this chapter we will be creating our api, creating hooks for CRUD operations on heroes, and we will be using them in the components.
 
@@ -58,7 +58,7 @@ export const getItem = (route: string) => client(route, "GET");
 
 ## `useGetHeroes`
 
-We can create a simple hook and replace our complex `useAxios`, while showcasing the performance gains of cache management by `react-query`. `yarn add react-query`, and create a file `src/hooks/useGetHeroes.ts`. `react-query`'s [`useQuery`](https://tanstack.com/query/v4/docs/reference/useQuery) is similar to our custom useAxios: takes a url, returns an object of data, status & error. 
+We can create a simple hook and replace our complex `useAxios`, while showcasing the performance gains of cache management by `react-query`. `yarn add react-query`, and create a file `src/hooks/useGetHeroes.ts`. `react-query`'s [`useQuery`](https://tanstack.com/query/v4/docs/reference/useQuery) is similar to our custom useAxios: takes a url, returns an object of data, status & error.
 
 `const { data, status, error } = useQuery(key, () => fetch(url))`
 
@@ -78,30 +78,30 @@ import { getItem } from "./api";
  * @returns {object} {heroes, status, getError}
  */
 export const useGetHeroes = () => {
-  const query = useQuery('heroes', () => getItem('heroes'))
+  const query = useQuery("heroes", () => getItem("heroes"));
 
   return {
     heroes: query.data,
     status: query.status,
     getError: query.error,
-  }
-}
+  };
+};
 ```
 
 Before replacing `useAxios` in `Heroes` component, we have to wrap our app JSX in a provider component called `QueryClientProvider` , instantiate a `queryClient` and use it as the `client` prop of `QueryClientProvider`. This is how we make the cache available for components to access and share.
 
 ```tsx
 // src/App.tsx
-import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
-import {QueryClient, QueryClientProvider} from 'react-query'
-import About from 'About'
-import HeaderBar from 'components/HeaderBar'
-import NavBar from 'components/NavBar'
-import NotFound from 'components/NotFound'
-import Heroes from 'heroes/Heroes'
-import './styles.scss'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+import About from "About";
+import HeaderBar from "components/HeaderBar";
+import NavBar from "components/NavBar";
+import NotFound from "components/NotFound";
+import Heroes from "heroes/Heroes";
+import "./styles.scss";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 function App() {
   return (
@@ -121,10 +121,10 @@ function App() {
         </main>
       </div>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
 ```
 
 `useGetHeroes` is a drop-in replacement for `useAxios`, and it does not even need an argument. We will use `status` and `getError` in the next chapter.
@@ -140,7 +140,7 @@ import { useGetHeroes } from "hooks/useGetHeroes";
 
 export default function Heroes() {
   const [showModal, setShowModal] = useState<boolean>(false);
-  const {heroes, status, getError} = useGetHeroes()
+  const { heroes, status, getError } = useGetHeroes();
 
   const navigate = useNavigate();
   const addNewHero = () => navigate("/heroes/add-hero");
@@ -303,7 +303,7 @@ In `HeroDetail` component we have a `createHero` function that `console.log`s. O
 
 `const {mutate: createHero, status: postStatus, error: postError} = usePostHero()`
 
-We can remove ` const createHero = () => console.log('createHero')`, instead use the `createHero` yielded from the hook. We need to pass to it an item argument. The type for it comes from our `usePostHero` hook's  `useMutation` callback:
+We can remove ` const createHero = () => console.log('createHero')`, instead use the `createHero` yielded from the hook. We need to pass to it an item argument. The type for it comes from our `usePostHero` hook's `useMutation` callback:
 
 `useMutation((item: Hero) => createItem('heroes', item)`
 
@@ -321,37 +321,37 @@ Here is the updated `HeroDetail` component (Green 1):
 
 ```tsx
 // src/heroes/HeroDetail.tsx
-import {useState, ChangeEvent} from 'react'
-import {useNavigate, useParams} from 'react-router-dom'
-import {FaUndo, FaRegSave} from 'react-icons/fa'
-import InputDetail from 'components/InputDetail'
-import ButtonFooter from 'components/ButtonFooter'
-import {useHeroParams} from 'hooks/useHeroParams'
-import {usePostHero} from 'hooks/usePostHero'
-import {Hero} from 'models/Hero'
+import { useState, ChangeEvent } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { FaUndo, FaRegSave } from "react-icons/fa";
+import InputDetail from "components/InputDetail";
+import ButtonFooter from "components/ButtonFooter";
+import { useHeroParams } from "hooks/useHeroParams";
+import { usePostHero } from "hooks/usePostHero";
+import { Hero } from "models/Hero";
 
 export default function HeroDetail() {
-  const navigate = useNavigate()
-  const {id} = useParams()
-  const {name, description} = useHeroParams()
-  const [hero, setHero] = useState({id, name, description})
-  const {mutate: createHero, status, error: postError} = usePostHero()
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { name, description } = useHeroParams();
+  const [hero, setHero] = useState({ id, name, description });
+  const { mutate: createHero, status, error: postError } = usePostHero();
 
-  const handleCancel = () => navigate('/heroes')
-  const updateHero = () => console.log('updateHero')
+  const handleCancel = () => navigate("/heroes");
+  const updateHero = () => console.log("updateHero");
   const handleSave = () => {
-    console.log('handleSave')
-    return name ? updateHero() : createHero(hero as Hero)
-  }
+    console.log("handleSave");
+    return name ? updateHero() : createHero(hero as Hero);
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleNameChange')
-    setHero({...hero, name: e.target.value})
-  }
+    console.log("handleNameChange");
+    setHero({ ...hero, name: e.target.value });
+  };
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleDescriptionChange')
-    setHero({...hero, description: e.target.value})
-  }
+    console.log("handleDescriptionChange");
+    setHero({ ...hero, description: e.target.value });
+  };
 
   return (
     <div data-cy="hero-detail" className="card edit-detail">
@@ -362,17 +362,17 @@ export default function HeroDetail() {
       <div className="card-content">
         <div className="content">
           {id && (
-            <InputDetail name={'id'} value={id} readOnly={true}></InputDetail>
+            <InputDetail name={"id"} value={id} readOnly={true}></InputDetail>
           )}
           <InputDetail
-            name={'name'}
-            value={name ? name : ''}
+            name={"name"}
+            value={name ? name : ""}
             placeholder="e.g. Colleen"
             onChange={handleNameChange}
           ></InputDetail>
           <InputDetail
-            name={'description'}
-            value={description ? description : ''}
+            name={"description"}
+            value={description ? description : ""}
             placeholder="e.g. dance fight!"
             onChange={handleDescriptionChange}
           ></InputDetail>
@@ -387,7 +387,7 @@ export default function HeroDetail() {
         <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
       </footer>
     </div>
-  )
+  );
 }
 ```
 
@@ -397,59 +397,59 @@ Now we can verify if the hero we just created appears in the list after the save
 
 ```ts
 // cypress/e2e/create-hero.cy.ts
-it.only('should go through the add hero flow (ui-e2e)', () => {
-  cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`).as('getHeroes')
-  cy.visit('/')
-  cy.wait('@getHeroes')
-  cy.location('pathname').should('eq', '/heroes')
+it.only("should go through the add hero flow (ui-e2e)", () => {
+  cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`).as("getHeroes");
+  cy.visit("/");
+  cy.wait("@getHeroes");
+  cy.location("pathname").should("eq", "/heroes");
 
-  cy.getByCy('add-button').click()
-  cy.location('pathname').should('eq', '/heroes/add-hero')
-  cy.getByCy('hero-detail').should('be.visible')
-  cy.getByCy('input-detail-id').should('not.exist')
+  cy.getByCy("add-button").click();
+  cy.location("pathname").should("eq", "/heroes/add-hero");
+  cy.getByCy("hero-detail").should("be.visible");
+  cy.getByCy("input-detail-id").should("not.exist");
 
   const newHero = {
     name: faker.internet.userName(),
     description: `description ${faker.internet.userName()}`,
-  }
-  cy.getByCy('input-detail-name').type(newHero.name)
-  cy.getByCy('input-detail-description').type(newHero.description)
-  cy.getByCy('save-button').click()
+  };
+  cy.getByCy("input-detail-name").type(newHero.name);
+  cy.getByCy("input-detail-description").type(newHero.description);
+  cy.getByCy("save-button").click();
 
-  cy.location('pathname').should('eq', '/heroes')
-  cy.getByCy('hero-list')
-    .should('be.visible')
-    .should('contain', newHero.name)
-    .and('contain', newHero.description)
-})
+  cy.location("pathname").should("eq", "/heroes");
+  cy.getByCy("hero-list")
+    .should("be.visible")
+    .should("contain", newHero.name)
+    .and("contain", newHero.description);
+});
 ```
 
-We see the new entity created at the backend (`db.json` got updated), and if we navigate to another tab and back we also see the newly created entity. Alas, it is not in the `HeroList` immediately after saving. This points to a shortcoming in cache management. When we mutate the backend, we also have to update the new cache. For this we use `queryClient`'s `setQueryData` method.  [`setQueryData`](https://tanstack.com/query/v4/docs/reference/QueryClient#queryclientsetquerydata) takes a key as the first arg, the 2nd arg is a callback that takes the old query cache and returns the new one. With that enhancement, our test is passing (Green 2).
+We see the new entity created at the backend (`db.json` got updated), and if we navigate to another tab and back we also see the newly created entity. Alas, it is not in the `HeroList` immediately after saving. This points to a shortcoming in cache management. When we mutate the backend, we also have to update the new cache. For this we use `queryClient`'s `setQueryData` method. [`setQueryData`](https://tanstack.com/query/v4/docs/reference/QueryClient#queryclientsetquerydata) takes a key as the first arg, the 2nd arg is a callback that takes the old query cache and returns the new one. With that enhancement, our test is passing (Green 2).
 
 ```ts
 // src/hooks/usePostHero.ts
-import {Hero} from 'models/Hero'
-import {useMutation, useQueryClient} from 'react-query'
-import {useNavigate} from 'react-router-dom'
-import {createItem} from './api'
+import { Hero } from "models/Hero";
+import { useMutation, useQueryClient } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { createItem } from "./api";
 
 /**
  * Helper for simple POST to `/heroes` route
  * @returns {object} {mutate, status, error}
  */
 export function usePostHero() {
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
-  return useMutation((item: Hero) => createItem('heroes', item), {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  return useMutation((item: Hero) => createItem("heroes", item), {
     onSuccess: (newData: Hero) => {
-      queryClient.setQueryData(['heroes'], (oldData: Hero[] | undefined) => [
+      queryClient.setQueryData(["heroes"], (oldData: Hero[] | undefined) => [
         ...(oldData || []),
         newData,
-      ])
+      ]);
 
-      return navigate(`/heroes`)
+      return navigate(`/heroes`);
     },
-  })
+  });
 }
 ```
 
@@ -457,69 +457,69 @@ Here is our e2e test at the moment:
 
 ```ts
 // cypress/e2e/create-hero.cy.ts
-import {faker} from '@faker-js/faker'
-describe('Create hero', () => {
-  it('should go through the refresh flow', () => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`).as('getHeroes')
-    cy.visit('/')
-    cy.wait('@getHeroes')
-    cy.location('pathname').should('eq', '/heroes')
+import { faker } from "@faker-js/faker";
+describe("Create hero", () => {
+  it("should go through the refresh flow", () => {
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`).as("getHeroes");
+    cy.visit("/");
+    cy.wait("@getHeroes");
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('add-button').click()
-    cy.location('pathname').should('eq', '/heroes/add-hero')
-    cy.getByCy('hero-detail').should('be.visible')
-    cy.getByCy('input-detail-id').should('not.exist')
+    cy.getByCy("add-button").click();
+    cy.location("pathname").should("eq", "/heroes/add-hero");
+    cy.getByCy("hero-detail").should("be.visible");
+    cy.getByCy("input-detail-id").should("not.exist");
 
-    cy.getByCy('refresh-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list').should('be.visible')
-  })
+    cy.getByCy("refresh-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list").should("be.visible");
+  });
 
-  it('should go through the cancel flow and perform direct navigation', () => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`).as('getHeroes')
-    cy.visit('/heroes/add-hero')
-    cy.wait('@getHeroes')
+  it("should go through the cancel flow and perform direct navigation", () => {
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`).as("getHeroes");
+    cy.visit("/heroes/add-hero");
+    cy.wait("@getHeroes");
 
-    cy.getByCy('cancel-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list').should('be.visible')
-  })
+    cy.getByCy("cancel-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list").should("be.visible");
+  });
 
-  it('should go through the add hero flow (ui-e2e)', () => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`).as('getHeroes')
-    cy.visit('/')
-    cy.wait('@getHeroes')
-    cy.location('pathname').should('eq', '/heroes')
+  it("should go through the add hero flow (ui-e2e)", () => {
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`).as("getHeroes");
+    cy.visit("/");
+    cy.wait("@getHeroes");
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('add-button').click()
-    cy.location('pathname').should('eq', '/heroes/add-hero')
-    cy.getByCy('hero-detail').should('be.visible')
-    cy.getByCy('input-detail-id').should('not.exist')
+    cy.getByCy("add-button").click();
+    cy.location("pathname").should("eq", "/heroes/add-hero");
+    cy.getByCy("hero-detail").should("be.visible");
+    cy.getByCy("input-detail-id").should("not.exist");
 
     const newHero = {
       name: faker.internet.userName(),
       description: `description ${faker.internet.userName()}`,
-    }
-    cy.getByCy('input-detail-name').type(newHero.name)
-    cy.getByCy('input-detail-description').type(newHero.description)
-    cy.getByCy('save-button').click()
+    };
+    cy.getByCy("input-detail-name").type(newHero.name);
+    cy.getByCy("input-detail-description").type(newHero.description);
+    cy.getByCy("save-button").click();
 
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list')
-      .should('be.visible')
-      .should('contain', newHero.name)
-      .and('contain', newHero.description)
-  })
-})
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list")
+      .should("be.visible")
+      .should("contain", newHero.name)
+      .and("contain", newHero.description);
+  });
+});
 ```
 
 ### ui-e2e vs ui-integration tests
 
 Pay attention to the first two tests. They end the add flow with cancel or refresh. Neither of them sends a write request to the backend, they just read the data from it. The fact that we are reading the data from the backend, and the fact that we are writing to the backend is covered in the 3rd test, which should stay e2e. But the first two tests can entirely stub the network, and thereby become ui-integration tests. What are `ui-integration` tests? From [List of Test Methodologies](https://dev.to/muratkeremozcan/mostly-incomplete-list-of-test-methodologies-52no) post:
 
-*These look like UI e2e tests but they fully stub the network, and they are run without hitting a real server. They are faster, and less brittle than traditional UI e2e tests since the network is not a concern. They are great for shift-left approach and to isolate the ui functionality prior to testing on deployments where the backend matters.*
+_These look like UI e2e tests but they fully stub the network, and they are run without hitting a real server. They are faster, and less brittle than traditional UI e2e tests since the network is not a concern. They are great for shift-left approach and to isolate the ui functionality prior to testing on deployments where the backend matters._
 
-If you have been through Kent C. Dodd's [Epic React](https://epicreact.dev/login) you might have seen his version of integration tests, using React Testing Library. The distinction here is that we are using the real UI, and testing the integration of components at a higher level, only stubbing the network data. For some, seeing the real browser, in fact the real app itself is easier and more confident, and that is the path we will follow in this course. 
+If you have been through Kent C. Dodd's [Epic React](https://epicreact.dev/login) you might have seen his version of integration tests, using React Testing Library. The distinction here is that we are using the real UI, and testing the integration of components at a higher level, only stubbing the network data. For some, seeing the real browser, in fact the real app itself is easier and more confident, and that is the path we will follow in this course.
 
 Always evaluate if you need the backend to gain confidence in your app's functionality. You should only use true e2e tests when you need this confidence, and you should not have to repeat the same costly tests everywhere. Instead utilize ui-integration tests. If your backend is tested by its own e2e tests, your true e2e needs at the front end are even less; be careful not to duplicate the backend effort. In our repo, `cypress/e2e/backend/crud.cy.ts` is a good example of a backend e2e test. Coincidentally we will be using some of its commands in our e2e to reset or setup db state.
 
@@ -527,64 +527,64 @@ Let's refactor our test file to use ui-integration tests for cancel and refresh 
 
 ```ts
 // cypress/e2e/create-hero.cy.ts
-import {faker} from '@faker-js/faker'
-describe('Create hero', () => {
+import { faker } from "@faker-js/faker";
+describe("Create hero", () => {
   const navToAddHero = () => {
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('add-button').click()
-    cy.location('pathname').should('eq', '/heroes/add-hero')
-    cy.getByCy('hero-detail').should('be.visible')
-    cy.getByCy('input-detail-id').should('not.exist')
-  }
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("add-button").click();
+    cy.location("pathname").should("eq", "/heroes/add-hero");
+    cy.getByCy("hero-detail").should("be.visible");
+    cy.getByCy("input-detail-id").should("not.exist");
+  };
 
-  it('should go through the refresh flow (ui-integration)', () => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
-      fixture: 'heroes',
-    }).as('stubbedGetHeroes')
-    cy.visit('/')
-    cy.wait('@stubbedGetHeroes')
+  it("should go through the refresh flow (ui-integration)", () => {
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
+      fixture: "heroes",
+    }).as("stubbedGetHeroes");
+    cy.visit("/");
+    cy.wait("@stubbedGetHeroes");
 
-    navToAddHero()
+    navToAddHero();
 
-    cy.getByCy('refresh-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list').should('be.visible')
-  })
+    cy.getByCy("refresh-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list").should("be.visible");
+  });
 
-  it('should go through the cancel flow and perform direct navigation (ui-integration)', () => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
-      fixture: 'heroes',
-    }).as('stubbedGetHeroes')
-    cy.visit('/heroes/add-hero')
-    cy.wait('@stubbedGetHeroes')
+  it("should go through the cancel flow and perform direct navigation (ui-integration)", () => {
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
+      fixture: "heroes",
+    }).as("stubbedGetHeroes");
+    cy.visit("/heroes/add-hero");
+    cy.wait("@stubbedGetHeroes");
 
-    cy.getByCy('cancel-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list').should('be.visible')
-  })
+    cy.getByCy("cancel-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list").should("be.visible");
+  });
 
-  it('should go through the add hero flow (ui-e2e)', () => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`).as('getHeroes')
-    cy.visit('/')
-    cy.wait('@getHeroes')
+  it("should go through the add hero flow (ui-e2e)", () => {
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`).as("getHeroes");
+    cy.visit("/");
+    cy.wait("@getHeroes");
 
-    navToAddHero()
+    navToAddHero();
 
     const newHero = {
       name: faker.internet.userName(),
       description: `description ${faker.internet.userName()}`,
-    }
-    cy.getByCy('input-detail-name').type(newHero.name)
-    cy.getByCy('input-detail-description').type(newHero.description)
-    cy.getByCy('save-button').click()
+    };
+    cy.getByCy("input-detail-name").type(newHero.name);
+    cy.getByCy("input-detail-description").type(newHero.description);
+    cy.getByCy("save-button").click();
 
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list')
-      .should('be.visible')
-      .should('contain', newHero.name)
-      .and('contain', newHero.description)
-  })
-})
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list")
+      .should("be.visible")
+      .should("contain", newHero.name)
+      .and("contain", newHero.description);
+  });
+});
 ```
 
 Since our delay for `json-server` is 1 second, the test is now 2 seconds faster, less flakey, and our confidence has not reduced because we already cover the real `GET` request in the third test.
@@ -595,77 +595,79 @@ Add 3 commands `getEntityByName`, `visitStubbedHeroes`, `visitHeroes` to the com
 
 ```ts
 // cypress/support/commands.ts
-import {Hero} from '../../src/models/Hero'
-import data from '../fixtures/db.json'
+import { Hero } from "../../src/models/Hero";
+import data from "../fixtures/db.json";
 
-Cypress.Commands.add('getByCy', (selector, ...args) =>
-  cy.get(`[data-cy="${selector}"]`, ...args),
-)
+Cypress.Commands.add("getByCy", (selector, ...args) =>
+  cy.get(`[data-cy="${selector}"]`, ...args)
+);
 
-Cypress.Commands.add('getByCyLike', (selector, ...args) =>
-  cy.get(`[data-cy*=${selector}]`, ...args),
-)
+Cypress.Commands.add("getByCyLike", (selector, ...args) =>
+  cy.get(`[data-cy*=${selector}]`, ...args)
+);
 
-Cypress.Commands.add('getByClassLike', (selector, ...args) =>
-  cy.get(`[class*=${selector}]`, ...args),
-)
+Cypress.Commands.add("getByClassLike", (selector, ...args) =>
+  cy.get(`[class*=${selector}]`, ...args)
+);
 
 Cypress.Commands.add(
-  'crud',
+  "crud",
   (
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    method: "GET" | "POST" | "PUT" | "DELETE",
     route: string,
     {
       body,
       allowedToFail = false,
-    }: {body?: Hero | object; allowedToFail?: boolean} = {},
+    }: { body?: Hero | object; allowedToFail?: boolean } = {}
   ) =>
     cy.request<Hero[] & Hero>({
       method: method,
-      url: `${Cypress.env('API_URL')}/${route}`,
-      body: method === 'POST' || method === 'PUT' ? body : undefined,
+      url: `${Cypress.env("API_URL")}/${route}`,
+      body: method === "POST" || method === "PUT" ? body : undefined,
       retryOnStatusCodeFailure: !allowedToFail,
       failOnStatusCode: !allowedToFail,
-    }),
-)
+    })
+);
 
-Cypress.Commands.add('resetData', () => cy.crud('POST', 'reset', {body: data}))
+Cypress.Commands.add("resetData", () =>
+  cy.crud("POST", "reset", { body: data })
+);
 
-const {_} = Cypress
-Cypress.Commands.add('getEntityByName', (name: Hero['name']) =>
+const { _ } = Cypress;
+Cypress.Commands.add("getEntityByName", (name: Hero["name"]) =>
   cy
-    .crud('GET', 'heroes')
-    .its('body')
+    .crud("GET", "heroes")
+    .its("body")
     .then((body: Hero[]) => _.filter(body, (hero: Hero) => hero.name === name))
-    .its(0),
-)
+    .its(0)
+);
 
-Cypress.Commands.add('visitStubbedHeroes', () => {
-  cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
-    fixture: 'heroes',
-  }).as('stubbedGetHeroes')
-  cy.visit('/')
-  cy.wait('@stubbedGetHeroes')
-  return cy.location('pathname').should('eq', '/heroes')
-})
+Cypress.Commands.add("visitStubbedHeroes", () => {
+  cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
+    fixture: "heroes",
+  }).as("stubbedGetHeroes");
+  cy.visit("/");
+  cy.wait("@stubbedGetHeroes");
+  return cy.location("pathname").should("eq", "/heroes");
+});
 
-Cypress.Commands.add('visitHeroes', () => {
-  cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`).as('getHeroes')
-  cy.visit('/')
-  cy.wait('@getHeroes')
-  return cy.location('pathname').should('eq', '/heroes')
-})
+Cypress.Commands.add("visitHeroes", () => {
+  cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`).as("getHeroes");
+  cy.visit("/");
+  cy.wait("@getHeroes");
+  return cy.location("pathname").should("eq", "/heroes");
+});
 ```
 
 Add the type definitions to `cypress.d.ts`
 
-```ts
+````ts
 // cypress.d.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {MountOptions, MountReturn} from 'cypress/react'
-import type {Hero} from './cypress/support/commands'
+import { MountOptions, MountReturn } from "cypress/react";
+import type { Hero } from "./cypress/support/commands";
 
-export {}
+export {};
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -674,7 +676,7 @@ declare global {
        * cy.getByCy('search-toggle') // where the selector is [data-cy="search-toggle"]
        * ```
        */
-      getByCy(qaSelector: string, args?: any): Chainable<JQuery<HTMLElement>>
+      getByCy(qaSelector: string, args?: any): Chainable<JQuery<HTMLElement>>;
 
       /** Yields elements with data-cy attribute that partially matches a specified selector.
        * ```
@@ -683,8 +685,8 @@ declare global {
        */
       getByCyLike(
         qaSelector: string,
-        args?: any,
-      ): Chainable<JQuery<HTMLElement>>
+        args?: any
+      ): Chainable<JQuery<HTMLElement>>;
 
       /** Yields the element that partially matches the css class
        * ```
@@ -693,8 +695,8 @@ declare global {
        */
       getByClassLike(
         qaSelector: string,
-        args?: any,
-      ): Chainable<JQuery<HTMLElement>>
+        args?: any
+      ): Chainable<JQuery<HTMLElement>>;
 
       /** Mounts a React node
        * @param component React Node to mount
@@ -702,14 +704,14 @@ declare global {
        */
       mount(
         component: React.ReactNode,
-        options?: MountOptions,
-      ): Cypress.Chainable<MountReturn>
+        options?: MountOptions
+      ): Cypress.Chainable<MountReturn>;
 
       /** Visits baseUrl, uses real network, verifies path */
-      visitHeroes(): Cypress.Chainable<string>
+      visitHeroes(): Cypress.Chainable<string>;
 
       /** Visits baseUrl, uses stubbed network, verifies path */
-      visitStubbedHeroes(): Cypress.Chainable<string>
+      visitStubbedHeroes(): Cypress.Chainable<string>;
 
       /**
        * Gets an entity by name.
@@ -718,7 +720,7 @@ declare global {
        * ```
        * @param name: Hero['name']
        */
-      getEntityByName(name: Hero['name']): Cypress.Chainable<Hero>
+      getEntityByName(name: Hero["name"]): Cypress.Chainable<Hero>;
 
       /**
        * Performs crud operations GET, POST, PUT and DELETE.
@@ -734,22 +736,22 @@ declare global {
        * @param options: {body?: Hero | object; allowedToFail?: boolean}
        */
       crud(
-        method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+        method: "GET" | "POST" | "PUT" | "DELETE",
         route: string,
         {
           body,
           allowedToFail = false,
-        }: {body?: Hero | object; allowedToFail?: boolean} = {},
-      ): Cypress.Chainable<Response<Hero[] & Hero>>
+        }: { body?: Hero | object; allowedToFail?: boolean } = {}
+      ): Cypress.Chainable<Response<Hero[] & Hero>>;
 
       /**
        * Resets the data in the database to the initial data.
        */
-      resetData(): Cypress.Chainable<Response<Hero[] & Hero>>
+      resetData(): Cypress.Chainable<Response<Hero[] & Hero>>;
     }
   }
 }
-```
+````
 
 In the refactored test we reset the db before every execution, we use the commands and helpers for initial navigation (Arrange), finally in the third test we extract the hero from the name we gave it and then delete it using an api command.
 
@@ -757,136 +759,137 @@ Before finishing, take a look at the test `cypress/e2e/network.cy.ts`. The main 
 
 ```ts
 // cypress/e2e/network.cy.ts
-cy.getByCy('heroes').should('be.visible')
-cy.getByCyLike('hero-list-item').should('have.length.gt', 0)
+cy.getByCy("heroes").should("be.visible");
+cy.getByCyLike("hero-list-item").should("have.length.gt", 0);
 ```
 
 We recall from chapter 13 takeaways:
 
-*Always look for opportunities to tweak what test is already existing as opposed to writing partially duplicated tests for new specs. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then it is an opportunity for a test enhancement vs partial test duplication.*
+_Always look for opportunities to tweak what test is already existing as opposed to writing partially duplicated tests for new specs. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then it is an opportunity for a test enhancement vs partial test duplication._
 
 We can include the two checks in the createhero e2e test when navigating back to heroes list, and we can remove the `cypress/e2e/network.cy.ts` entirely. We are saving 8 lines of code and a few seconds of testing, without adding any new time in testing; this would not be an easy call to make in a BDD framework.
 
 ```ts
 // cypress/e2e/create-hero.cy.ts
-import {faker} from '@faker-js/faker'
-describe('Create hero', () => {
-  before(cy.resetData)
+import { faker } from "@faker-js/faker";
+describe("Create hero", () => {
+  before(cy.resetData);
 
   const navToAddHero = () => {
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('add-button').click()
-    cy.location('pathname').should('eq', '/heroes/add-hero')
-    cy.getByCy('hero-detail').should('be.visible')
-    cy.getByCy('input-detail-id').should('not.exist')
-  }
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("add-button").click();
+    cy.location("pathname").should("eq", "/heroes/add-hero");
+    cy.getByCy("hero-detail").should("be.visible");
+    cy.getByCy("input-detail-id").should("not.exist");
+  };
 
-  it('should go through the refresh flow (ui-integration)', () => {
-    cy.visitStubbedHeroes()
-    navToAddHero()
+  it("should go through the refresh flow (ui-integration)", () => {
+    cy.visitStubbedHeroes();
+    navToAddHero();
 
-    cy.getByCy('refresh-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list').should('be.visible')
-  })
+    cy.getByCy("refresh-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list").should("be.visible");
+  });
 
-  it('should go through the cancel flow and perform direct navigation (ui-integration)', () => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
-      fixture: 'heroes',
-    }).as('stubbedGetHeroes')
-    cy.visit('/heroes/add-hero')
-    cy.wait('@stubbedGetHeroes')
+  it("should go through the cancel flow and perform direct navigation (ui-integration)", () => {
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
+      fixture: "heroes",
+    }).as("stubbedGetHeroes");
+    cy.visit("/heroes/add-hero");
+    cy.wait("@stubbedGetHeroes");
 
-    cy.getByCy('cancel-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list').should('be.visible')
-  })
+    cy.getByCy("cancel-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list").should("be.visible");
+  });
 
-  it('should go through the add hero flow (ui-e2e)', () => {
-    cy.visitHeroes()
-    navToAddHero()
+  it("should go through the add hero flow (ui-e2e)", () => {
+    cy.visitHeroes();
+    navToAddHero();
 
     const newHero = {
       name: faker.internet.userName(),
       description: `description ${faker.internet.userName()}`,
-    }
-    cy.getByCy('input-detail-name').type(newHero.name)
-    cy.getByCy('input-detail-description').type(newHero.description)
-    cy.getByCy('save-button').click()
+    };
+    cy.getByCy("input-detail-name").type(newHero.name);
+    cy.getByCy("input-detail-description").type(newHero.description);
+    cy.getByCy("save-button").click();
 
-    cy.location('pathname').should('eq', '/heroes')
+    cy.location("pathname").should("eq", "/heroes");
 
-    cy.getByCy('heroes').should('be.visible')
-    cy.getByCyLike('hero-list-item').should('have.length.gt', 0)
-    cy.getByCy('hero-list')
-      .should('contain', newHero.name)
-      .and('contain', newHero.description)
+    cy.getByCy("heroes").should("be.visible");
+    cy.getByCyLike("hero-list-item").should("have.length.gt", 0);
+    cy.getByCy("hero-list")
+      .should("contain", newHero.name)
+      .and("contain", newHero.description);
 
-    cy.getEntityByProperty(newHero.name).then(myHero =>
-      cy.crud('DELETE', `heroes/${myHero.id}`),
-    )
-  })
-})
+    cy.getEntityByProperty(newHero.name).then((myHero) =>
+      cy.crud("DELETE", `heroes/${myHero.id}`)
+    );
+  });
+});
 ```
 
 There is one more ui-integration enhancement we can make in `cypress/e2e/routes-nav.cy.ts`. The tests are simply covering the routes of the application, irrelevant of the back-end. So long as there is any data, they are satisfied. We can stub the network to make this one into a ui-integration test.
 
-> Tip: In a large project, you might be separating `ui-integration` from `ui-e2e` tests in folders. And/or you might be applying other types of selective testing ([there are over 32](https://dev.to/muratkeremozcan/the-32-ways-of-selective-testing-with-cypress-a-unified-concise-approach-to-selective-testing-in-ci-and-local-machines-1c19)), such as  tagging the tests with [`cypress-grep`](https://github.com/cypress-io/cypress-grep).
+> Tip: In a large project, you might be separating `ui-integration` from `ui-e2e` tests in folders. And/or you might be applying other types of selective testing ([there are over 32](https://dev.to/muratkeremozcan/the-32-ways-of-selective-testing-with-cypress-a-unified-concise-approach-to-selective-testing-in-ci-and-local-machines-1c19)), such as tagging the tests with [`cypress-grep`](https://github.com/cypress-io/cypress-grep).
 
 ```ts
 // cypress/e2e/routes-nav.cy.ts
-describe('routes navigation', () => {
+describe("routes navigation", () => {
   beforeEach(() => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
-      fixture: 'heroes',
-    }).as('stubbedGetHeroes')
-  })
-  it('should land on baseUrl, redirect to /heroes', () => {
-    cy.visit('/')
-    cy.getByCy('header-bar').should('be.visible')
-    cy.getByCy('nav-bar').should('be.visible')
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
+      fixture: "heroes",
+    }).as("stubbedGetHeroes");
+  });
+  it("should land on baseUrl, redirect to /heroes", () => {
+    cy.visit("/");
+    cy.getByCy("header-bar").should("be.visible");
+    cy.getByCy("nav-bar").should("be.visible");
 
-    cy.url().should('include', '/heroes')
-    cy.getByCy('heroes').should('be.visible')
-  })
+    cy.url().should("include", "/heroes");
+    cy.getByCy("heroes").should("be.visible");
+  });
 
-  it('should direct-navigate to /heroes', () => {
-    const route = '/heroes'
-    cy.visit(route)
-    cy.url().should('include', route)
-    cy.getByCy('heroes').should('be.visible')
-  })
+  it("should direct-navigate to /heroes", () => {
+    const route = "/heroes";
+    cy.visit(route);
+    cy.url().should("include", route);
+    cy.getByCy("heroes").should("be.visible");
+  });
 
-  it('should land on not found when visiting an non-existing route', () => {
-    const route = '/route48'
-    cy.visit(route)
-    cy.url().should('include', route)
-    cy.getByCy('not-found').should('be.visible')
-  })
+  it("should land on not found when visiting an non-existing route", () => {
+    const route = "/route48";
+    cy.visit(route);
+    cy.url().should("include", route);
+    cy.getByCy("not-found").should("be.visible");
+  });
 
-  it('should direct-navigate to about', () => {
-    const route = '/about'
-    cy.visit(route)
-    cy.url().should('include', route)
-    cy.getByCy('about').contains('CCTDD')
-  })
+  it("should direct-navigate to about", () => {
+    const route = "/about";
+    cy.visit(route);
+    cy.url().should("include", route);
+    cy.getByCy("about").contains("CCTDD");
+  });
 
-  it('should cover route history with browser back and forward', () => {
-    const routes = ['villains', 'heroes', 'about']
+  it("should cover route history with browser back and forward", () => {
+    cy.visit("/");
+    const routes = ["villains", "heroes", "about"];
     cy.wrap(routes).each((route: string) =>
-      cy.get(`[href="/${route}"]`).click(),
-    )
+      cy.get(`[href="/${route}"]`).click()
+    );
 
-    const lastIndex = routes.length - 1
-    cy.url().should('include', routes[lastIndex])
-    cy.go('back')
-    cy.url().should('include', routes[lastIndex - 1])
-    cy.go('back')
-    cy.url().should('include', routes[lastIndex - 2])
-    cy.go('forward').go('forward')
-    cy.url().should('include', routes[lastIndex])
-  })
-})
+    const lastIndex = routes.length - 1;
+    cy.url().should("include", routes[lastIndex]);
+    cy.go("back");
+    cy.url().should("include", routes[lastIndex - 1]);
+    cy.go("back");
+    cy.url().should("include", routes[lastIndex - 2]);
+    cy.go("forward").go("forward");
+    cy.url().should("include", routes[lastIndex]);
+  });
+});
 ```
 
 ## `usePutHero`
@@ -898,27 +901,27 @@ Start by adding `findHeroIndex` command and its type definition. For brevity we 
 ```tsx
 // cypress/support/commands.ts
 Cypress.Commands.add(
-  'findHeroIndex',
-  (property: Hero['name'] | Hero['description'] | Hero['id']) =>
+  "findHeroIndex",
+  (property: Hero["name"] | Hero["description"] | Hero["id"]) =>
     cy
-      .crud('GET', 'heroes')
-      .its('body')
+      .crud("GET", "heroes")
+      .its("body")
       .then((body: Hero[]) =>
         _.findIndex(
           body,
           (hero: Hero) =>
             hero.name === property ||
             hero.description === property ||
-            hero.id === property,
-        ),
-      ),
-)
+            hero.id === property
+        )
+      )
+);
 ```
 
 ```ts
 // cypress.d.ts
 /**
-* Given a hero property (name, description or id), 
+* Given a hero property (name, description or id),
 * returns the index of the hero in the collection
 */
 findHeroIndex(
@@ -930,173 +933,174 @@ Now we can add a hero to the database via an api call, visit the app, get the he
 
 ```ts
 // cypress/e2e/edit-hero.cy.ts
-import {faker} from '@faker-js/faker'
-import {Hero} from '../../src/models/Hero'
-describe('Edit hero', () => {
+import { faker } from "@faker-js/faker";
+import { Hero } from "../../src/models/Hero";
+describe("Edit hero", () => {
   beforeEach(() => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`).as('getHeroes')
-    cy.visit('/')
-    cy.wait('@getHeroes')
-    cy.location('pathname').should('eq', '/heroes')
-  })
-  it('should go through the cancel flow', () => {
-    cy.fixture('heroes').then(heroes => {
-      cy.getByCy('edit-button').eq(0).click()
-      cy.location('pathname').should(
-        'include',
-        `/heroes/edit-hero/${heroes[0].id}`,
-      )
-      cy.getByCy('hero-detail').should('be.visible')
-      cy.getByCy('input-detail-id').should('be.visible')
-      cy.findByDisplayValue(heroes[0].id).should('be.visible')
-      cy.findByDisplayValue(heroes[0].name).should('be.visible')
-      cy.findByDisplayValue(heroes[0].description).should('be.visible')
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`).as("getHeroes");
+    cy.visit("/");
+    cy.wait("@getHeroes");
+    cy.location("pathname").should("eq", "/heroes");
+  });
+  it("should go through the cancel flow", () => {
+    cy.fixture("heroes").then((heroes) => {
+      cy.getByCy("edit-button").eq(0).click();
+      cy.location("pathname").should(
+        "include",
+        `/heroes/edit-hero/${heroes[0].id}`
+      );
+      cy.getByCy("hero-detail").should("be.visible");
+      cy.getByCy("input-detail-id").should("be.visible");
+      cy.findByDisplayValue(heroes[0].id).should("be.visible");
+      cy.findByDisplayValue(heroes[0].name).should("be.visible");
+      cy.findByDisplayValue(heroes[0].description).should("be.visible");
 
-      cy.getByCy('cancel-button').click()
-      cy.location('pathname').should('eq', '/heroes')
-      cy.getByCy('hero-list').should('be.visible')
-    })
-  })
+      cy.getByCy("cancel-button").click();
+      cy.location("pathname").should("eq", "/heroes");
+      cy.getByCy("hero-list").should("be.visible");
+    });
+  });
 
-  it('should go through the cancel flow for another hero', () => {
-    cy.fixture('heroes').then(heroes => {
-      cy.getByCy('edit-button').eq(1).click()
-      cy.location('pathname').should(
-        'include',
-        `/heroes/edit-hero/${heroes[1].id}`,
-      )
-      cy.getByCy('hero-detail').should('be.visible')
-      cy.getByCy('input-detail-id').should('be.visible')
-      cy.findByDisplayValue(heroes[1].id).should('be.visible')
-      cy.findByDisplayValue(heroes[1].name).should('be.visible')
-      cy.findByDisplayValue(heroes[1].description).should('be.visible')
+  it("should go through the cancel flow for another hero", () => {
+    cy.fixture("heroes").then((heroes) => {
+      cy.getByCy("edit-button").eq(1).click();
+      cy.location("pathname").should(
+        "include",
+        `/heroes/edit-hero/${heroes[1].id}`
+      );
+      cy.getByCy("hero-detail").should("be.visible");
+      cy.getByCy("input-detail-id").should("be.visible");
+      cy.findByDisplayValue(heroes[1].id).should("be.visible");
+      cy.findByDisplayValue(heroes[1].name).should("be.visible");
+      cy.findByDisplayValue(heroes[1].description).should("be.visible");
 
-      cy.getByCy('cancel-button').click()
-      cy.location('pathname').should('eq', '/heroes')
-      cy.getByCy('hero-list').should('be.visible')
-    })
-  })
+      cy.getByCy("cancel-button").click();
+      cy.location("pathname").should("eq", "/heroes");
+      cy.getByCy("hero-list").should("be.visible");
+    });
+  });
 
-  it('should navigate to add from an existing hero', () => {
-    cy.fixture('heroes').then(heroes => {
-      cy.getByCy('edit-button').eq(1).click()
+  it("should navigate to add from an existing hero", () => {
+    cy.fixture("heroes").then((heroes) => {
+      cy.getByCy("edit-button").eq(1).click();
 
-      cy.getByCy('add-button').click()
-      cy.getByCy('input-detail-id').should('not.exist')
-      cy.findByDisplayValue(heroes[1].name).should('not.exist')
-      cy.findByDisplayValue(heroes[1].description).should('not.exist')
-    })
-  })
+      cy.getByCy("add-button").click();
+      cy.getByCy("input-detail-id").should("not.exist");
+      cy.findByDisplayValue(heroes[1].name).should("not.exist");
+      cy.findByDisplayValue(heroes[1].description).should("not.exist");
+    });
+  });
 
-  it.only('should go through the edit flow (ui-e2e)', () => {
+  it.only("should go through the edit flow (ui-e2e)", () => {
     const newHero: Hero = {
       id: faker.datatype.uuid(),
       name: faker.internet.userName(),
       description: `description ${faker.internet.userName()}`,
-    }
+    };
 
-    cy.crud('POST', 'heroes', {body: newHero})
-    cy.visitHeroes()
-    cy.findHeroIndex(newHero.id).then(heroIndex =>
-      cy.getByCy('edit-button').eq(heroIndex).click(),
-    )
-  })
-})
+    cy.crud("POST", "heroes", { body: newHero });
+    cy.visitHeroes();
+    cy.findHeroIndex(newHero.id).then((heroIndex) =>
+      cy.getByCy("edit-button").eq(heroIndex).click()
+    );
+  });
+});
 ```
 
 If we look at the first two tests, we are already covering click-navigation from the `HeroList` to `HeroDetails` in them. We are repeating the same in the final test. We could instead direct-navigate via url. We can pass the query parameters to [`cy.visit`](https://docs.cypress.io/api/commands/visit#Arguments). With e2e tests, always think if you are duplicating the test effort covered elsewhere. If the cost does not add any confidence, then find opportunities to cover different functionalities. In this case we are gaining confidence on direct navigation but also being able to extract state from the url (remember `useParams` & `useSearchParams`).
 
 ```tsx
 // cypress/e2e/edit-hero.cy.ts
-it.only('should go through the edit flow (ui-e2e)', () => {
+it.only("should go through the edit flow (ui-e2e)", () => {
   const newHero: Hero = {
     id: faker.datatype.uuid(),
     name: faker.internet.userName(),
     description: `description ${faker.internet.userName()}`,
-  }
+  };
 
-  cy.crud('POST', 'heroes', {body: newHero})
+  cy.crud("POST", "heroes", { body: newHero });
 
   cy.visit(`heroes/edit-hero/${newHero.id}`, {
-    qs: {name: newHero.name, description: newHero.description},
-  })
-})
+    qs: { name: newHero.name, description: newHero.description },
+  });
+});
 ```
 
 In the rest of the test all we have to do is change the name & description, hit save, end up on `HeroList` and verify the new data. Mind how spacing is used to communicate separation between the tasks to ease readability. This is our first failing test (Red 3).
 
 ```ts
 // cypress/e2e/edit-hero.cy.ts
-it.only('should go through the edit flow (ui-e2e)', () => {
+it.only("should go through the edit flow (ui-e2e)", () => {
   const newHero: Hero = {
     id: faker.datatype.uuid(),
     name: faker.internet.userName(),
     description: `description ${faker.internet.userName()}`,
-  }
+  };
 
-  cy.crud('POST', 'heroes', {body: newHero})
+  cy.crud("POST", "heroes", { body: newHero });
 
   cy.visit(`heroes/edit-hero/${newHero.id}`, {
-    qs: {name: newHero.name, description: newHero.description},
-  })
+    qs: { name: newHero.name, description: newHero.description },
+  });
 
   const editedHero = {
     name: faker.internet.userName(),
     description: `description ${faker.internet.userName()}`,
-  }
+  };
 
-  cy.getByCy('input-detail-name')
-    .find('.input')
+  cy.getByCy("input-detail-name")
+    .find(".input")
     .clear()
-    .type(`${editedHero.name}`)
-  cy.getByCy('input-detail-description')
-    .find('.input')
+    .type(`${editedHero.name}`);
+  cy.getByCy("input-detail-description")
+    .find(".input")
     .clear()
-    .type(`${editedHero.description}`)
-  cy.getByCy('save-button').click()
+    .type(`${editedHero.description}`);
+  cy.getByCy("save-button").click();
 
-  cy.getByCy('hero-list').should('be.visible')
-    .should('contain', editedHero.name)
-    .and('contain', editedHero.description)
-})
+  cy.getByCy("hero-list")
+    .should("be.visible")
+    .should("contain", editedHero.name)
+    .and("contain", editedHero.description);
+});
 ```
 
-Time for our custom hook `usePutHero`. Create a file `src/hooks/usePutHero.ts`. Replicate a similar usage to `usePostHero`, this time utilizing `editItem` from our api : 
+Time for our custom hook `usePutHero`. Create a file `src/hooks/usePutHero.ts`. Replicate a similar usage to `usePostHero`, this time utilizing `editItem` from our api :
 
-` (item: Hero) => editItem(`heroes/${*item*.id}`, item)`
+` (item: Hero) => editItem(`heroes/${_item_.id}`, item)`
 
 For the return, instead of name aliasing the variables at the component, we can showcase how to return an object and alias in place.
 
 ```ts
 // src/hooks/usePutHero.ts
-import {Hero} from 'models/Hero'
-import {useMutation} from 'react-query'
-import {useNavigate} from 'react-router-dom'
-import {editItem} from './api'
+import { Hero } from "models/Hero";
+import { useMutation } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { editItem } from "./api";
 
 /**
  * Helper for PUT to `/heroes` route
  * @returns {object} {updateHero, isUpdating, isUpdateError, updateError}
  */
 export function usePutHero() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const mutation = useMutation(
     (item: Hero) => editItem(`heroes/${item.id}`, item),
     {
       onSuccess: (updatedHero: Hero) => {
-        console.log(updatedHero)
-        navigate(`/heroes`)
+        console.log(updatedHero);
+        navigate(`/heroes`);
       },
-    },
-  )
+    }
+  );
 
   return {
     updateHero: mutation.mutate,
     isUpdating: mutation.isLoading,
     isUpdateError: mutation.isError,
     updateError: mutation.error,
-  }
+  };
 }
 ```
 
@@ -1110,38 +1114,38 @@ With the below changes, we are sending out the `PUT` request and changing the he
 
 ```tsx
 // src/heroes/HeroDetail.tsx
-import {useState, ChangeEvent} from 'react'
-import {useNavigate, useParams} from 'react-router-dom'
-import {FaUndo, FaRegSave} from 'react-icons/fa'
-import InputDetail from 'components/InputDetail'
-import ButtonFooter from 'components/ButtonFooter'
-import {useHeroParams} from 'hooks/useHeroParams'
-import {usePostHero} from 'hooks/usePostHero'
-import {Hero} from 'models/Hero'
-import {usePutHero} from 'hooks/usePutHero'
+import { useState, ChangeEvent } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { FaUndo, FaRegSave } from "react-icons/fa";
+import InputDetail from "components/InputDetail";
+import ButtonFooter from "components/ButtonFooter";
+import { useHeroParams } from "hooks/useHeroParams";
+import { usePostHero } from "hooks/usePostHero";
+import { Hero } from "models/Hero";
+import { usePutHero } from "hooks/usePutHero";
 
 export default function HeroDetail() {
-  const navigate = useNavigate()
-  const {id} = useParams()
-  const {name, description} = useHeroParams()
-  const [hero, setHero] = useState({id, name, description})
-  const {mutate: createHero, status, error: postError} = usePostHero()
-  const {updateHero, isUpdating, isUpdateError} = usePutHero()
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { name, description } = useHeroParams();
+  const [hero, setHero] = useState({ id, name, description });
+  const { mutate: createHero, status, error: postError } = usePostHero();
+  const { updateHero, isUpdating, isUpdateError } = usePutHero();
 
-  const handleCancel = () => navigate('/heroes')
+  const handleCancel = () => navigate("/heroes");
   const handleSave = () => {
-    console.log('handleSave')
-    return name ? updateHero(hero as Hero) : createHero(hero as Hero)
-  }
+    console.log("handleSave");
+    return name ? updateHero(hero as Hero) : createHero(hero as Hero);
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleNameChange')
-    setHero({...hero, name: e.target.value})
-  }
+    console.log("handleNameChange");
+    setHero({ ...hero, name: e.target.value });
+  };
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('handleDescriptionChange')
-    setHero({...hero, description: e.target.value})
-  }
+    console.log("handleDescriptionChange");
+    setHero({ ...hero, description: e.target.value });
+  };
 
   return (
     <div data-cy="hero-detail" className="card edit-detail">
@@ -1152,17 +1156,17 @@ export default function HeroDetail() {
       <div className="card-content">
         <div className="content">
           {id && (
-            <InputDetail name={'id'} value={id} readOnly={true}></InputDetail>
+            <InputDetail name={"id"} value={id} readOnly={true}></InputDetail>
           )}
           <InputDetail
-            name={'name'}
-            value={name ? name : ''}
+            name={"name"}
+            value={name ? name : ""}
             placeholder="e.g. Colleen"
             onChange={handleNameChange}
           ></InputDetail>
           <InputDetail
-            name={'description'}
-            value={description ? description : ''}
+            name={"description"}
+            value={description ? description : ""}
             placeholder="e.g. dance fight!"
             onChange={handleDescriptionChange}
           ></InputDetail>
@@ -1177,7 +1181,7 @@ export default function HeroDetail() {
         <ButtonFooter label="Save" IconClass={FaRegSave} onClick={handleSave} />
       </footer>
     </div>
-  )
+  );
 }
 ```
 
@@ -1185,62 +1189,62 @@ We need a way to replace the hero in the cache with the updated version. First w
 
 ```ts
 // src/hooks/usePutHero.ts
-import {Hero} from 'models/Hero'
-import {useMutation, useQueryClient} from 'react-query'
-import type {QueryClient} from 'react-query'
-import {useNavigate} from 'react-router-dom'
-import {editItem} from './api'
+import { Hero } from "models/Hero";
+import { useMutation, useQueryClient } from "react-query";
+import type { QueryClient } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { editItem } from "./api";
 
 /**
  * Helper for PUT to `/heroes` route
  * @returns {object} {updateHero, isUpdating, isUpdateError, updateError}
  */
 export function usePutHero() {
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const mutation = useMutation(
     (item: Hero) => editItem(`heroes/${item.id}`, item),
     {
       onSuccess: (updatedHero: Hero) => {
-        updateHeroesCache(updatedHero, queryClient)
-        navigate(`/heroes`)
+        updateHeroesCache(updatedHero, queryClient);
+        navigate(`/heroes`);
       },
-    },
-  )
+    }
+  );
 
   return {
     updateHero: mutation.mutate,
     isUpdating: mutation.isLoading,
     isUpdateError: mutation.isError,
     updateError: mutation.error,
-  }
+  };
 }
 
 /** Replace a hero in the cache with the updated version. */
 function updateHeroesCache(updatedHero: Hero, queryClient: QueryClient) {
   // get all the heroes from the cache
-  let heroesCache: Hero[] = queryClient.getQueryData('heroes') || []
+  let heroesCache: Hero[] = queryClient.getQueryData("heroes") || [];
 
   // find the index in the cache of the hero that's been edited
-  const heroIndex = heroesCache.findIndex(h => h.id === updatedHero.id)
+  const heroIndex = heroesCache.findIndex((h) => h.id === updatedHero.id);
 
   if (heroIndex !== -1) {
     // if the hero is found, replace the pre-edited hero with the updated one
     // this is just replacing an array item in place,
     // while not mutating the original array
-    heroesCache = heroesCache.map(preEditedHero =>
-    	preEditedHero.id === updatedHero.id ? updatedHero : preEditedHero,
-    )
+    heroesCache = heroesCache.map((preEditedHero) =>
+      preEditedHero.id === updatedHero.id ? updatedHero : preEditedHero
+    );
     // use queryClient's setQueryData to set the cache
     // takes a key as the first arg, the 2nd arg is the new cache
-    return queryClient.setQueryData(['heroes'], heroesCache)
-  } else return null
+    return queryClient.setQueryData(["heroes"], heroesCache);
+  } else return null;
 }
 ```
 
-We can begin to refactor our test and commands. Similar to add hero flow, the final test reads the real backend and writes to the real backend. The rest of the tests are cancel flows, and the edge case to cover navigating to add from an existing hero. In these tests, the backend is read, and it does not really matter what the data is, so long as there is some data. Therefore we can once again apply ui-integration testing. 
+We can begin to refactor our test and commands. Similar to add hero flow, the final test reads the real backend and writes to the real backend. The rest of the tests are cancel flows, and the edge case to cover navigating to add from an existing hero. In these tests, the backend is read, and it does not really matter what the data is, so long as there is some data. Therefore we can once again apply ui-integration testing.
 
-We can also use randomization to cover hero n vs hero n + 1 index in the array; since the data is stubbed and constant, randomization is okay in this case. 
+We can also use randomization to cover hero n vs hero n + 1 index in the array; since the data is stubbed and constant, randomization is okay in this case.
 
 Let's also not forget to reset the database in the beginning, and clean up after the e2e test by deleting the seeded hero as we did in the add hero flow. We can upgrade the command `getEntityByName` to get the entity by any property passed in.
 
@@ -1248,87 +1252,89 @@ Here are the refactored files (Refactor 3):
 
 ```ts
 // cypress/support/commands.ts
-import {Hero} from '../../src/models/Hero'
-import data from '../fixtures/db.json'
+import { Hero } from "../../src/models/Hero";
+import data from "../fixtures/db.json";
 
-Cypress.Commands.add('getByCy', (selector, ...args) =>
-  cy.get(`[data-cy="${selector}"]`, ...args),
-)
+Cypress.Commands.add("getByCy", (selector, ...args) =>
+  cy.get(`[data-cy="${selector}"]`, ...args)
+);
 
-Cypress.Commands.add('getByCyLike', (selector, ...args) =>
-  cy.get(`[data-cy*=${selector}]`, ...args),
-)
+Cypress.Commands.add("getByCyLike", (selector, ...args) =>
+  cy.get(`[data-cy*=${selector}]`, ...args)
+);
 
-Cypress.Commands.add('getByClassLike', (selector, ...args) =>
-  cy.get(`[class*=${selector}]`, ...args),
-)
+Cypress.Commands.add("getByClassLike", (selector, ...args) =>
+  cy.get(`[class*=${selector}]`, ...args)
+);
 
 Cypress.Commands.add(
-  'crud',
+  "crud",
   (
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    method: "GET" | "POST" | "PUT" | "DELETE",
     route: string,
     {
       body,
       allowedToFail = false,
-    }: {body?: Hero | object; allowedToFail?: boolean} = {},
+    }: { body?: Hero | object; allowedToFail?: boolean } = {}
   ) =>
     cy.request<Hero[] & Hero>({
       method: method,
-      url: `${Cypress.env('API_URL')}/${route}`,
-      body: method === 'POST' || method === 'PUT' ? body : undefined,
+      url: `${Cypress.env("API_URL")}/${route}`,
+      body: method === "POST" || method === "PUT" ? body : undefined,
       retryOnStatusCodeFailure: !allowedToFail,
       failOnStatusCode: !allowedToFail,
-    }),
-)
+    })
+);
 
-Cypress.Commands.add('resetData', () => cy.crud('POST', 'reset', {body: data}))
+Cypress.Commands.add("resetData", () =>
+  cy.crud("POST", "reset", { body: data })
+);
 
-const {_} = Cypress
+const { _ } = Cypress;
 
-type HeroProperty = Hero['name'] | Hero['description'] | Hero['id']
+type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
 
 const propExists = (property: HeroProperty) => (hero: Hero) =>
   hero.name === property ||
   hero.description === property ||
-  hero.id === property
+  hero.id === property;
 
-const getHeroes = () => cy.crud('GET', 'heroes').its('body')
+const getHeroes = () => cy.crud("GET", "heroes").its("body");
 
-Cypress.Commands.add('getEntityByProperty', (property: HeroProperty) =>
+Cypress.Commands.add("getEntityByProperty", (property: HeroProperty) =>
   getHeroes()
     .then((body: Hero[]) => _.filter(body, propExists(property)))
-    .its(0),
-)
+    .its(0)
+);
 
-Cypress.Commands.add('findHeroIndex', (property: HeroProperty) =>
-  getHeroes().then((body: Hero[]) => _.findIndex(body, propExists(property))),
-)
+Cypress.Commands.add("findHeroIndex", (property: HeroProperty) =>
+  getHeroes().then((body: Hero[]) => _.findIndex(body, propExists(property)))
+);
 
-Cypress.Commands.add('visitStubbedHeroes', () => {
-  cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
-    fixture: 'heroes',
-  }).as('stubbedGetHeroes')
-  cy.visit('/')
-  cy.wait('@stubbedGetHeroes')
-  return cy.location('pathname').should('eq', '/heroes')
-})
+Cypress.Commands.add("visitStubbedHeroes", () => {
+  cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
+    fixture: "heroes",
+  }).as("stubbedGetHeroes");
+  cy.visit("/");
+  cy.wait("@stubbedGetHeroes");
+  return cy.location("pathname").should("eq", "/heroes");
+});
 
-Cypress.Commands.add('visitHeroes', () => {
-  cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`).as('getHeroes')
-  cy.visit('/')
-  cy.wait('@getHeroes')
-  return cy.location('pathname').should('eq', '/heroes')
-})
+Cypress.Commands.add("visitHeroes", () => {
+  cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`).as("getHeroes");
+  cy.visit("/");
+  cy.wait("@getHeroes");
+  return cy.location("pathname").should("eq", "/heroes");
+});
 ```
 
-```ts
+````ts
 // cypress.d.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {MountOptions, MountReturn} from 'cypress/react'
-import type {Hero} from './cypress/support/commands'
+import { MountOptions, MountReturn } from "cypress/react";
+import type { Hero } from "./cypress/support/commands";
 
-export {}
+export {};
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -1337,7 +1343,7 @@ declare global {
        * cy.getByCy('search-toggle') // where the selector is [data-cy="search-toggle"]
        * ```
        */
-      getByCy(qaSelector: string, args?: any): Chainable<JQuery<HTMLElement>>
+      getByCy(qaSelector: string, args?: any): Chainable<JQuery<HTMLElement>>;
 
       /** Yields elements with data-cy attribute that partially matches a specified selector.
        * ```
@@ -1346,8 +1352,8 @@ declare global {
        */
       getByCyLike(
         qaSelector: string,
-        args?: any,
-      ): Chainable<JQuery<HTMLElement>>
+        args?: any
+      ): Chainable<JQuery<HTMLElement>>;
 
       /** Yields the element that partially matches the css class
        * ```
@@ -1356,8 +1362,8 @@ declare global {
        */
       getByClassLike(
         qaSelector: string,
-        args?: any,
-      ): Chainable<JQuery<HTMLElement>>
+        args?: any
+      ): Chainable<JQuery<HTMLElement>>;
 
       /** Mounts a React node
        * @param component React Node to mount
@@ -1365,14 +1371,14 @@ declare global {
        */
       mount(
         component: React.ReactNode,
-        options?: MountOptions,
-      ): Cypress.Chainable<MountReturn>
+        options?: MountOptions
+      ): Cypress.Chainable<MountReturn>;
 
       /** Visits baseUrl, uses real network, verifies path */
-      visitHeroes(): Cypress.Chainable<string>
+      visitHeroes(): Cypress.Chainable<string>;
 
       /** Visits baseUrl, uses stubbed network, verifies path */
-      visitStubbedHeroes(): Cypress.Chainable<string>
+      visitStubbedHeroes(): Cypress.Chainable<string>;
 
       /**
        * Gets an entity by name.
@@ -1382,16 +1388,16 @@ declare global {
        * @param name: Hero['name']
        */
       getEntityByProperty(
-        property: Hero['name'] | Hero['description'] | Hero['id'],
-      ): Cypress.Chainable<Hero>
+        property: Hero["name"] | Hero["description"] | Hero["id"]
+      ): Cypress.Chainable<Hero>;
 
       /**
        * Given a hero property (name, description or id),
        * returns the index of the hero in the collection
        */
       findHeroIndex(
-        property: Hero['name'] | Hero['description'] | Hero['id'],
-      ): Cypress.Chainable<number>
+        property: Hero["name"] | Hero["description"] | Hero["id"]
+      ): Cypress.Chainable<number>;
 
       /**
        * Performs crud operations GET, POST, PUT and DELETE.
@@ -1407,110 +1413,110 @@ declare global {
        * @param options: {body?: Hero | object; allowedToFail?: boolean}
        */
       crud(
-        method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+        method: "GET" | "POST" | "PUT" | "DELETE",
         route: string,
         {
           body,
           allowedToFail = false,
-        }: {body?: Hero | object; allowedToFail?: boolean} = {},
-      ): Cypress.Chainable<Response<Hero[] & Hero>>
+        }: { body?: Hero | object; allowedToFail?: boolean } = {}
+      ): Cypress.Chainable<Response<Hero[] & Hero>>;
 
       /**
        * Resets the data in the database to the initial data.
        */
-      resetData(): Cypress.Chainable<Response<Hero[] & Hero>>
+      resetData(): Cypress.Chainable<Response<Hero[] & Hero>>;
     }
   }
 }
-```
+````
 
 ```ts
 // cypress/e2e/edit-hero.cy.ts
-import {faker} from '@faker-js/faker'
-import {Hero} from '../../src/models/Hero'
-describe('Edit hero', () => {
-  before(cy.resetData)
+import { faker } from "@faker-js/faker";
+import { Hero } from "../../src/models/Hero";
+describe("Edit hero", () => {
+  before(cy.resetData);
 
   /** Verifies hero info on Edit page */
   const verifyHero = (heroes: Hero[], heroIndex: number) => {
-    cy.location('pathname').should('include', '/heroes/edit-hero/')
-    cy.getByCy('hero-detail').should('be.visible')
-    cy.getByCy('input-detail-id').should('be.visible')
-    cy.findByDisplayValue(heroes[heroIndex].id)
-    cy.findByDisplayValue(heroes[heroIndex].name)
-    cy.findByDisplayValue(heroes[heroIndex].description)
-  }
+    cy.location("pathname").should("include", "/heroes/edit-hero/");
+    cy.getByCy("hero-detail").should("be.visible");
+    cy.getByCy("input-detail-id").should("be.visible");
+    cy.findByDisplayValue(heroes[heroIndex].id);
+    cy.findByDisplayValue(heroes[heroIndex].name);
+    cy.findByDisplayValue(heroes[heroIndex].description);
+  };
 
   const randomHeroIndex = (heroes: Hero[]) =>
-    Cypress._.random(0, heroes.length - 1)
+    Cypress._.random(0, heroes.length - 1);
 
-  it('should go through the cancel flow for a random hero (ui-integration)', () => {
-    cy.visitStubbedHeroes()
+  it("should go through the cancel flow for a random hero (ui-integration)", () => {
+    cy.visitStubbedHeroes();
 
-    cy.fixture('heroes').then(heroes => {
-      const heroIndex = randomHeroIndex(heroes)
-      cy.getByCy('edit-button').eq(heroIndex).click()
-      verifyHero(heroes, heroIndex)
-    })
+    cy.fixture("heroes").then((heroes) => {
+      const heroIndex = randomHeroIndex(heroes);
+      cy.getByCy("edit-button").eq(heroIndex).click();
+      verifyHero(heroes, heroIndex);
+    });
 
-    cy.getByCy('cancel-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('hero-list').should('be.visible')
-  })
+    cy.getByCy("cancel-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("hero-list").should("be.visible");
+  });
 
-  it('should navigate to add from an existing hero (ui-integration)', () => {
-    cy.visitStubbedHeroes()
+  it("should navigate to add from an existing hero (ui-integration)", () => {
+    cy.visitStubbedHeroes();
 
-    cy.fixture('heroes').then(heroes => {
-      const heroIndex = randomHeroIndex(heroes)
-      cy.getByCy('edit-button').eq(heroIndex).click()
-      verifyHero(heroes, heroIndex)
+    cy.fixture("heroes").then((heroes) => {
+      const heroIndex = randomHeroIndex(heroes);
+      cy.getByCy("edit-button").eq(heroIndex).click();
+      verifyHero(heroes, heroIndex);
 
-      cy.getByCy('add-button').click()
-      cy.getByCy('input-detail-id').should('not.exist')
-      cy.findByDisplayValue(heroes[heroIndex].name).should('not.exist')
-      cy.findByDisplayValue(heroes[heroIndex].description).should('not.exist')
-    })
-  })
+      cy.getByCy("add-button").click();
+      cy.getByCy("input-detail-id").should("not.exist");
+      cy.findByDisplayValue(heroes[heroIndex].name).should("not.exist");
+      cy.findByDisplayValue(heroes[heroIndex].description).should("not.exist");
+    });
+  });
 
-  it('should go through the edit flow (ui-e2e)', () => {
+  it("should go through the edit flow (ui-e2e)", () => {
     const newHero: Hero = {
       id: faker.datatype.uuid(),
       name: faker.internet.userName(),
       description: `description ${faker.internet.userName()}`,
-    }
+    };
 
-    cy.crud('POST', 'heroes', {body: newHero})
+    cy.crud("POST", "heroes", { body: newHero });
 
     cy.visit(`heroes/edit-hero/${newHero.id}`, {
-      qs: {name: newHero.name, description: newHero.description},
-    })
+      qs: { name: newHero.name, description: newHero.description },
+    });
 
     const editedHero = {
       name: faker.internet.userName(),
       description: `description ${faker.internet.userName()}`,
-    }
+    };
 
-    cy.getByCy('input-detail-name')
-      .find('.input')
+    cy.getByCy("input-detail-name")
+      .find(".input")
       .clear()
-      .type(`${editedHero.name}`)
-    cy.getByCy('input-detail-description')
-      .find('.input')
+      .type(`${editedHero.name}`);
+    cy.getByCy("input-detail-description")
+      .find(".input")
       .clear()
-      .type(`${editedHero.description}`)
-    cy.getByCy('save-button').click()
+      .type(`${editedHero.description}`);
+    cy.getByCy("save-button").click();
 
-    cy.getByCy('hero-list')
-      .should('be.visible')
-      .should('contain', editedHero.name)
-      .and('contain', editedHero.description)
+    cy.getByCy("hero-list")
+      .should("be.visible")
+      .should("contain", editedHero.name)
+      .and("contain", editedHero.description);
 
-    cy.getEntityByProperty(newHero.id).then(myHero =>
-      cy.crud('DELETE', `heroes/${myHero.id}`),
-    )
-  })
-})
+    cy.getEntityByProperty(newHero.id).then((myHero) =>
+      cy.crud("DELETE", `heroes/${myHero.id}`)
+    );
+  });
+});
 ```
 
 ## `useDeleteHero`
@@ -1519,12 +1525,12 @@ We start the creation of our final hook with a test, as usual. We want to use th
 
 ```ts
 // cypress/support/commands.ts
-Cypress.Commands.add('findHeroIndex', (property: HeroProperty) =>
+Cypress.Commands.add("findHeroIndex", (property: HeroProperty) =>
   getHeroes().then((body: Hero[]) => ({
     heroIndex: _.findIndex(body, propExists(property)),
     heroesArray: body,
-  })),
-)
+  }))
+);
 ```
 
 ```ts
@@ -1538,64 +1544,64 @@ findHeroIndex(
   ): Cypress.Chainable<{heroIndex: number; heroesArray: Hero[]}>
 ```
 
-Here is our entire test. We are covering the cancel delete flow as a ui-integration test. We delete the hero and expect to not find it on the list (Red 4). 
+Here is our entire test. We are covering the cancel delete flow as a ui-integration test. We delete the hero and expect to not find it on the list (Red 4).
 
 ```ts
 // cypress/e2e/delete-hero.cy.ts
-import {faker} from '@faker-js/faker'
-import {Hero} from '../../src/models/Hero'
-describe('Delete hero', () => {
-  before(cy.resetData)
+import { faker } from "@faker-js/faker";
+import { Hero } from "../../src/models/Hero";
+describe("Delete hero", () => {
+  before(cy.resetData);
 
-  it('should go through the cancel flow (ui-integration)', () => {
-    cy.visitStubbedHeroes()
+  it("should go through the cancel flow (ui-integration)", () => {
+    cy.visitStubbedHeroes();
 
-    cy.getByCy('delete-button').first().click()
-    cy.getByCy('modal-yes-no').within(() => cy.getByCy('button-no').click())
-    cy.getByCy('heroes').should('be.visible')
-    cy.get('modal-yes-no').should('not.exist')
-  })
+    cy.getByCy("delete-button").first().click();
+    cy.getByCy("modal-yes-no").within(() => cy.getByCy("button-no").click());
+    cy.getByCy("heroes").should("be.visible");
+    cy.get("modal-yes-no").should("not.exist");
+  });
 
-  it('should go through the edit flow (ui-e2e)', () => {
+  it("should go through the edit flow (ui-e2e)", () => {
     const hero: Hero = {
       id: faker.datatype.uuid(),
       name: faker.internet.userName(),
       description: `description ${faker.internet.userName()}`,
-    }
+    };
 
-    cy.crud('POST', 'heroes', {body: hero})
+    cy.crud("POST", "heroes", { body: hero });
 
-    cy.visitHeroes()
+    cy.visitHeroes();
 
-    cy.findHeroIndex(hero.id).then(({heroIndex, heroesArray}) => {
-      cy.getByCy('delete-button').eq(heroIndex).click()
-      cy.getByCy('modal-yes-no').within(() => cy.getByCy('button-yes').click())
+    cy.findHeroIndex(hero.id).then(({ heroIndex, heroesArray }) => {
+      cy.getByCy("delete-button").eq(heroIndex).click();
+      cy.getByCy("modal-yes-no").within(() => cy.getByCy("button-yes").click());
 
-      cy.getByCy('hero-list')
-        .should('be.visible')
-        .should('not.contain', heroesArray[heroIndex].name)
-        .and('not.contain', heroesArray[heroIndex].description)
-    })
-  })
-})
+      cy.getByCy("hero-list")
+        .should("be.visible")
+        .should("not.contain", heroesArray[heroIndex].name)
+        .and("not.contain", heroesArray[heroIndex].description);
+    });
+  });
+});
 ```
 
 As the test fails, we see a `console.log` of `handleDeleteFromModal` which exists in the `Heroes` component. For our hook, we are going to utilize `useMutation` once again. We are using `deleteItem` from our api. `onSuccess`, which has used the first argument until now (the created / edited item) is going to be using the second argument which is the original (deleted) item. Cache will need management once again; we need to get all the heroes from the cache, and set the cache without the deleted hero. We should consistently use the same cache key which we used for `POST` and `PUT` operations; `['heroes']`. We will apply a similar return value to `usePutHero` hook.
 
 ```ts
 // src/hooks/useDeleteHero.ts
-import {Hero} from 'models/Hero'
-import {useMutation, useQueryClient} from 'react-query'
-import {useNavigate} from 'react-router-dom'
-import {deleteItem} from './api'
+import { Hero } from "models/Hero";
+import { useMutation, useQueryClient } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { deleteItem } from "./api";
 
 /**
  * Helper for DELETE to `/heroes` route
  * @returns {object} {deleteHero, isDeleting, isDeleteError, deleteError}
  */
 export function useDeleteHero() {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const mutation = useMutation(
     (item: Hero) => deleteItem(`heroes/${item.id}`),
@@ -1604,28 +1610,28 @@ export function useDeleteHero() {
       // if you recall, the first argument is the created item
       onSuccess: (_, deletedHero: Hero) => {
         // get all the heroes from the cache
-        const heroes: Hero[] = queryClient.getQueryData(['heroes']) || []
+        const heroes: Hero[] = queryClient.getQueryData(["heroes"]) || [];
         // set the heroes cache without the delete one
         queryClient.setQueryData(
-          ['heroes'],
-          heroes.filter(h => h.id !== deletedHero.id),
-        )
+          ["heroes"],
+          heroes.filter((h) => h.id !== deletedHero.id)
+        );
 
-        navigate('/heroes')
+        navigate("/heroes");
       },
-    },
-  )
+    }
+  );
 
   return {
     deleteHero: mutation.mutate,
     isDeleting: mutation.isLoading,
     isDeleteError: mutation.isError,
     deleteError: mutation.error,
-  }
+  };
 }
 ```
 
-Our `Heroes` component can begin to use the hook like  so:
+Our `Heroes` component can begin to use the hook like so:
 
 `const {deleteHero, isDeleteError} = useDeleteHero()`
 
@@ -1634,54 +1640,54 @@ Alas, in these two handler functions, we have to pass the hook a `hero` to mutat
 ```ts
 // src/heroes/Heroes.tsx
 const handleDeleteHero = () => {
-  setShowModal(true)
-}
+  setShowModal(true);
+};
 const handleDeleteFromModal = () => {
-  setShowModal(false)
-  console.log('handleDeleteFromModal')
-}
+  setShowModal(false);
+  console.log("handleDeleteFromModal");
+};
 ```
 
-The component not only needs to know which hero to delete, it is displaying the whole list, but it also needs to tell `HeroList` that information in a prop `handleDeleteHero`.  We can identify the hero via `useState`; in the beginning we do not know it, when we are letting `HeroList` know about it then we can identify the hero.
+The component not only needs to know which hero to delete, it is displaying the whole list, but it also needs to tell `HeroList` that information in a prop `handleDeleteHero`. We can identify the hero via `useState`; in the beginning we do not know it, when we are letting `HeroList` know about it then we can identify the hero.
 
 ```ts
 // src/heroes/Heroes.tsx
-const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null)
+const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null);
 
 const handleDeleteHero = (hero: Hero) => {
-  setHeroToDelete(hero)
-  setShowModal(true)
-}
+  setHeroToDelete(hero);
+  setShowModal(true);
+};
 
 const handleDeleteFromModal = () => {
-  eleteHero(heroToDelete!)
-  setShowModal(false)
-}
+  eleteHero(heroToDelete!);
+  setShowModal(false);
+};
 ```
 
 Before moving forward, we need to make a slight modification to `HeroList`. The prop `handleDeleteHero` needs to take a hero as an argument. Additionally the click handler for `handleDeleteHero` needs to become a function that returns `handleDeleteHero`, similar to `handleSelectHero`.
 
 ```tsx
 // src/heroes/HeroList.tsx
-import {useNavigate} from 'react-router-dom'
-import CardContent from 'components/CardContent'
-import ButtonFooter from 'components/ButtonFooter'
-import {FaEdit, FaRegSave} from 'react-icons/fa'
-import {Hero} from 'models/Hero'
+import { useNavigate } from "react-router-dom";
+import CardContent from "components/CardContent";
+import ButtonFooter from "components/ButtonFooter";
+import { FaEdit, FaRegSave } from "react-icons/fa";
+import { Hero } from "models/Hero";
 
 type HeroListProps = {
-  heroes: Hero[]
-  handleDeleteHero: (hero: Hero) => void // TODO: consider better type
-}
+  heroes: Hero[];
+  handleDeleteHero: (hero: Hero) => void; // TODO: consider better type
+};
 
-export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
-  const navigate = useNavigate()
+export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
+  const navigate = useNavigate();
   const handleSelectHero = (heroId: string) => {
-    const hero = heroes.find((h: Hero) => h.id === heroId)
+    const hero = heroes.find((h: Hero) => h.id === heroId);
     navigate(
-      `/heroes/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`,
-    )
-  }
+      `/heroes/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`
+    );
+  };
 
   return (
     <ul data-cy="hero-list" className="list">
@@ -1705,7 +1711,7 @@ export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
         </li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
@@ -1713,64 +1719,64 @@ Now we can apply the key changes to `Heroes` component (Green 4).
 
 ```ts
 // we identify the hero to delete as state
-const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null)
+const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null);
 // we use the new hook
-const {deleteHero, isDeleteError} = useDeleteHero()
+const { deleteHero, isDeleteError } = useDeleteHero();
 // when closing the modal, we should negat the heroToDelete state
 const handleCloseModal = () => {
-  setHeroToDelete(null) // we 
-  setShowModal(false)
-}
+  setHeroToDelete(null); // we
+  setShowModal(false);
+};
 // we let the HeroList know about which hero to delete
 // and HeroList decides the hero in its click handler
 // onClick={() => handleDeleteHero(hero)}
 const handleDeleteHero = (hero: Hero) => {
-  setHeroToDelete(hero)
-  setShowModal(true)
-}
+  setHeroToDelete(hero);
+  setShowModal(true);
+};
 // on clicking Yes in the modal, we invoke the hook
 const handleDeleteFromModal = () => {
-  deleteHero(heroToDelete!)
-  setShowModal(false)
-}
+  deleteHero(heroToDelete!);
+  setShowModal(false);
+};
 ```
 
 ```tsx
 // src/heroes/Heroes.tsx
-import {useNavigate, Routes, Route} from 'react-router-dom'
-import ListHeader from 'components/ListHeader'
-import ModalYesNo from 'components/ModalYesNo'
-import HeroList from './HeroList'
-import {useState} from 'react'
-import HeroDetail from './HeroDetail'
-import {useGetHeroes} from 'hooks/useGetHeroes'
-import {useDeleteHero} from 'hooks/useDeleteHero'
-import {Hero} from 'models/Hero'
+import { useNavigate, Routes, Route } from "react-router-dom";
+import ListHeader from "components/ListHeader";
+import ModalYesNo from "components/ModalYesNo";
+import HeroList from "./HeroList";
+import { useState } from "react";
+import HeroDetail from "./HeroDetail";
+import { useGetHeroes } from "hooks/useGetHeroes";
+import { useDeleteHero } from "hooks/useDeleteHero";
+import { Hero } from "models/Hero";
 
 export default function Heroes() {
-  const [showModal, setShowModal] = useState<boolean>(false)
-  const {heroes, status, getError} = useGetHeroes()
-  const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null)
-  const {deleteHero, isDeleteError} = useDeleteHero()
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const { heroes, status, getError } = useGetHeroes();
+  const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null);
+  const { deleteHero, isDeleteError } = useDeleteHero();
 
-  const navigate = useNavigate()
-  const addNewHero = () => navigate('/heroes/add-hero')
-  const handleRefresh = () => navigate('/heroes')
+  const navigate = useNavigate();
+  const addNewHero = () => navigate("/heroes/add-hero");
+  const handleRefresh = () => navigate("/heroes");
 
   const handleCloseModal = () => {
-    setHeroToDelete(null)
-    setShowModal(false)
-  }
+    setHeroToDelete(null);
+    setShowModal(false);
+  };
   const handleDeleteHero = (hero: Hero) => {
-    setHeroToDelete(hero)
-    setShowModal(true)
-  }
+    setHeroToDelete(hero);
+    setShowModal(true);
+  };
 
   const handleDeleteFromModal = () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    deleteHero(heroToDelete!)
-    setShowModal(false)
-  }
+    deleteHero(heroToDelete!);
+    setShowModal(false);
+  };
 
   return (
     <div data-cy="heroes">
@@ -1808,7 +1814,7 @@ export default function Heroes() {
         />
       )}
     </div>
-  )
+  );
 }
 ```
 
@@ -1827,27 +1833,27 @@ onClick{handleDeleteHero(hero)}
 To accomplish that we need to curry `handleSelectHero`. Similar to chapter 14, the outer function takes our custom argument and returns a function that takes the event. We need to align the prop type to communicate that.
 
 ```tsx
-import {useNavigate} from 'react-router-dom'
-import CardContent from 'components/CardContent'
-import ButtonFooter from 'components/ButtonFooter'
-import {FaEdit, FaRegSave} from 'react-icons/fa'
-import {MouseEvent} from 'react'
-import {Hero} from 'models/Hero'
+import { useNavigate } from "react-router-dom";
+import CardContent from "components/CardContent";
+import ButtonFooter from "components/ButtonFooter";
+import { FaEdit, FaRegSave } from "react-icons/fa";
+import { MouseEvent } from "react";
+import { Hero } from "models/Hero";
 
 type HeroListProps = {
-  heroes: Hero[]
-  handleDeleteHero: (hero: Hero) => (e: MouseEvent<HTMLButtonElement>) => void
-}
+  heroes: Hero[];
+  handleDeleteHero: (hero: Hero) => (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
-export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
-  const navigate = useNavigate()
+export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
+  const navigate = useNavigate();
   // currying: the outer fn takes our custom arg and returns a fn that takes the event
   const handleSelectHero = (heroId: string) => () => {
-    const hero = heroes.find((h: Hero) => h.id === heroId)
+    const hero = heroes.find((h: Hero) => h.id === heroId);
     navigate(
-      `/heroes/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`,
-    )
-  }
+      `/heroes/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`
+    );
+  };
 
   return (
     <ul data-cy="hero-list" className="list">
@@ -1871,7 +1877,7 @@ export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
         </li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
@@ -1879,41 +1885,41 @@ We only need to apply the same refactor to `handleDeleteHero` in `Heroes` compon
 
 ```ts
 // src/heroes/Heroes.tsx
-import {useNavigate, Routes, Route} from 'react-router-dom'
-import ListHeader from 'components/ListHeader'
-import ModalYesNo from 'components/ModalYesNo'
-import HeroList from './HeroList'
-import {useState} from 'react'
-import HeroDetail from './HeroDetail'
-import {useGetHeroes} from 'hooks/useGetHeroes'
-import {useDeleteHero} from 'hooks/useDeleteHero'
-import {Hero} from 'models/Hero'
+import { useNavigate, Routes, Route } from "react-router-dom";
+import ListHeader from "components/ListHeader";
+import ModalYesNo from "components/ModalYesNo";
+import HeroList from "./HeroList";
+import { useState } from "react";
+import HeroDetail from "./HeroDetail";
+import { useGetHeroes } from "hooks/useGetHeroes";
+import { useDeleteHero } from "hooks/useDeleteHero";
+import { Hero } from "models/Hero";
 
 export default function Heroes() {
-  const [showModal, setShowModal] = useState<boolean>(false)
-  const {heroes, status, getError} = useGetHeroes()
-  const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null)
-  const {deleteHero, isDeleteError} = useDeleteHero()
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const { heroes, status, getError } = useGetHeroes();
+  const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null);
+  const { deleteHero, isDeleteError } = useDeleteHero();
 
-  const navigate = useNavigate()
-  const addNewHero = () => navigate('/heroes/add-hero')
-  const handleRefresh = () => navigate('/heroes')
+  const navigate = useNavigate();
+  const addNewHero = () => navigate("/heroes/add-hero");
+  const handleRefresh = () => navigate("/heroes");
 
   const handleCloseModal = () => {
-    setHeroToDelete(null)
-    setShowModal(false)
-  }
+    setHeroToDelete(null);
+    setShowModal(false);
+  };
   // currying: the outer fn takes our custom arg and returns a fn that takes the event
   const handleDeleteHero = (hero: Hero) => () => {
-    setHeroToDelete(hero)
-    setShowModal(true)
-  }
+    setHeroToDelete(hero);
+    setShowModal(true);
+  };
 
   const handleDeleteFromModal = () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    deleteHero(heroToDelete!)
-    setShowModal(false)
-  }
+    deleteHero(heroToDelete!);
+    setShowModal(false);
+  };
 
   return (
     <div data-cy="heroes">
@@ -1951,164 +1957,162 @@ export default function Heroes() {
         />
       )}
     </div>
-  )
+  );
 }
 ```
 
 ## Updating the component tests
 
-Now that `react-query`'s `QueryClientProvider` is being used, `Heroes` and `HeroDetail` components will also need to be wrapped in `QueryClientProvider`. Running the component tests, we get an error: `(uncaught exception)**Error: No QueryClient set, use QueryClientProvider to set one`. 
+Now that `react-query`'s `QueryClientProvider` is being used, `Heroes` and `HeroDetail` components will also need to be wrapped in `QueryClientProvider`. Running the component tests, we get an error: `(uncaught exception)**Error: No QueryClient set, use QueryClientProvider to set one`.
 
 Update `HeroDetail` component test as below. When covering the test `should handle Save`, we now see an aborted `POST` going out which we can verify and satisfy the todo item. Other than that, the only change is that we are wrapping the component mounts in `QueryClientProvider`.
 
 ```tsx
 // src/heroes/HeroDetail.cy.tsx
-import HeroDetail from './HeroDetail'
-import {BrowserRouter} from 'react-router-dom'
-import {QueryClient, QueryClientProvider} from 'react-query'
-import '../styles.scss'
+import HeroDetail from "./HeroDetail";
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+import "../styles.scss";
 
-describe('HeroDetail', () => {
-  let queryClient: QueryClient
-  context('handleSave, handleCancel', () => {
+describe("HeroDetail", () => {
+  let queryClient: QueryClient;
+  context("handleSave, handleCancel", () => {
     beforeEach(() => {
-      queryClient = new QueryClient()
+      queryClient = new QueryClient();
       cy.mount(
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <HeroDetail />
           </BrowserRouter>
-        </QueryClientProvider>,
-      )
-    })
-    
-    it('should handle Save', () => {
-      cy.intercept('POST', '*', {statusCode: 200}).as('postHero')
-      cy.getByCy('save-button').click()
-      cy.wait('@postHero')
-    })
+        </QueryClientProvider>
+      );
+    });
 
-    it('should handle Cancel', () => {
-      cy.getByCy('cancel-button').click()
-      cy.location('pathname').should('eq', '/heroes')
-    })
-  })
+    it("should handle Save", () => {
+      cy.intercept("POST", "*", { statusCode: 200 }).as("postHero");
+      cy.getByCy("save-button").click();
+      cy.wait("@postHero");
+    });
 
-  context('handleNameChange, handleDescriptionChange', () => {
+    it("should handle Cancel", () => {
+      cy.getByCy("cancel-button").click();
+      cy.location("pathname").should("eq", "/heroes");
+    });
+  });
+
+  context("handleNameChange, handleDescriptionChange", () => {
     beforeEach(() => {
-      queryClient = new QueryClient()
+      queryClient = new QueryClient();
       cy.mount(
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <HeroDetail />
           </BrowserRouter>
-        </QueryClientProvider>,
-      )
-    })
+        </QueryClientProvider>
+      );
+    });
 
-    it('should handle name change', () => {
-      const newHeroName = 'abc'
-      cy.getByCy('input-detail-name').type(newHeroName)
+    it("should handle name change", () => {
+      const newHeroName = "abc";
+      cy.getByCy("input-detail-name").type(newHeroName);
 
-      cy.findByDisplayValue(newHeroName).should('be.visible')
-    })
+      cy.findByDisplayValue(newHeroName).should("be.visible");
+    });
 
-    it('should handle description change', () => {
-      const newHeroDescription = '123'
-      cy.getByCy('input-detail-description').type(newHeroDescription)
+    it("should handle description change", () => {
+      const newHeroDescription = "123";
+      cy.getByCy("input-detail-description").type(newHeroDescription);
 
-      cy.findByDisplayValue(newHeroDescription).should('be.visible')
-    })
-  })
+      cy.findByDisplayValue(newHeroDescription).should("be.visible");
+    });
+  });
 
-  context('state: should verify the layout of the component', () => {
-    it('id: false, name: false - should verify the minimal state of the component', () => {
-      queryClient = new QueryClient()
+  context("state: should verify the layout of the component", () => {
+    it("id: false, name: false - should verify the minimal state of the component", () => {
+      queryClient = new QueryClient();
       cy.mount(
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <HeroDetail />
           </BrowserRouter>
-        </QueryClientProvider>,
-      )
+        </QueryClientProvider>
+      );
 
-      cy.get('p').then($el => cy.wrap($el.text()).should('equal', ''))
-      cy.getByCyLike('input-detail').should('have.length', 2)
-      cy.getByCy('input-detail-id').should('not.exist')
+      cy.get("p").then(($el) => cy.wrap($el.text()).should("equal", ""));
+      cy.getByCyLike("input-detail").should("have.length", 2);
+      cy.getByCy("input-detail-id").should("not.exist");
 
-      cy.findByPlaceholderText('e.g. Colleen').should('be.visible')
-      cy.findByPlaceholderText('e.g. dance fight!').should('be.visible')
+      cy.findByPlaceholderText("e.g. Colleen").should("be.visible");
+      cy.findByPlaceholderText("e.g. dance fight!").should("be.visible");
 
-      cy.getByCy('save-button').should('be.visible')
-      cy.getByCy('cancel-button').should('be.visible')
-    })
-  })
-})
+      cy.getByCy("save-button").should("be.visible");
+      cy.getByCy("cancel-button").should("be.visible");
+    });
+  });
+});
 ```
 
-In `Heroes` component test, we wrap the component in `QueryClientProvider`. We can also stop spying on console.log and instead  stub the `DELETE` request going out when going through the delete hero modal flow.
+In `Heroes` component test, we wrap the component in `QueryClientProvider`. We can also stop spying on console.log and instead stub the `DELETE` request going out when going through the delete hero modal flow.
 
 ```tsx
 // src/heroes/Heroes.cy.tsx
-import Heroes from './Heroes'
-import {BrowserRouter} from 'react-router-dom'
-import {QueryClient, QueryClientProvider} from 'react-query'
-import '../styles.scss'
+import Heroes from "./Heroes";
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+import "../styles.scss";
 
-describe('Heroes', () => {
-  let queryClient: QueryClient
+describe("Heroes", () => {
+  let queryClient: QueryClient;
   beforeEach(() => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
-      fixture: 'heroes.json',
-    }).as('getHeroes')
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
+      fixture: "heroes.json",
+    }).as("getHeroes");
 
-    queryClient = new QueryClient()
+    queryClient = new QueryClient();
     cy.mount(
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Heroes />
         </BrowserRouter>
-      </QueryClientProvider>,
-    )
-  })
+      </QueryClientProvider>
+    );
+  });
 
-  it('should display the hero list on render, and go through hero add & refresh flow', () => {
-    cy.wait('@getHeroes')
+  it("should display the hero list on render, and go through hero add & refresh flow", () => {
+    cy.wait("@getHeroes");
 
-    cy.getByCy('list-header').should('be.visible')
-    cy.getByCy('hero-list').should('be.visible')
+    cy.getByCy("list-header").should("be.visible");
+    cy.getByCy("hero-list").should("be.visible");
 
-    cy.getByCy('add-button').click()
-    cy.location('pathname').should('eq', '/heroes/add-hero')
+    cy.getByCy("add-button").click();
+    cy.location("pathname").should("eq", "/heroes/add-hero");
 
-    cy.getByCy('refresh-button').click()
-    cy.location('pathname').should('eq', '/heroes')
-  })
+    cy.getByCy("refresh-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+  });
 
   const invokeHeroDelete = () => {
-    cy.getByCy('delete-button').first().click()
-    cy.getByCy('modal-yes-no').should('be.visible')
-  }
-  it('should go through the modal flow', () => {
-    cy.getByCy('modal-yes-no').should('not.exist')
+    cy.getByCy("delete-button").first().click();
+    cy.getByCy("modal-yes-no").should("be.visible");
+  };
+  it("should go through the modal flow", () => {
+    cy.getByCy("modal-yes-no").should("not.exist");
 
-    cy.log('do not delete flow')
-    invokeHeroDelete()
-    cy.getByCy('button-no').click()
-    cy.getByCy('modal-yes-no').should('not.exist')
+    cy.log("do not delete flow");
+    invokeHeroDelete();
+    cy.getByCy("button-no").click();
+    cy.getByCy("modal-yes-no").should("not.exist");
 
-    cy.log('delete flow')
-    invokeHeroDelete()
-    cy.intercept('DELETE', '*', {statusCode: 200}).as('deleteHero')
+    cy.log("delete flow");
+    invokeHeroDelete();
+    cy.intercept("DELETE", "*", { statusCode: 200 }).as("deleteHero");
 
-    cy.getByCy('button-yes').click()
-    cy.wait('@deleteHero')
-    cy.getByCy('modal-yes-no').should('not.exist')
-  })
-})
+    cy.getByCy("button-yes").click();
+    cy.wait("@deleteHero");
+    cy.getByCy("modal-yes-no").should("not.exist");
+  });
+});
 ```
-
-
 
 ## Summary
 

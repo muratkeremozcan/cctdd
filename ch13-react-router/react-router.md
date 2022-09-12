@@ -451,6 +451,7 @@ describe("e2e sanity", () => {
   });
 
   it("should cover route history with browser back and forward", () => {
+    cy.visit("/")
     const routes = ["villains", "heroes", "about"];
     cy.wrap(routes).each((route: string) =>
       cy.get(`[href="/${route}"]`).click()
