@@ -1025,7 +1025,7 @@ export default function HeroDetail() {
 }
 ```
 
-We do not have any way to check the update scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Any time we are not able to cover a test at a low level with component tests, move up to ui-integration tests. Most the time a ui-integration test will suffice, and when it is not enough we can use a true e2e that hits the backend. We can add a ui-integration test to `edit-hero.cy.ts` e2e test that covers the update scenario. We see the boundaries between test types begin to get thinner; we use the least costly kind of test to gain the highest confidence. Where they are in the pyramid is only relevant by the ability to perform that kind of test in the given context (Refactor 3).
+We do not have any way to check the update scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Any time we are not able to cover a test at a low level with component tests, move up to ui-integration tests. Most the time a ui-integration test will suffice, and when it is not enough we can use a true e2e that hits the backend. In our case ui-integration is sufficient because we do not necessarily have to receive a 500 response from a real network to render the error .  Therefore we can add a ui-integration test to `edit-hero.cy.ts` e2e test that covers the update scenario. We see the boundaries between test types begin to get thinner; we use the least costly kind of test to gain the highest confidence. Where they are in the pyramid is only relevant by the ability to perform that kind of test in the given context (Refactor 3).
 
 The new test is similar to other ui-integration tests; we stub the network and visit the main route. We go to the edit page for any random hero. We setup the network stub that will happen on update via `cy.intercept`. Finally we repeat a similar spinner -> wait on network -> error flow from the component test. The only distinction here is `PUT` vs `POST`.
 
@@ -1617,7 +1617,7 @@ describe("Heroes", () => {
 });
 ```
 
-We are covering the error that may happen in a `GET` call, but nothing about `DELETE`. We do not have any way to check the delete scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Once again we can move up in the pyramid and take a look at the e2e test; `delete-hero.cy.ts` . Similar to `edit-hero.cy.ts`, we can satisfy this check with a ui-integration test, stubbing the network.
+We are covering the error that may happen in a `GET` call, but nothing about `DELETE`. We do not have any way to check the delete scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Once again we can move up in the pyramid and take a look at the e2e test; `delete-hero.cy.ts` . Similar to `edit-hero.cy.ts`, we can satisfy this check with a ui-integration test, stubbing the network. Once again a ui-integration is sufficient because we do not necessarily have to receive a 500 response from a real network to render the error
 
 ```tsx
 // Arrange: cy.mount
@@ -1797,9 +1797,9 @@ We configured the application for `Suspense` and `ErrorBoundary`
 
 We wrote a non-200 / network error edge case for `HeroDetail` component which also hits the `Suspense` code using a `cy.intercept` delay option (Red 2, Red 3).
 
-We added conditional rendering to `HeroDetail` for loading and error conditions that may occur with a `POST` request(Green 2, Green 3)
+We added conditional rendering to `HeroDetail` for loading and error conditions that may occur with a `POST` request (Green 2, Green 3)
 
-In order to cover `PUT` request of loading and error condition, we utilized an ui-integration test, since it is aware of a state that can trigger a back-end modification (Refactor 3)
+In order to cover `PUT` request loading and error condition, we utilized a ui-integration test, since it is aware of a state that can trigger a back-end modification, but doesn't necessarily have to receive a 500 response from a real network to render the error (Refactor 3)
 
 <br />
 
@@ -1807,7 +1807,7 @@ We wrote a non-200 / network error edge case for `Heroes` component which is `He
 
 We wrapped the component test mount in the fashion the root app is wrapped by `ErrorBoundary` & `Suspense`. We took advantage of `cy.clock` , `cy.tick` and turned off test failure on expected error throws (Green 4).
 
-We improved the component test to check for the spinner. We covered the network error case for `DELETE` in a ui-integration test since it is aware of a state that can trigger a back-end modification.
+We improved the component test to check for the spinner. Similar to the `POST` request error case, we covered the network error case for `DELETE` in a ui-integration test since it is aware of a state that can trigger a back-end modification, but doesn't necessarily have to receive a 500 response from a real network to render the error (Refactor 4).
 
 <br />
 
@@ -1815,8 +1815,8 @@ We modified the RTL unit test to work with `Suspense`
 
 ## Takeaways
 
-- When adding major features, it is important to execute the CT as well as e2e test suites to ensure there are no regressions. Small incremental steps, coupled by confident tests, make error diagnosis easier.
-- Although they have a reputation of being "brittle", well-written, stable e2e tests have a high fault-finding capability, catching the defects that are not realized in a smaller focus.
+- When adding major features, it is important to execute the CT as well as e2e test suites to ensure there are no regressions. Small incremental steps coupled by confident tests make error diagnosis easier.
+- Although they have a reputation of being "brittle", well-written, stable e2e of ui-integration tests have a high fault-finding capability, catching the defects that are not realized in an isolated component, or unit test.
 - While multiple state updates are occurring simultaneously, Concurrency refers to certain state updates having less priority over others, for the purpose of optimizing UI responsiveness. `useTransition` & `useDeferredValue` can be used to specify what is of lower priority. If you have access to the state updating code, prefer `useTransition` and wrap that code. If you do not have access to the code but only to the final value, utilize `useDeferredValue` to wrap that value.
 - `Suspense` with `lazy` loading is used to code-split the initial application bundle, in order to improve UI responsiveness. Together with `ErrorBoundary` , they de-couple the loading and error UI from individual components. While loading show the `Suspense` component, if error show the `ErrorBoundary` component, if success show the component we want to render.
 - When beginning to write tests for error cases, any test that is covering the positive flows to spy on or stub the network with `cy.intercept()` is a good candidate to begin with. Start at the component level and move up to ui-integration when further tests are not possible.
