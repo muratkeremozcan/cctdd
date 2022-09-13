@@ -13,7 +13,7 @@ We start minimal with a test that renders the component (Red 1).
 import CardContent from "./CardContent";
 
 describe("CardContent", () => {
-  it("should", () => {
+  it("should render the card content", () => {
     cy.mount(<CardContent />);
   });
 });
@@ -38,7 +38,7 @@ Let's test that the string renders (Green 1).
 import CardContent from "./CardContent";
 
 describe("CardContent", () => {
-  it("should", () => {
+  it("should render the card content", () => {
     cy.mount(<CardContent />);
     cy.contains("hello");
   });
@@ -54,7 +54,7 @@ Let's write a test for the divs we want; we need two divs, one contains a name, 
 import CardContent from "./CardContent";
 
 describe("CardContent", () => {
-  it("should", () => {
+  it("should render the card content", () => {
     cy.mount(<CardContent />);
 
     cy.contains("Bjorn Ironside");
@@ -84,7 +84,7 @@ It is becoming obvious we should be passing name and description as props (Red 3
 import CardContent from "./CardContent";
 
 describe("CardContent", () => {
-  it("should", () => {
+  it("should render the card content", () => {
     const name = "Bjorn Ironside";
     const description = "king of 9th century Sweden";
     cy.mount(<CardContent name={name} description={description} />);
@@ -193,8 +193,6 @@ We added styles and classes to the component (Refactor 3).
 
 ## Takeaways
 
-* It is encouraged to use hard coded values to make the tests pass initially.
+- It is encouraged to use hard coded values to make the tests pass initially.
 
-* Using a `data-cy` attribute in the top tag of the component will make it easier to reference when other components or the app uses it.
-
-  
+- Using a `data-cy` attribute in the top tag of the component will make it easier to reference when other components or the app uses it.
