@@ -259,7 +259,7 @@ export default function HeroDetail() {
 }
 ```
 
-We can take advantage of TypeScript paths to avoid needing too many `../` folder references. Enhance `src/tsconfig.json` as such:
+We can take advantage of TypeScript paths to avoid needing too many `../` folder references. Ensure that `src/tsconfig.json` is as such:
 
 ```json
 {
@@ -267,12 +267,7 @@ We can take advantage of TypeScript paths to avoid needing too many `../` folder
     "target": "esnext",
     "lib": ["esnext", "dom"],
     "types": ["cypress", "node", "@testing-library/cypress"],
-    "baseUrl": "./",
-    "paths": {
-      "@components/*": ["components/*"],
-      "@hooks/*": ["hooks/*"],
-      "@models/*": ["models/*"]
-    }
+    "baseUrl": "./"
   },
   "include": ["**/*.ts*", "../cypress.d.ts"],
   "extends": "../tsconfig.json"
