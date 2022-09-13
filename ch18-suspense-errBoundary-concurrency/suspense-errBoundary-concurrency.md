@@ -1718,112 +1718,172 @@ Compare to our new mount:
 
 ```tsx
 // src/heroes/Heroes.cy.tsx
-const mounter = (queryClient: QueryClient) =>
-  cy.mount(
-    <QueryClientProvider client={queryClient}>
-      <ErrorBoundary fallback={<ErrorComp />}>
-        <Suspense fallback={<PageSpinner />}>
-          <BrowserRouter>
-            <Heroes />
-          </BrowserRouter>
-        </Suspense>
-      </ErrorBoundary>
-    </QueryClientProvider>
-  );
+cy.mount(
+  <QueryClientProvider client={new QueryClient}>
+    <ErrorBoundary fallback={<ErrorComp />}>
+      <Suspense fallback={<PageSpinner />}>
+        <BrowserRouter>
+          <Heroes />
+        </BrowserRouter>
+      </Suspense>
+    </ErrorBoundary>
+  </QueryClientProvider>
+)
 ```
 
-> We will show a final refactor for `cy.mount` wrapper hell later.
-
-Our test is working with that wrapped mount. We can include a check for the spinner before the error (Refactor 5). Here is the final version of the test:
+Our test can work with that, but most likely the verbosity will be needed elsewhere. We can instead use a custom function for it like so:
 
 ```tsx
-// src/heroes/Heroes.cy.tsx
-import { Suspense } from "react";
-import Heroes from "./Heroes";
-import { BrowserRouter } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ErrorBoundary } from "react-error-boundary";
-import ErrorComp from "components/ErrorComp";
-import PageSpinner from "components/PageSpinner";
-import "../styles.scss";
-
-describe("Heroes", () => {
-  const mounter = (queryClient: QueryClient) =>
-    cy.mount(
-      <QueryClientProvider client={queryClient}>
+  const wrappedMount = (
+    WrappedComponent: React.ElementType,
+    props: JSX.IntrinsicAttributes &
+      React.ClassAttributes<HTMLSpanElement> &
+      React.HTMLAttributes<HTMLSpanElement> = {},
+  ) => {
+    const wrapped = (
+      <QueryClientProvider client={new QueryClient()}>
         <ErrorBoundary fallback={<ErrorComp />}>
           <Suspense fallback={<PageSpinner />}>
             <BrowserRouter>
-              <Heroes />
+              <WrappedComponent />
             </BrowserRouter>
           </Suspense>
         </ErrorBoundary>
       </QueryClientProvider>
-    );
+    )
+    return cy.mount(wrapped, props)
+  }
 
-  it("should go through the error flow", () => {
-    Cypress.on("uncaught:exception", () => false);
-    cy.clock();
-    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
+// usage
+
+wrappedMount(Heroes)
+```
+
+It is optimal to make that a Cypress command which we can use in any component without having to import. We could replace most `cy.mount`s in the component test suite - with the exception of `App.cy.tsx`  -because the additional wrappers will not hurt. Change `./cypress/support/component.ts` to a `tsx` file. We align the command better with `cy.mount` in command version of the `wrappedMount`.
+
+```tsx
+// cypress/support/component.tsx
+import './commands'
+import '@testing-library/cypress/add-commands'
+import {mount} from 'cypress/react18'
+import {BrowserRouter} from 'react-router-dom'
+import {QueryClient, QueryClientProvider} from 'react-query'
+import {ErrorBoundary} from 'react-error-boundary'
+import ErrorComp from '../../src/components/ErrorComp'
+import PageSpinner from '../../src/components/PageSpinner'
+import {Suspense} from 'react'
+
+Cypress.Commands.add('mount', mount)
+
+Cypress.Commands.add(
+  'wrappedMount',
+  (WrappedComponent: React.ReactNode, options = {}) => {
+    const wrapped = (
+      <QueryClientProvider client={new QueryClient()}>
+        <ErrorBoundary fallback={<ErrorComp />}>
+          <Suspense fallback={<PageSpinner />}>
+            <BrowserRouter>{WrappedComponent}</BrowserRouter>
+          </Suspense>
+        </ErrorBoundary>
+      </QueryClientProvider>
+    )
+    return cy.mount(wrapped, options)
+  },
+)
+```
+
+Add the definition to `cypress.d.ts.`
+
+```ts
+/** Mounts the component wrapped by all the providers:
+* QueryClientProvider, ErrorBoundary, Suspense, BrowserRouter
+* @param component React Node to mount
+* @param options Additional options to pass into mount */
+wrappedMount(
+  component: React.ReactNode,
+  options?: MountOptions,
+): Cypress.Chainable<MountReturn>
+```
+
+ Here is the final version of the test with `cy.wrappedMount`. We included a check for the spinner before the error as a bonus (Refactor 5). You can optionally apply `cy.wrappedMount` refactor to a few of the component tests:
+
+* `src/components/HeaderBar.cy.tsx`
+* `src/components/HeaderBarBrand.cy.tsx`
+* `src/components/ListHeader.cy.tsx`
+* `src/components/NavBar.cy.tsx`
+* `src/components/HeroDetail.cy.tsx`
+* `src/components/Heroes.cy.tsx`
+* `src/components/HeroList.cy.tsx`
+
+```tsx
+// src/heroes/Heroes.cy.tsx
+import Heroes from './Heroes'
+import '../styles.scss'
+
+describe('Heroes', () => {
+  it('should go through the error flow', () => {
+    Cypress.on('uncaught:exception', () => false)
+    cy.clock()
+    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
       statusCode: 400,
       delay: 100,
-    }).as("notFound");
+    }).as('notFound')
 
-    mounter(new QueryClient());
+    cy.wrappedMount(<Heroes />)
 
-    cy.getByCy("page-spinner").should("be.visible");
+    cy.getByCy('page-spinner').should('be.visible')
     Cypress._.times(4, () => {
-      cy.tick(5000);
-      cy.wait("@notFound");
-    });
+      cy.tick(5000)
+      cy.wait('@notFound')
+    })
 
-    cy.getByCy("error");
-  });
+    cy.getByCy('error')
+  })
 
-  context("200 flows", () => {
+  context('200 flows', () => {
     beforeEach(() => {
-      cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
-        fixture: "heroes.json",
-      }).as("getHeroes");
+      cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
+        fixture: 'heroes.json',
+      }).as('getHeroes')
 
-      mounter(new QueryClient());
-    });
+      cy.wrappedMount(<Heroes />)
+    })
 
-    it("should display the hero list on render, and go through hero add & refresh flow", () => {
-      cy.wait("@getHeroes");
+    it('should display the hero list on render, and go through hero add & refresh flow', () => {
+      cy.wait('@getHeroes')
 
-      cy.getByCy("list-header").should("be.visible");
-      cy.getByCy("hero-list").should("be.visible");
+      cy.getByCy('list-header').should('be.visible')
+      cy.getByCy('hero-list').should('be.visible')
 
-      cy.getByCy("add-button").click();
-      cy.location("pathname").should("eq", "/heroes/add-hero");
+      cy.getByCy('add-button').click()
+      cy.location('pathname').should('eq', '/heroes/add-hero')
 
-      cy.getByCy("refresh-button").click();
-      cy.location("pathname").should("eq", "/heroes");
-    });
+      cy.getByCy('refresh-button').click()
+      cy.location('pathname').should('eq', '/heroes')
+    })
 
     const invokeHeroDelete = () => {
-      cy.getByCy("delete-button").first().click();
-      cy.getByCy("modal-yes-no").should("be.visible");
-    };
-    it("should go through the modal flow", () => {
-      cy.getByCy("modal-yes-no").should("not.exist");
+      cy.getByCy('delete-button').first().click()
+      cy.getByCy('modal-yes-no').should('be.visible')
+    }
+    it('should go through the modal flow', () => {
+      cy.getByCy('modal-yes-no').should('not.exist')
 
-      cy.log("do not delete flow");
-      invokeHeroDelete();
-      cy.getByCy("button-no").click();
-      cy.getByCy("modal-yes-no").should("not.exist");
+      cy.log('do not delete flow')
+      invokeHeroDelete()
+      cy.getByCy('button-no').click()
+      cy.getByCy('modal-yes-no').should('not.exist')
 
-      cy.log("delete flow");
-      invokeHeroDelete();
-      cy.intercept("DELETE", "*", { statusCode: 200 }).as("deleteHero");
+      cy.log('delete flow')
+      invokeHeroDelete()
+      cy.intercept('DELETE', '*', {statusCode: 200}).as('deleteHero')
 
-      cy.getByCy("button-yes").click();
-      cy.wait("@deleteHero");
-      cy.getByCy("modal-yes-no").should("not.exist");
-    });
-  });
-});
+      cy.getByCy('button-yes').click()
+      cy.wait('@deleteHero')
+      cy.getByCy('modal-yes-no').should('not.exist')
+    })
+  })
+})
 ```
 
 We are covering the error that may happen in a `GET` call, but nothing about `DELETE`. We do not have any way to check the delete scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Once again we can move up in the pyramid and take a look at the e2e test; `delete-hero.cy.ts` . Similar to `edit-hero.cy.ts`, we can satisfy this check with a ui-integration test, stubbing the network. Once again a ui-integration is sufficient because we do not necessarily have to receive a 500 response from a real network to render the error
@@ -1841,7 +1901,7 @@ it("should go through the error flow", () => {
     delay: 100,
   }).as("notFound");
   // Act: mount
-  mounter(new QueryClient());
+  cy.wrappedMount(<Heroes />)
 
   // Assert
   cy.getByCy("page-spinner").should("be.visible");
