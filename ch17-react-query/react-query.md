@@ -1736,7 +1736,7 @@ const handleDeleteHero = (hero: Hero) => {
 };
 // on clicking Yes in the modal, we invoke the hook
 const handleDeleteFromModal = () => {
-  deleteHero(heroToDelete!);
+  heroToDelete ? deleteHero(heroToDelete) : null;
   setShowModal(false);
 };
 ```
@@ -1773,8 +1773,7 @@ export default function Heroes() {
   };
 
   const handleDeleteFromModal = () => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    deleteHero(heroToDelete!);
+    heroToDelete ? deleteHero(heroToDelete) : null;
     setShowModal(false);
   };
 
@@ -1916,8 +1915,7 @@ export default function Heroes() {
   };
 
   const handleDeleteFromModal = () => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    deleteHero(heroToDelete!);
+    heroToDelete ? deleteHero(heroToDelete) : null;
     setShowModal(false);
   };
 

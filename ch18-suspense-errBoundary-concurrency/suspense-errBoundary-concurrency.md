@@ -152,8 +152,8 @@ When typing into the search field, we want to filter the heroes data to see if a
 Now we have to set that state with the filtering logic. Here are two functions that help us do that:
 
 ```ts
-/** returns a boolean whether the hero properties exist in the search field */
 type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+
 /** returns a boolean whether the hero properties exist in the search field */
 const searchExists = (searchProperty: HeroProperty, searchField: string) =>
   String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
@@ -204,8 +204,8 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
     );
   };
 
-  /** returns a boolean whether the hero properties exist in the search field */
   type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+
   /** returns a boolean whether the hero properties exist in the search field */
   const searchExists = (searchProperty: HeroProperty, searchField: string) =>
     String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
@@ -301,8 +301,8 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
     );
   };
 
-  /** returns a boolean whether the hero properties exist in the search field */
   type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+
   /** returns a boolean whether the hero properties exist in the search field */
   const searchExists = (searchProperty: HeroProperty, searchField: string) =>
     String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
@@ -439,8 +439,8 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
     );
   };
 
-  /** returns a boolean whether the hero properties exist in the search field */
   type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+
   /** returns a boolean whether the hero properties exist in the search field */
   const searchExists = (searchProperty: HeroProperty, searchField: string) =>
     String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
@@ -565,8 +565,8 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
     );
   };
 
-  /** returns a boolean whether the hero properties exist in the search field */
   type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+
   /** returns a boolean whether the hero properties exist in the search field */
   const searchExists = (searchProperty: HeroProperty, searchField: string) =>
     String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
@@ -601,6 +601,199 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
         <span>Search </span>
         <input data-cy="search" onChange={handleSearch(deferredHeroes)} />
       </div>
+      &nbsp;
+      <ul data-cy="hero-list" className="list">
+        {filteredHeroes.map((hero, index) => (
+          <li data-cy={`hero-list-item-${index}`} key={hero.id}>
+            <div className="card">
+              <CardContent name={hero.name} description={hero.description} />
+              <footer className="card-footer">
+                <ButtonFooter
+                  label="Delete"
+                  IconClass={FaRegSave}
+                  onClick={handleDeleteHero(hero)}
+                />
+                <ButtonFooter
+                  label="Edit"
+                  IconClass={FaEdit}
+                  onClick={handleSelectHero(hero.id)}
+                />
+              </footer>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+The conditional rendering gives another clue; do we need a search bar when there is no data? Let's add that feature, starting with a failing test. We will rearrange `HeroLIst.cy.tsx` a bit so that we can capture the test in two contexts; mount without hero data, and mount with hero data (Red 2).
+
+```tsx
+// src/heroes/HeroList.cy.tsx
+import { BrowserRouter } from "react-router-dom";
+import HeroList from "./HeroList";
+import "../styles.scss";
+import heroes from "../../cypress/fixtures/heroes.json";
+
+describe("HeroList", () => {
+  it("no heroes should not display a list nor search bar", () => {
+    cy.mount(
+      <BrowserRouter>
+        <HeroList
+          heroes={[]}
+          handleDeleteHero={cy.stub().as("handleDeleteHero")}
+        />
+      </BrowserRouter>
+    );
+
+    cy.getByCyLike("hero-list-item").should("not.exist");
+    cy.getByCy("search").should("not.exist");
+  });
+
+  context("with heroes in the list", () => {
+    beforeEach(() => {
+      cy.mount(
+        <BrowserRouter>
+          <HeroList
+            heroes={heroes}
+            handleDeleteHero={cy.stub().as("handleDeleteHero")}
+          />
+        </BrowserRouter>
+      );
+    });
+
+    it("should render the hero layout", () => {
+      cy.getByCyLike("hero-list-item").should("have.length", heroes.length);
+
+      cy.getByCy("card-content");
+      cy.contains(heroes[0].name);
+      cy.contains(heroes[0].description);
+
+      cy.get("footer").within(() => {
+        cy.getByCy("delete-button");
+        cy.getByCy("edit-button");
+      });
+    });
+
+    it("should search and filter hero by name and description", () => {
+      cy.getByCy("search").type(heroes[0].name);
+      cy.getByCyLike("hero-list-item")
+        .should("have.length", 1)
+        .contains(heroes[0].name);
+
+      cy.getByCy("search").clear().type(heroes[2].description);
+      cy.getByCyLike("hero-list-item")
+        .should("have.length", 1)
+        .contains(heroes[2].description);
+    });
+
+    it("should handle delete", () => {
+      cy.getByCy("delete-button").first().click();
+      cy.get("@handleDeleteHero").should("have.been.called");
+    });
+
+    it("should handle edit", () => {
+      cy.getByCy("edit-button").first().click();
+      cy.location("pathname").should("eq", "/heroes/edit-hero/" + heroes[0].id);
+    });
+  });
+});
+```
+
+To satisfy the test, all we need is conditional rendering for the search bar.
+
+```tsx
+{
+  deferredHeroes.length > 0 && (
+    <div className="card-content">
+      <span>Search </span>
+      <input data-cy="search" onChange={handleSearch(deferredHeroes)} />
+    </div>
+  );
+}
+```
+
+Here is the `HeroList` component in its final form (Green 2):
+
+```tsx
+// src/heroes/HeroList.tsx
+import { useNavigate } from "react-router-dom";
+import CardContent from "components/CardContent";
+import ButtonFooter from "components/ButtonFooter";
+import { FaEdit, FaRegSave } from "react-icons/fa";
+import {
+  ChangeEvent,
+  MouseEvent,
+  useTransition,
+  useEffect,
+  useState,
+  useDeferredValue,
+} from "react";
+import { Hero } from "models/Hero";
+
+type HeroListProps = {
+  heroes: Hero[];
+  handleDeleteHero: (hero: Hero) => (e: MouseEvent<HTMLButtonElement>) => void;
+};
+
+export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
+  const deferredHeroes = useDeferredValue(heroes);
+  const isStale = deferredHeroes !== heroes;
+  const [filteredHeroes, setFilteredHeroes] = useState(deferredHeroes);
+  const navigate = useNavigate();
+  const [isPending, startTransition] = useTransition();
+
+  // needed to refresh the list after deleting a hero
+  useEffect(() => setFilteredHeroes(deferredHeroes), [deferredHeroes]);
+
+  // currying: the outer fn takes our custom arg and returns a fn that takes the event
+  const handleSelectHero = (heroId: string) => () => {
+    const hero = deferredHeroes.find((h: Hero) => h.id === heroId);
+    navigate(
+      `/heroes/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`
+    );
+  };
+
+  type HeroProperty = Hero["name"] | Hero["description"] | Hero["id"];
+
+  /** returns a boolean whether the hero properties exist in the search field */
+  const searchExists = (searchProperty: HeroProperty, searchField: string) =>
+    String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
+    -1;
+
+  /** given the data and the search field, returns the data in which the search field exists */
+  const searchProperties = (searchField: string, data: Hero[]) =>
+    [...data].filter((item: Hero) =>
+      Object.values(item).find((property: HeroProperty) =>
+        searchExists(property, searchField)
+      )
+    );
+
+  /** filters the heroes data to see if the any of the properties exist in the list */
+  const handleSearch =
+    (data: Hero[]) => (event: ChangeEvent<HTMLInputElement>) => {
+      const searchField = event.target.value;
+
+      return startTransition(() =>
+        setFilteredHeroes(searchProperties(searchField, data))
+      );
+    };
+
+  return (
+    <div
+      style={{
+        opacity: isPending ? 0.5 : 1,
+        color: isStale ? "dimgray" : "black",
+      }}
+    >
+      {deferredHeroes.length > 0 && (
+        <div className="card-content">
+          <span>Search </span>
+          <input data-cy="search" onChange={handleSearch(deferredHeroes)} />
+        </div>
+      )}
       &nbsp;
       <ul data-cy="hero-list" className="list">
         {filteredHeroes.map((hero, index) => (
@@ -739,7 +932,7 @@ export const useGetHeroes = () => {
 
 Now we can begin writing failing tests for error edge cases. Where do we start? Any component test that is covering the positive cases, spying on or stubbing the network with `cy.intercept()` is a good candidate . Those are `HeroDetail` and `Heroes` component tests.
 
-Add a test to `HeroList` component test for a non-200 scenario. We use a delay option to be able to see the spinner (Red 2).
+Add a test to `HeroList` component test for a non-200 scenario. We use a delay option to be able to see the spinner (Red 3).
 
 ```ts
 it("should handle Save", () => {
@@ -939,7 +1132,7 @@ it.only("should handle non-200 Save", () => {
 });
 ```
 
-Next we add a line to check for an error. The status code is 400, we should see some error in this test (Red 3).
+Next we add a line to check for an error. The status code is 400, we should see some error in this test (Red 4).
 
 ```ts
 it.only("should handle non-200 Save", () => {
@@ -1041,7 +1234,7 @@ export default function HeroDetail() {
 }
 ```
 
-We do not have any way to check the update scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Any time we are not able to cover a test at a low level with component tests, move up to ui-integration tests. Most the time a ui-integration test will suffice, and when it is not enough we can use a true e2e that hits the backend. In our case ui-integration is sufficient because we do not necessarily have to receive a 500 response from a real network to render the error . Therefore we can add a ui-integration test to `edit-hero.cy.ts` e2e test that covers the update scenario. We see the boundaries between test types begin to get thinner; we use the least costly kind of test to gain the highest confidence. Where they are in the pyramid is only relevant by the ability to perform that kind of test in the given context (Refactor 3).
+We do not have any way to check the update scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Any time we are not able to cover a test at a low level with component tests, move up to ui-integration tests. Most the time a ui-integration test will suffice, and when it is not enough we can use a true e2e that hits the backend. In our case ui-integration is sufficient because we do not necessarily have to receive a 500 response from a real network to render the error . Therefore we can add a ui-integration test to `edit-hero.cy.ts` e2e test that covers the update scenario. We see the boundaries between test types begin to get thinner; we use the least costly kind of test to gain the highest confidence. Where they are in the pyramid is only relevant by the ability to perform that kind of test in the given context (Refactor 4).
 
 The new test is similar to other ui-integration tests; we stub the network and visit the main route. We go to the edit page for any random hero. We setup the network stub that will happen on update via `cy.intercept`. Finally we repeat a similar spinner -> wait on network -> error flow from the component test. The only distinction here is `PUT` vs `POST`.
 
@@ -1368,7 +1561,7 @@ describe("Heroes", () => {
 });
 ```
 
-Running the component test, we see that nothing renders, Axios retrying multiple times and throws an error (Red 4).
+Running the component test, we see that nothing renders, Axios retrying multiple times and throws an error (Red 5).
 
 ![SuspenseErrBoundary-Red4](../img/SuspenseErrBoundary-Red4.png)
 
@@ -1503,7 +1696,7 @@ After that change, the only remaining failure is `data-cy` not rendering
 
 ![SuspenseErrBoundary-Red4-Part2](../img/SuspenseErrBoundary-Red4-Part2.png)
 
-We need to remember that a component test is an independent, small scale app. Our application is being wrapped at the base level, and with that `ErrorBoundary` and `Suspense` are able to apply to every component under the App. Therefore we also need to wrap our mounted component (Green 4).
+We need to remember that a component test is an independent, small scale app. Our application is being wrapped at the base level, and with that `ErrorBoundary` and `Suspense` are able to apply to every component under the App. Therefore we also need to wrap our mounted component (Green 5).
 
 ```tsx
 // remember App.tsx
@@ -1525,112 +1718,172 @@ Compare to our new mount:
 
 ```tsx
 // src/heroes/Heroes.cy.tsx
-const mounter = (queryClient: QueryClient) =>
-  cy.mount(
-    <QueryClientProvider client={queryClient}>
-      <ErrorBoundary fallback={<ErrorComp />}>
-        <Suspense fallback={<PageSpinner />}>
-          <BrowserRouter>
-            <Heroes />
-          </BrowserRouter>
-        </Suspense>
-      </ErrorBoundary>
-    </QueryClientProvider>
-  );
+cy.mount(
+  <QueryClientProvider client={new QueryClient}>
+    <ErrorBoundary fallback={<ErrorComp />}>
+      <Suspense fallback={<PageSpinner />}>
+        <BrowserRouter>
+          <Heroes />
+        </BrowserRouter>
+      </Suspense>
+    </ErrorBoundary>
+  </QueryClientProvider>
+)
 ```
 
-> We will show a final refactor for `cy.mount` wrapper hell later.
-
-Our test is working with that wrapped mount. We can include a check for the spinner before the error (Refactor 4). Here is the final version of the test:
+Our test can work with that, but most likely the verbosity will be needed elsewhere. We can instead use a custom function for it like so:
 
 ```tsx
-// src/heroes/Heroes.cy.tsx
-import { Suspense } from "react";
-import Heroes from "./Heroes";
-import { BrowserRouter } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ErrorBoundary } from "react-error-boundary";
-import ErrorComp from "components/ErrorComp";
-import PageSpinner from "components/PageSpinner";
-import "../styles.scss";
-
-describe("Heroes", () => {
-  const mounter = (queryClient: QueryClient) =>
-    cy.mount(
-      <QueryClientProvider client={queryClient}>
+  const wrappedMount = (
+    WrappedComponent: React.ElementType,
+    props: JSX.IntrinsicAttributes &
+      React.ClassAttributes<HTMLSpanElement> &
+      React.HTMLAttributes<HTMLSpanElement> = {},
+  ) => {
+    const wrapped = (
+      <QueryClientProvider client={new QueryClient()}>
         <ErrorBoundary fallback={<ErrorComp />}>
           <Suspense fallback={<PageSpinner />}>
             <BrowserRouter>
-              <Heroes />
+              <WrappedComponent />
             </BrowserRouter>
           </Suspense>
         </ErrorBoundary>
       </QueryClientProvider>
-    );
+    )
+    return cy.mount(wrapped, props)
+  }
 
-  it("should go through the error flow", () => {
-    Cypress.on("uncaught:exception", () => false);
-    cy.clock();
-    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
+// usage
+
+wrappedMount(Heroes)
+```
+
+It is optimal to make that a Cypress command which we can use in any component without having to import. We could replace most `cy.mount`s in the component test suite - with the exception of `App.cy.tsx`  -because the additional wrappers will not hurt. Change `./cypress/support/component.ts` to a `tsx` file. We align the command better with `cy.mount` in command version of the `wrappedMount`.
+
+```tsx
+// cypress/support/component.tsx
+import './commands'
+import '@testing-library/cypress/add-commands'
+import {mount} from 'cypress/react18'
+import {BrowserRouter} from 'react-router-dom'
+import {QueryClient, QueryClientProvider} from 'react-query'
+import {ErrorBoundary} from 'react-error-boundary'
+import ErrorComp from '../../src/components/ErrorComp'
+import PageSpinner from '../../src/components/PageSpinner'
+import {Suspense} from 'react'
+
+Cypress.Commands.add('mount', mount)
+
+Cypress.Commands.add(
+  'wrappedMount',
+  (WrappedComponent: React.ReactNode, options = {}) => {
+    const wrapped = (
+      <QueryClientProvider client={new QueryClient()}>
+        <ErrorBoundary fallback={<ErrorComp />}>
+          <Suspense fallback={<PageSpinner />}>
+            <BrowserRouter>{WrappedComponent}</BrowserRouter>
+          </Suspense>
+        </ErrorBoundary>
+      </QueryClientProvider>
+    )
+    return cy.mount(wrapped, options)
+  },
+)
+```
+
+Add the definition to `cypress.d.ts.`
+
+```ts
+/** Mounts the component wrapped by all the providers:
+* QueryClientProvider, ErrorBoundary, Suspense, BrowserRouter
+* @param component React Node to mount
+* @param options Additional options to pass into mount */
+wrappedMount(
+  component: React.ReactNode,
+  options?: MountOptions,
+): Cypress.Chainable<MountReturn>
+```
+
+ Here is the final version of the test with `cy.wrappedMount`. We included a check for the spinner before the error as a bonus (Refactor 5). You can optionally apply `cy.wrappedMount` refactor to a few of the component tests:
+
+* `src/components/HeaderBar.cy.tsx`
+* `src/components/HeaderBarBrand.cy.tsx`
+* `src/components/ListHeader.cy.tsx`
+* `src/components/NavBar.cy.tsx`
+* `src/components/HeroDetail.cy.tsx`
+* `src/components/Heroes.cy.tsx`
+* `src/components/HeroList.cy.tsx`
+
+```tsx
+// src/heroes/Heroes.cy.tsx
+import Heroes from './Heroes'
+import '../styles.scss'
+
+describe('Heroes', () => {
+  it('should go through the error flow', () => {
+    Cypress.on('uncaught:exception', () => false)
+    cy.clock()
+    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
       statusCode: 400,
       delay: 100,
-    }).as("notFound");
+    }).as('notFound')
 
-    mounter(new QueryClient());
+    cy.wrappedMount(<Heroes />)
 
-    cy.getByCy("page-spinner").should("be.visible");
+    cy.getByCy('page-spinner').should('be.visible')
     Cypress._.times(4, () => {
-      cy.tick(5000);
-      cy.wait("@notFound");
-    });
+      cy.tick(5000)
+      cy.wait('@notFound')
+    })
 
-    cy.getByCy("error");
-  });
+    cy.getByCy('error')
+  })
 
-  context("200 flows", () => {
+  context('200 flows', () => {
     beforeEach(() => {
-      cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
-        fixture: "heroes.json",
-      }).as("getHeroes");
+      cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
+        fixture: 'heroes.json',
+      }).as('getHeroes')
 
-      mounter(new QueryClient());
-    });
+      cy.wrappedMount(<Heroes />)
+    })
 
-    it("should display the hero list on render, and go through hero add & refresh flow", () => {
-      cy.wait("@getHeroes");
+    it('should display the hero list on render, and go through hero add & refresh flow', () => {
+      cy.wait('@getHeroes')
 
-      cy.getByCy("list-header").should("be.visible");
-      cy.getByCy("hero-list").should("be.visible");
+      cy.getByCy('list-header').should('be.visible')
+      cy.getByCy('hero-list').should('be.visible')
 
-      cy.getByCy("add-button").click();
-      cy.location("pathname").should("eq", "/heroes/add-hero");
+      cy.getByCy('add-button').click()
+      cy.location('pathname').should('eq', '/heroes/add-hero')
 
-      cy.getByCy("refresh-button").click();
-      cy.location("pathname").should("eq", "/heroes");
-    });
+      cy.getByCy('refresh-button').click()
+      cy.location('pathname').should('eq', '/heroes')
+    })
 
     const invokeHeroDelete = () => {
-      cy.getByCy("delete-button").first().click();
-      cy.getByCy("modal-yes-no").should("be.visible");
-    };
-    it("should go through the modal flow", () => {
-      cy.getByCy("modal-yes-no").should("not.exist");
+      cy.getByCy('delete-button').first().click()
+      cy.getByCy('modal-yes-no').should('be.visible')
+    }
+    it('should go through the modal flow', () => {
+      cy.getByCy('modal-yes-no').should('not.exist')
 
-      cy.log("do not delete flow");
-      invokeHeroDelete();
-      cy.getByCy("button-no").click();
-      cy.getByCy("modal-yes-no").should("not.exist");
+      cy.log('do not delete flow')
+      invokeHeroDelete()
+      cy.getByCy('button-no').click()
+      cy.getByCy('modal-yes-no').should('not.exist')
 
-      cy.log("delete flow");
-      invokeHeroDelete();
-      cy.intercept("DELETE", "*", { statusCode: 200 }).as("deleteHero");
+      cy.log('delete flow')
+      invokeHeroDelete()
+      cy.intercept('DELETE', '*', {statusCode: 200}).as('deleteHero')
 
-      cy.getByCy("button-yes").click();
-      cy.wait("@deleteHero");
-      cy.getByCy("modal-yes-no").should("not.exist");
-    });
-  });
-});
+      cy.getByCy('button-yes').click()
+      cy.wait('@deleteHero')
+      cy.getByCy('modal-yes-no').should('not.exist')
+    })
+  })
+})
 ```
 
 We are covering the error that may happen in a `GET` call, but nothing about `DELETE`. We do not have any way to check the delete scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Once again we can move up in the pyramid and take a look at the e2e test; `delete-hero.cy.ts` . Similar to `edit-hero.cy.ts`, we can satisfy this check with a ui-integration test, stubbing the network. Once again a ui-integration is sufficient because we do not necessarily have to receive a 500 response from a real network to render the error
@@ -1648,7 +1901,7 @@ it("should go through the error flow", () => {
     delay: 100,
   }).as("notFound");
   // Act: mount
-  mounter(new QueryClient());
+  cy.wrappedMount(<Heroes />)
 
   // Assert
   cy.getByCy("page-spinner").should("be.visible");
@@ -1807,23 +2060,27 @@ We enhanced the component with `useTransition` to wrap the code we have control 
 
 <br />
 
+We added conditional rendering for the search-filter (Red 2, Green 2)
+
+<br />
+
 We configured the application for `Suspense` and `ErrorBoundary`
 
 <br />
 
-We wrote a non-200 / network error edge case for `HeroDetail` component which also hits the `Suspense` code using a `cy.intercept` delay option (Red 2, Red 3).
+We wrote a non-200 / network error edge case for `HeroDetail` component which also hits the `Suspense` code using a `cy.intercept` delay option (Red 3, Red 4).
 
-We added conditional rendering to `HeroDetail` for loading and error conditions that may occur with a `POST` request (Green 2, Green 3)
+We added conditional rendering to `HeroDetail` for loading and error conditions that may occur with a `POST` request (Green 3, Green 4)
 
-In order to cover `PUT` request loading and error condition, we utilized a ui-integration test, since it is aware of a state that can trigger a back-end modification, but doesn't necessarily have to receive a 500 response from a real network to render the error (Refactor 3)
+In order to cover `PUT` request loading and error condition, we utilized a ui-integration test, since it is aware of a state that can trigger a back-end modification, but doesn't necessarily have to receive a 500 response from a real network to render the error (Refactor 4)
 
 <br />
 
-We wrote a non-200 / network error edge case for `Heroes` component which is `HeroDetail`'s parent.' It uses `GET` request to get the data (Red 4).
+We wrote a non-200 / network error edge case for `Heroes` component which is `HeroDetail`'s parent.' It uses `GET` request to get the data (Red 5).
 
-We wrapped the component test mount in the fashion the root app is wrapped by `ErrorBoundary` & `Suspense`. We took advantage of `cy.clock` , `cy.tick` and turned off test failure on expected error throws (Green 4).
+We wrapped the component test mount in the fashion the root app is wrapped by `ErrorBoundary` & `Suspense`. We took advantage of `cy.clock` , `cy.tick` and turned off test failure on expected error throws (Green 5).
 
-We improved the component test to check for the spinner. Similar to the `POST` request error case, we covered the network error case for `DELETE` in a ui-integration test since it is aware of a state that can trigger a back-end modification, but doesn't necessarily have to receive a 500 response from a real network to render the error (Refactor 4).
+We improved the component test to check for the spinner. Similar to the `POST` request error case, we covered the network error case for `DELETE` in a ui-integration test since it is aware of a state that can trigger a back-end modification, but doesn't necessarily have to receive a 500 response from a real network to render the error (Refactor 5).
 
 <br />
 
