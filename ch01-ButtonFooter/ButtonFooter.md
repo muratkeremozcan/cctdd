@@ -321,7 +321,7 @@ describe("ButtonFooter", () => {
 
 There are diverging opinions about code duplication in tests. Some prefer to have long tests with duplication, as opposed to using test hooks and helpers, so that failure diagnosis is easier. Always think about how the test may fail and if the refactor will make diagnosis harder. In this case, the two components will most likely fail the same way. If we keep the helper function nearby, we can refactor the test to be drier (Refactor 6).
 
-> ​ Tip: use [`cy.pause()`](https://docs.cypress.io/api/commands/pause#Pause-and-step-through-each-click-command) to step through tests during diagnosis, or demos. Another useful diagnosis command is [ `cy.debug()`](https://docs.cypress.io/api/commands/debug#Syntax).
+> Tip: use [`cy.pause()`](https://docs.cypress.io/api/commands/pause#Pause-and-step-through-each-click-command) to step through tests during diagnosis, or demos. Another useful diagnosis command is [ `cy.debug()`](https://docs.cypress.io/api/commands/debug#Syntax).
 
 We can add an additional css check, since in the second test we are adding a style to the component. Import the styles for the final look.
 
@@ -369,6 +369,46 @@ describe("ButtonFooter", () => {
 ```
 
 ![ButtonFooter-Refactor6](../img/ButtonFooter-Refactor6.png)
+
+## React Testing Library (RTL) version of the component test
+
+```tsx
+// src/components/ButtonFooter.test.tsx
+import ButtonFooter from "./ButtonFooter";
+import { FaEdit, FaRegSave } from "react-icons/fa";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import "@testing-library/jest-dom";
+
+describe("ButtonFooter", () => {
+  const click = jest.fn();
+
+  const doAssertions = async (label: string) => {
+    expect(await screen.findByText(label)).toBeVisible();
+
+    await userEvent.click(
+      await screen.findByTestId(`${label.toLowerCase()}-button`)
+    );
+    expect(click).toHaveBeenCalled();
+  };
+
+  it("should render and Edit button, the label, and trigger an onClick", async () => {
+    const label = "Edit";
+    render(<ButtonFooter label={label} IconClass={FaEdit} onClick={click} />);
+
+    await doAssertions(label);
+  });
+
+  it("should render and Save button, the label, and trigger an onClick", async () => {
+    const label = "Save";
+    render(
+      <ButtonFooter label={label} IconClass={FaRegSave} onClick={click} />
+    );
+
+    await doAssertions(label);
+  });
+});
+```
 
 ## Summary
 

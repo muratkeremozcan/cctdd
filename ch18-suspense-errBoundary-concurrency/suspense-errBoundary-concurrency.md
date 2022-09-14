@@ -16,6 +16,22 @@ describe("ErrorComp", () => {
 ```
 
 ```tsx
+// src/components/ErrorComp.test.tsx
+import ErrorComp from './ErrorComp'
+import {render, screen} from '@testing-library/react'
+import '@testing-library/jest-dom'
+
+describe('ErrorComp', () => {
+  it('should render error', async () => {
+    render(<ErrorComp />)
+    expect(await screen.findByTestId('error')).toBeVisible()
+  })
+})
+
+
+```
+
+```tsx
 // src/components/ErrorComp.tsx
 export default function ErrorComp() {
   return (
@@ -39,6 +55,22 @@ describe("Spinner", () => {
   });
 });
 ```
+
+```tsx
+// src/components/Spinner.test.tsx
+import Spinner from './Spinner'
+import {render, screen} from '@testing-library/react'
+import '@testing-library/jest-dom'
+
+describe('Spinner', () => {
+  it('should render a spinner', async () => {
+    render(<Spinner />)
+    await screen.findByTestId('spinner')
+  })
+})
+```
+
+
 
 ```tsx
 // src/components/Spinner.tsx
@@ -69,6 +101,21 @@ describe("PageSpinner", () => {
     cy.getByCyLike("page-spinner").should("be.visible");
   });
 });
+```
+
+```tsx
+// src/components/PageSpinner.test.tsx
+import PageSpinner from './PageSpinner'
+import {render, screen} from '@testing-library/react'
+import '@testing-library/jest-dom'
+
+describe('PageSpinner', () => {
+  it('should render a PageSpinner', async () => {
+    render(<PageSpinner />)
+    await screen.findByTestId('page-spinner')
+  })
+})
+
 ```
 
 ```tsx
@@ -1808,13 +1855,14 @@ wrappedMount(
 
 Here is the final version of the test with `cy.wrappedMount`. We included a check for the spinner before the error as a bonus (Refactor 5). You can optionally apply `cy.wrappedMount` refactor to a few of the component tests:
 
-- `src/components/HeaderBar.cy.tsx`
-- `src/components/HeaderBarBrand.cy.tsx`
-- `src/components/ListHeader.cy.tsx`
-- `src/components/NavBar.cy.tsx`
-- `src/components/HeroDetail.cy.tsx`
 - `src/components/Heroes.cy.tsx`
 - `src/components/HeroList.cy.tsx`
+- Not as useful but still possible:
+  - `src/components/HeroDetail.cy.tsx`
+  - `src/components/HeaderBar.cy.tsx`
+  - `src/components/HeaderBarBrand.cy.tsx`
+  - `src/components/ListHeader.cy.tsx`
+  - `src/components/NavBar.cy.tsx`
 
 ```tsx
 // src/heroes/Heroes.cy.tsx
