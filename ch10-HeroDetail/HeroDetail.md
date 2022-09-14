@@ -1518,6 +1518,11 @@ We filled in the handlers with console.logs (Green 6).
 
 We refactored the component, and added styles (Refactor 6).
 
+## Note about RTL version
+
+From this chapter on, the 3 higher components `HeroDetail`, `HeroList` and their parent `Heroes` will be changing often.
+For the sake of brevity, we will save the RTL versions of the component tests until after we have the full UI layout.
+
 ### State
 
 We scrutinized the shape of the `hero` object, and decided to pass it in as a prop to the component.

@@ -9,7 +9,7 @@ Create a branch `feat/headerBarBrand`. Create 2 files under `src/components/` fo
 ```tsx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
-import '../styles.scss'
+import "../styles.scss";
 
 describe("HeaderBarBrand", () => {
   it("should", () => {
@@ -33,7 +33,7 @@ We need a `div` wrapping two links. Let's start with the easier one in a failing
 ```tsx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
-import '../styles.scss'
+import "../styles.scss";
 
 describe("HeaderBarBrand", () => {
   it("should", () => {
@@ -62,7 +62,7 @@ Let's click that link and see if there is any navigation. Cypress runner will co
 ```tsx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
-import '../styles.scss'
+import "../styles.scss";
 
 describe("HeaderBarBrand", () => {
   it("should", () => {
@@ -437,6 +437,48 @@ describe("HeaderBarBrand", () => {
 });
 ```
 
+### RTL version of the component test
+
+```tsx
+// src/components/HeaderBarBrand.test.tsx
+import HeaderBarBrand from "./HeaderBarBrand";
+import { render, screen, within } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
+import "@testing-library/jest-dom";
+
+describe("HeaderBarBrand", () => {
+  beforeEach(() => {
+    // eslint-disable-next-line testing-library/no-render-in-setup
+    render(
+      <BrowserRouter>
+        <HeaderBarBrand />
+      </BrowserRouter>
+    );
+  });
+  it("should verify external link attributes", async () => {
+    const link = await screen.findByTestId("header-bar-brand-link");
+    expect(link).toHaveAttribute("href", "https://reactjs.org/");
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+
+    // not easy to get a tag with RTL, needed to use a test id
+    within(await screen.findByTestId("header-bar-brand")).getByTestId(
+      "react-icon-svg"
+    );
+  });
+
+  it("should verify internal link spans and navigation", async () => {
+    const navLink = await screen.findByTestId("navLink");
+    const withinNavLink = within(navLink);
+    ["TOUR", "OF", "HEROES"].map((part) => withinNavLink.getByText(part));
+
+    await userEvent.click(navLink);
+    expect(window.location.pathname).toBe("/");
+  });
+});
+```
+
 ## Summary
 
 We added a failing test for a link that goes to an href (Red 1).
@@ -479,9 +521,9 @@ We refactored the test (Refactor 6)
 
 ## Takeaways
 
-* There are [3 ways to deal with a 2nd tab](https://glebbahmutov.com/blog/cypress-second-tab/) in Cypress. Most the time it suffices to check for the `href` attribute
-* [`react-router`](https://reactrouter.com/en/main) is a de-facto solution to routing in React apps. We use [ `NavLink`](https://reactrouter.com/en/main/components/nav-link)  with a `to` attribute for navigation.
-* For component tests that have to do with `react-router`, wrap the component in `BrowserRouter`.
-* There is no concept of url in a Cypress component test, however clicking on links does indeed change a url attribute which we can verify.
-* A Cypress component test is a small scale e2e; there is no need to keep the tests short to have a smaller blast radius in case of a failure because the runner makes diagnosis easy. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then usually it is an opportunity for a test enhancement vs partial test duplication. 
-* In a long test [`cy.log()`](https://docs.cypress.io/api/commands/log#Syntax) can be used for delimitation.
+- There are [3 ways to deal with a 2nd tab](https://glebbahmutov.com/blog/cypress-second-tab/) in Cypress. Most the time it suffices to check for the `href` attribute
+- [`react-router`](https://reactrouter.com/en/main) is a de-facto solution to routing in React apps. We use [ `NavLink`](https://reactrouter.com/en/main/components/nav-link) with a `to` attribute for navigation.
+- For component tests that have to do with `react-router`, wrap the component in `BrowserRouter`.
+- There is no concept of url in a Cypress component test, however clicking on links does indeed change a url attribute which we can verify.
+- A Cypress component test is a small scale e2e; there is no need to keep the tests short to have a smaller blast radius in case of a failure because the runner makes diagnosis easy. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then usually it is an opportunity for a test enhancement vs partial test duplication.
+- In a long test [`cy.log()`](https://docs.cypress.io/api/commands/log#Syntax) can be used for delimitation.

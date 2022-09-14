@@ -81,8 +81,6 @@ export default function InputDetail({ placeholder }: InputDetailProps) {
 }
 ```
 
-
-
 ![InputDetail-refactor1](../img/InputDetail-refactor1.png)
 
 The next tag we need is `label`. This is a usual pattern in forms, a `div` wrapping a `label` and an `input` with css & attributes. Let's write a failing test (Red 2).
@@ -124,7 +122,7 @@ export default function InputDetail({ name, placeholder }: InputDetailProps) {
 
 We can add the css from the specification, alongside the usual form field attributes.
 
-`input type="text"` makes an `input` a text input. 
+`input type="text"` makes an `input` a text input.
 
 `label htmlFor={someValue}` links the `label` and `input` tags (Refactor 2).
 
@@ -377,46 +375,46 @@ export default function InputDetail({
 We can enhance the test to be more specific with the onChange check. It should be called 2 times when typing 42 (Refactor 5).
 
 ```tsx
-import InputDetail from './InputDetail'
-import '../styles.scss'
+import InputDetail from "./InputDetail";
+import "../styles.scss";
 
-describe('InputDetail', () => {
-  const placeholder = 'Aslaug'
-  const name = 'name'
-  const value = 'some value'
-  const newValue = '42'
-  
-  it('should allow the input field to be modified', () => {
+describe("InputDetail", () => {
+  const placeholder = "Aslaug";
+  const name = "name";
+  const value = "some value";
+  const newValue = "42";
+
+  it("should allow the input field to be modified", () => {
     cy.mount(
       <InputDetail
         name={name}
         value={value}
         placeholder={placeholder}
-        onChange={cy.stub().as('onChange')}
-      />,
-    )
+        onChange={cy.stub().as("onChange")}
+      />
+    );
 
-    cy.contains('label', name)
-    cy.findByPlaceholderText(placeholder).clear().type(newValue)
-    cy.get('input').should('have.value', newValue)
-    cy.get('@onChange').should('have.been.calledTwice')
-  })
+    cy.contains("label", name);
+    cy.findByPlaceholderText(placeholder).clear().type(newValue);
+    cy.get("input").should("have.value", newValue);
+    cy.get("@onChange").should("have.been.calledTwice");
+  });
 
-  it('should not allow the input field to be modified', () => {
+  it("should not allow the input field to be modified", () => {
     cy.mount(
       <InputDetail
         name={name}
         value={value}
         placeholder={placeholder}
         readOnly={true}
-      />,
-    )
+      />
+    );
 
-    cy.contains('label', name)
-    cy.findByPlaceholderText(placeholder).should('have.attr', 'readOnly')
-    cy.get('input').should('have.value', value)
-  })
-})
+    cy.contains("label", name);
+    cy.findByPlaceholderText(placeholder).should("have.attr", "readOnly");
+    cy.get("input").should("have.value", value);
+  });
+});
 ```
 
 As a final touch up, we add a `data-cy` selector to make the component easier to reference when it is used as a child.
@@ -458,13 +456,64 @@ export default function InputDetail({
 }
 ```
 
+## RTL version of the component test
+
+```tsx
+// src/components/InputDetail.test.tsx
+import InputDetail from "./InputDetail";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import "@testing-library/jest-dom";
+
+describe("InputDetail", () => {
+  const placeholder = "Aslaug";
+  const name = "name";
+  const value = "some value";
+  const newValue = "42";
+
+  it("should allow the input field to be modified", async () => {
+    const onChange = jest.fn();
+    render(
+      <InputDetail
+        name={name}
+        value={value}
+        placeholder={placeholder}
+        onChange={onChange}
+      />
+    );
+
+    await screen.findByText(name);
+    const inputField = await screen.findByPlaceholderText(placeholder);
+    await userEvent.clear(inputField);
+    await userEvent.type(inputField, newValue);
+    expect(inputField).toHaveDisplayValue(newValue);
+  });
+
+  it("should not allow the input field to be modified", async () => {
+    render(
+      <InputDetail
+        name={name}
+        value={value}
+        placeholder={placeholder}
+        readOnly={true}
+      />
+    );
+
+    await screen.findByText(name);
+    const inputField = await screen.findByPlaceholderText(placeholder);
+    expect(inputField).toHaveAttribute("readOnly");
+    expect(inputField).toHaveDisplayValue(value);
+  });
+});
+```
+
 ## Summary
 
 We started with an input placeholder text check using Testing Library's `findByPlaceholderText` command (Red 1).
 
 We hard-coded a value for the placeholder attribute to make the test pass (Green 1).
 
-We refactored the hard-coded value to be instead a prop. We added the prop to the types, to the arguments of the component, and we used that argument for the value of the placeholder attribute (Refactor 1). 
+We refactored the hard-coded value to be instead a prop. We added the prop to the types, to the arguments of the component, and we used that argument for the value of the placeholder attribute (Refactor 1).
 
 <br />
 
@@ -496,7 +545,7 @@ We enhanced the test to check for a specific number of `onChange` calls (Refacto
 
 ## Takeaways
 
-* When adding a prop to the component test:
+- When adding a prop to the component test:
 
   1. Add the prop to the component types.
 
@@ -504,4 +553,4 @@ We enhanced the test to check for a specific number of `onChange` calls (Refacto
 
   3. Use the prop in the component.
 
-* A  `div` wrapping a `label` and an `input` is a usual pattern to create form fields. `input type="text"` makes an `input` a text input, `label htmlFor={someValue}` links the `label` and `input` tags.
+- A `div` wrapping a `label` and an `input` is a usual pattern to create form fields. `input type="text"` makes an `input` a text input, `label htmlFor={someValue}` links the `label` and `input` tags.

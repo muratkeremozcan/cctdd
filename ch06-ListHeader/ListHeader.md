@@ -29,14 +29,14 @@ We will start with the add button, and write a failing test (Red 1).
 
 ```tsx
 // src/components/ListHeader.cy.tsx
-import ListHeader from './ListHeader'
-describe('ListHeader', () => {
-  it('should', () => {
-    cy.mount(<ListHeader />)
+import ListHeader from "./ListHeader";
+describe("ListHeader", () => {
+  it("should", () => {
+    cy.mount(<ListHeader />);
 
-    cy.getByCy('add-button')
-  })
-})
+    cy.getByCy("add-button");
+  });
+});
 ```
 
 We add the `data-cy` attribute for the button to pass the test (Green 1). We also add a `data-cy` attribute for the top level tag, for when the component is used in a larger scale.
@@ -48,7 +48,7 @@ export default function ListHeader() {
     <div data-cy="list-header">
       <button data-cy="add-button"></button>
     </div>
-  )
+  );
 }
 ```
 
@@ -56,17 +56,16 @@ Buttons have `onClick` handlers. We add a test which mounts the component with a
 
 ```tsx
 // src/components/ListHeader.cy.tsx
-import ListHeader from './ListHeader'
+import ListHeader from "./ListHeader";
 
-describe('ListHeader', () => {
-  it('should', () => {
-    cy.mount(<ListHeader handleAdd={cy.stub().as('handleAdd')}/>)
+describe("ListHeader", () => {
+  it("should", () => {
+    cy.mount(<ListHeader handleAdd={cy.stub().as("handleAdd")} />);
 
-    cy.getByCy('add-button').click()
-		cy.get('@handleAdd').should('be.called')
-  })
-})
-
+    cy.getByCy("add-button").click();
+    cy.get("@handleAdd").should("be.called");
+  });
+});
 ```
 
 We recall from the previous chapters the flow when adding new props to a component:
@@ -81,22 +80,20 @@ Here the attribute is `onClick` and it gets added to the `button` tag. We have o
 
 ```tsx
 // src/components/ListHeader.tsx
-import {MouseEvent} from 'react'
+import { MouseEvent } from "react";
 
 type ListHeaderProps = {
-  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
-export default function ListHeader({handleAdd}: ListHeaderProps) {
+export default function ListHeader({ handleAdd }: ListHeaderProps) {
   return (
     <div data-cy="list-header">
       <button data-cy="add-button" onClick={handleAdd}></button>
     </div>
-  )
+  );
 }
 ```
-
-
 
 ![ListHeader-green2](../img/ListHeader-green2.png)
 
@@ -104,36 +101,36 @@ We can create another check for the refresh button, with a similar prop and simi
 
 ```tsx
 // src/components/ListHeader.cy.tsx
-import ListHeader from './ListHeader'
+import ListHeader from "./ListHeader";
 
-describe('ListHeader', () => {
-  it('should', () => {
+describe("ListHeader", () => {
+  it("should", () => {
     cy.mount(
       <ListHeader
-        handleAdd={cy.stub().as('handleAdd')}
-        handleRefresh={cy.stub().as('handleRefresh')}
-      />,
-    )
+        handleAdd={cy.stub().as("handleAdd")}
+        handleRefresh={cy.stub().as("handleRefresh")}
+      />
+    );
 
-    cy.getByCy('add-button').click()
-    cy.get('@handleAdd').should('be.called')
+    cy.getByCy("add-button").click();
+    cy.get("@handleAdd").should("be.called");
 
-    cy.getByCy('refresh-button').click()
-    cy.get('@handleRefresh').should('be.called')
-  })
-})
+    cy.getByCy("refresh-button").click();
+    cy.get("@handleRefresh").should("be.called");
+  });
+});
 ```
 
 Adding the prop type, prop argument, and the `onClick` attribute is a mirror of the add button (Green 3).
 
 ```tsx
 // src/components/ListHeader.tsx
-import {MouseEvent} from 'react'
+import { MouseEvent } from "react";
 
 type ListHeaderProps = {
-  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
-  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void;
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
 export default function ListHeader({
   handleAdd,
@@ -144,7 +141,7 @@ export default function ListHeader({
       <button data-cy="add-button" onClick={handleAdd}></button>
       <button data-cy="refresh-button" onClick={handleRefresh}></button>
     </div>
-  )
+  );
 }
 ```
 
@@ -152,12 +149,12 @@ We can conveniently copy the aria labels from the Angular app (Refactor 3).
 
 ```tsx
 // src/components/ListHeader.tsx
-import {MouseEvent} from 'react'
+import { MouseEvent } from "react";
 
 type ListHeaderProps = {
-  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
-  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void;
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
 export default function ListHeader({
   handleAdd,
@@ -176,7 +173,7 @@ export default function ListHeader({
         aria-label="refresh"
       ></button>
     </div>
-  )
+  );
 }
 ```
 
@@ -184,14 +181,14 @@ The visuals show that we are missing the icons for the buttons. We can use [reac
 
 ```tsx
 // src/components/ListHeader.tsx
-import {MouseEvent} from 'react'
-import {FiRefreshCcw} from 'react-icons/fi'
-import {GrAdd} from 'react-icons/gr'
+import { MouseEvent } from "react";
+import { FiRefreshCcw } from "react-icons/fi";
+import { GrAdd } from "react-icons/gr";
 
 type ListHeaderProps = {
-  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
-  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void;
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
 export default function ListHeader({
   handleAdd,
@@ -210,9 +207,8 @@ export default function ListHeader({
         <FiRefreshCcw />
       </button>
     </div>
-  )
+  );
 }
-
 ```
 
 ![ListHeader-refactor3](../img/ListHeader-refactor4.png)
@@ -221,41 +217,41 @@ The final remaining piece is the title link. We write a failing check with a `da
 
 ```tsx
 // src/components/ListHeader.cy.tsx
-import ListHeader from './ListHeader'
-import '../styles.scss'
+import ListHeader from "./ListHeader";
+import "../styles.scss";
 
-describe('ListHeader', () => {
-  it('should call click handlers on add & refresh button clicks', () => {
+describe("ListHeader", () => {
+  it("should call click handlers on add & refresh button clicks", () => {
     cy.mount(
       <ListHeader
-        handleAdd={cy.stub().as('handleAdd')}
-        handleRefresh={cy.stub().as('handleRefresh')}
-      />,
-    )
+        handleAdd={cy.stub().as("handleAdd")}
+        handleRefresh={cy.stub().as("handleRefresh")}
+      />
+    );
 
-    cy.getByCy('add-button').click()
-    cy.get('@handleAdd').should('be.called')
+    cy.getByCy("add-button").click();
+    cy.get("@handleAdd").should("be.called");
 
-    cy.getByCy('refresh-button').click()
-    cy.get('@handleRefresh').should('be.called')
+    cy.getByCy("refresh-button").click();
+    cy.get("@handleRefresh").should("be.called");
 
-    cy.getByCy('title').contains('HEROES')
-  })
-})
+    cy.getByCy("title").contains("HEROES");
+  });
+});
 ```
 
 We make the test pass with a hard-coded title in a link (Green 5).
 
 ```tsx
 // src/components/ListHeader.tsx
-import {MouseEvent} from 'react'
-import {FiRefreshCcw} from 'react-icons/fi'
-import {GrAdd} from 'react-icons/gr'
+import { MouseEvent } from "react";
+import { FiRefreshCcw } from "react-icons/fi";
+import { GrAdd } from "react-icons/gr";
 
 type ListHeaderProps = {
-  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
-  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void;
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
 export default function ListHeader({
   handleAdd,
@@ -277,7 +273,7 @@ export default function ListHeader({
         <FiRefreshCcw />
       </button>
     </div>
-  )
+  );
 }
 ```
 
@@ -285,44 +281,44 @@ As with all hard coded value, we recall the pattern of passing it as a prop. We 
 
 ```tsx
 // src/components/ListHeader.cy.tsx
-import ListHeader from './ListHeader'
-import '../styles.scss'
+import ListHeader from "./ListHeader";
+import "../styles.scss";
 
-describe('ListHeader', () => {
-  it('should call click handlers on add & refresh button clicks', () => {
-    const title = 'Heroes'
+describe("ListHeader", () => {
+  it("should call click handlers on add & refresh button clicks", () => {
+    const title = "Heroes";
     cy.mount(
       <ListHeader
         title={title}
-        handleAdd={cy.stub().as('handleAdd')}
-        handleRefresh={cy.stub().as('handleRefresh')}
-      />,
-    )
+        handleAdd={cy.stub().as("handleAdd")}
+        handleRefresh={cy.stub().as("handleRefresh")}
+      />
+    );
 
-    cy.getByCy('add-button').click()
-    cy.get('@handleAdd').should('be.called')
+    cy.getByCy("add-button").click();
+    cy.get("@handleAdd").should("be.called");
 
-    cy.getByCy('refresh-button').click()
-    cy.get('@handleRefresh').should('be.called')
+    cy.getByCy("refresh-button").click();
+    cy.get("@handleRefresh").should("be.called");
 
-    cy.getByCy('title').contains(title)
-  })
-})
+    cy.getByCy("title").contains(title);
+  });
+});
 ```
 
-We also recall the pattern of passing the prop as a  type, a component argument, and a variable in the component render (Green 6).
+We also recall the pattern of passing the prop as a type, a component argument, and a variable in the component render (Green 6).
 
 ```tsx
 // src/components/ListHeader.tsx
-import {MouseEvent} from 'react'
-import {FiRefreshCcw} from 'react-icons/fi'
-import {GrAdd} from 'react-icons/gr'
+import { MouseEvent } from "react";
+import { FiRefreshCcw } from "react-icons/fi";
+import { GrAdd } from "react-icons/gr";
 
 type ListHeaderProps = {
-  title: string
-  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
-  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  title: string;
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void;
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
 export default function ListHeader({
   title,
@@ -345,24 +341,24 @@ export default function ListHeader({
         <FiRefreshCcw />
       </button>
     </div>
-  )
+  );
 }
 ```
 
-In the previous component `HeaderBarBrand` we used a `NavLink` from `react-router`.The application hints that this `a` link is in fact a route in our app that can either be Heroes, Villians or About. We use `NavLink` instead of `a`, and `to` attribute is one of the routes. We can enhance the string type to be a union of the 3 possibilities as well (Refactor 6).	
+In the previous component `HeaderBarBrand` we used a `NavLink` from `react-router`.The application hints that this `a` link is in fact a route in our app that can either be Heroes, Villians or About. We use `NavLink` instead of `a`, and `to` attribute is one of the routes. We can enhance the string type to be a union of the 3 possibilities as well (Refactor 6).
 
 ```tsx
 // src/components/ListHeader.tsx
-import {MouseEvent} from 'react'
-import {NavLink} from 'react-router-dom'
-import {FiRefreshCcw} from 'react-icons/fi'
-import {GrAdd} from 'react-icons/gr'
+import { MouseEvent } from "react";
+import { NavLink } from "react-router-dom";
+import { FiRefreshCcw } from "react-icons/fi";
+import { GrAdd } from "react-icons/gr";
 
 type ListHeaderProps = {
-  title: 'Heroes' | 'Villains' | 'About'
-  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
-  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  title: "Heroes" | "Villains" | "About";
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void;
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
 export default function ListHeader({
   title,
@@ -385,74 +381,73 @@ export default function ListHeader({
         <FiRefreshCcw />
       </button>
     </div>
-  )
+  );
 }
-
 ```
 
 With that change, we run into the familiar test error complaining about the `Router` component. Any time we are using `react-router`, we have to wrap the mounted component in `BrowserRouter`.
 
 ```tsx
 // src/components/ListHeader.cy.tsx
-import ListHeader from './ListHeader'
-import {BrowserRouter} from 'react-router-dom'
-import '../styles.scss'
+import ListHeader from "./ListHeader";
+import { BrowserRouter } from "react-router-dom";
+import "../styles.scss";
 
-describe('ListHeader', () => {
-  it('should call click handlers on add & refresh button clicks', () => {
-    const title = 'Heroes'
+describe("ListHeader", () => {
+  it("should call click handlers on add & refresh button clicks", () => {
+    const title = "Heroes";
     cy.mount(
       <BrowserRouter>
         <ListHeader
           title={title}
-          handleAdd={cy.stub().as('handleAdd')}
-          handleRefresh={cy.stub().as('handleRefresh')}
+          handleAdd={cy.stub().as("handleAdd")}
+          handleRefresh={cy.stub().as("handleRefresh")}
         />
-      </BrowserRouter>,
-    )
+      </BrowserRouter>
+    );
 
-    cy.getByCy('add-button').click()
-    cy.get('@handleAdd').should('be.called')
+    cy.getByCy("add-button").click();
+    cy.get("@handleAdd").should("be.called");
 
-    cy.getByCy('refresh-button').click()
-    cy.get('@handleRefresh').should('be.called')
+    cy.getByCy("refresh-button").click();
+    cy.get("@handleRefresh").should("be.called");
 
-    cy.getByCy('title').contains(title)
-  })
-})
+    cy.getByCy("title").contains(title);
+  });
+});
 ```
 
 We notice a test enhancement. We can check that when navigating to the route with a click, we end up on that url. We have done this before in the `HeaderBarBrand` component (Refactor 7).
 
 ```tsx
 // src/components/ListHeader.cy.tsx
-import ListHeader from './ListHeader'
-import {BrowserRouter} from 'react-router-dom'
-import '../styles.scss'
+import ListHeader from "./ListHeader";
+import { BrowserRouter } from "react-router-dom";
+import "../styles.scss";
 
-describe('ListHeader', () => {
-  it('should call click handlers on add & refresh button clicks', () => {
-    const title = 'Heroes'
+describe("ListHeader", () => {
+  it("should call click handlers on add & refresh button clicks", () => {
+    const title = "Heroes";
     cy.mount(
       <BrowserRouter>
         <ListHeader
           title={title}
-          handleAdd={cy.stub().as('handleAdd')}
-          handleRefresh={cy.stub().as('handleRefresh')}
+          handleAdd={cy.stub().as("handleAdd")}
+          handleRefresh={cy.stub().as("handleRefresh")}
         />
-      </BrowserRouter>,
-    )
+      </BrowserRouter>
+    );
 
-    cy.getByCy('add-button').click()
-    cy.get('@handleAdd').should('be.called')
+    cy.getByCy("add-button").click();
+    cy.get("@handleAdd").should("be.called");
 
-    cy.getByCy('refresh-button').click()
-    cy.get('@handleRefresh').should('be.called')
+    cy.getByCy("refresh-button").click();
+    cy.get("@handleRefresh").should("be.called");
 
-    cy.getByCy('title').contains(title).click()
-    cy.url().should('contain', title)
-  })
-})
+    cy.getByCy("title").contains(title).click();
+    cy.url().should("contain", title);
+  });
+});
 ```
 
 ![ListHeader-Refactor7](../img/ListHeader-Refactor7.png)
@@ -461,16 +456,16 @@ Our test is looking great with high coverage. The render is lacking though. We c
 
 ```tsx
 // src/components/ListHeader.tsx
-import {MouseEvent} from 'react'
-import {NavLink} from 'react-router-dom'
-import {FiRefreshCcw} from 'react-icons/fi'
-import {GrAdd} from 'react-icons/gr'
+import { MouseEvent } from "react";
+import { NavLink } from "react-router-dom";
+import { FiRefreshCcw } from "react-icons/fi";
+import { GrAdd } from "react-icons/gr";
 
 type ListHeaderProps = {
-  title: 'Heroes' | 'Villains' | 'About'
-  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void
-  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void
-}
+  title: "Heroes" | "Villains" | "About";
+  handleAdd: (e: MouseEvent<HTMLButtonElement>) => void;
+  handleRefresh: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
 export default function ListHeader({
   title,
@@ -493,11 +488,48 @@ export default function ListHeader({
         <FiRefreshCcw />
       </button>
     </div>
-  )
+  );
 }
 ```
 
 ![ListHeader-Refactor8](../img/ListHeader-Refactor8.png)
+
+## RTL version of the component test
+
+```tsx
+// src/components/ListHeader.test.tsx
+import ListHeader from "./ListHeader";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { BrowserRouter } from "react-router-dom";
+import "@testing-library/jest-dom";
+
+describe("ListHeader", () => {
+  it("should call click handlers on add & refresh button clicks", async () => {
+    const handleAdd = jest.fn();
+    const handleRefresh = jest.fn();
+    const title = "Heroes";
+    render(
+      <BrowserRouter>
+        <ListHeader
+          title={title}
+          handleAdd={handleAdd}
+          handleRefresh={handleRefresh}
+        />
+      </BrowserRouter>
+    );
+
+    await userEvent.click(await screen.findByTestId("add-button"));
+    expect(handleAdd).toHaveBeenCalled();
+
+    await userEvent.click(await screen.findByTestId("refresh-button"));
+    expect(handleRefresh).toHaveBeenCalled();
+
+    await userEvent.click(await screen.findByText(title));
+    expect(window.location.pathname).toBe(`/${title}`);
+  });
+});
+```
 
 ## Summary
 
@@ -533,16 +565,14 @@ We enhance the visuals with additional css (Refactor 8).
 
 ## Takeaways
 
-* We recalled the pattern of adding props to a component:
+- We recalled the pattern of adding props to a component:
 
-  * Add the prop to the types
+  - Add the prop to the types
 
+  - Add it to the arguments or the component
 
-  * Add it to the arguments or the component
+  - Use it in the component.
 
+- The test tool can serve as the design tool in order to aid RedGreenRefactor cycles with incremental visual enhancements.
 
-  * Use it in the component.
-
-* The test tool can serve as the design tool in order to aid RedGreenRefactor cycles with incremental visual enhancements.
-
-* Like we saw in chapter one, the key idea is to start with something failing, do the minimal to get it to work, and then make it better. In this chapter, to make things better at the end, we kept improving the test and the visuals.
+- Like we saw in chapter one, the key idea is to start with something failing, do the minimal to get it to work, and then make it better. In this chapter, to make things better at the end, we kept improving the test and the visuals.

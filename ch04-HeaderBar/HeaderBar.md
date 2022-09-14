@@ -60,7 +60,7 @@ We get the same `react-router` related error that we got with the `HeaderBarBran
 // src/components/HeaderBar.cy.tsx
 import HeaderBar from "./HeaderBar";
 import { BrowserRouter } from "react-router-dom";
-import '../styles.scss'
+import "../styles.scss";
 
 describe("HeaderBar", () => {
   it("should", () => {
@@ -82,7 +82,7 @@ The specification shows that the child component is wrapped by a `header` and a 
 
 ```tsx
 // src/components/HeaderBar.tsx
-import HeaderBarBrand from './HeaderBarBrand'
+import HeaderBarBrand from "./HeaderBarBrand";
 
 export default function HeaderBar() {
   return (
@@ -95,7 +95,7 @@ export default function HeaderBar() {
         <HeaderBarBrand />
       </nav>
     </header>
-  )
+  );
 }
 ```
 
@@ -126,6 +126,27 @@ describe("HeaderBar", () => {
 });
 ```
 
+## RTL version of the component test
+
+```tsx
+// src/components/HeaderBar.test.tsx
+import HeaderBar from "./HeaderBar";
+import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import "@testing-library/jest-dom";
+
+describe("HeaderBar", () => {
+  it("should render error", async () => {
+    render(
+      <BrowserRouter>
+        <HeaderBar />
+      </BrowserRouter>
+    );
+    expect(await screen.findByTestId("header-bar-brand")).toBeVisible();
+  });
+});
+```
+
 ## Summary & takeaways
 
 The main takeaway in this section is the parent-child relationship between the components, and a demo of how top level `data-cy` selectors make child components easier to reference in higher level tests.
@@ -135,4 +156,3 @@ If a child component is using `react-router`, when testing the parent component 
 In a parent component, we do not need to repeat the tests for the child component, because we covered all of it at the child. The same thought process applies to higher level tests with e2e.
 
 When designing the component, we do not necessarily have to go through a traditional RedGreenRefactor cycle. When our test tool is also the design tool, our RGR can as well be incremental visual enhancements to the component whilst adding classes and css.
-
