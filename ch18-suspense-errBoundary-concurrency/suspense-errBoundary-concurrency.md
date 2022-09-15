@@ -17,18 +17,15 @@ describe("ErrorComp", () => {
 
 ```tsx
 // src/components/ErrorComp.test.tsx
-import ErrorComp from './ErrorComp'
-import {render, screen} from '@testing-library/react'
-import '@testing-library/jest-dom'
+import ErrorComp from "./ErrorComp";
+import { render, screen } from "@testing-library/react";
 
-describe('ErrorComp', () => {
-  it('should render error', async () => {
-    render(<ErrorComp />)
-    expect(await screen.findByTestId('error')).toBeVisible()
-  })
-})
-
-
+describe("ErrorComp", () => {
+  it("should render error", async () => {
+    render(<ErrorComp />);
+    expect(await screen.findByTestId("error")).toBeVisible();
+  });
+});
 ```
 
 ```tsx
@@ -58,19 +55,16 @@ describe("Spinner", () => {
 
 ```tsx
 // src/components/Spinner.test.tsx
-import Spinner from './Spinner'
-import {render, screen} from '@testing-library/react'
-import '@testing-library/jest-dom'
+import Spinner from "./Spinner";
+import { render, screen } from "@testing-library/react";
 
-describe('Spinner', () => {
-  it('should render a spinner', async () => {
-    render(<Spinner />)
-    await screen.findByTestId('spinner')
-  })
-})
+describe("Spinner", () => {
+  it("should render a spinner", async () => {
+    render(<Spinner />);
+    await screen.findByTestId("spinner");
+  });
+});
 ```
-
-
 
 ```tsx
 // src/components/Spinner.tsx
@@ -105,17 +99,15 @@ describe("PageSpinner", () => {
 
 ```tsx
 // src/components/PageSpinner.test.tsx
-import PageSpinner from './PageSpinner'
-import {render, screen} from '@testing-library/react'
-import '@testing-library/jest-dom'
+import PageSpinner from "./PageSpinner";
+import { render, screen } from "@testing-library/react";
 
-describe('PageSpinner', () => {
-  it('should render a PageSpinner', async () => {
-    render(<PageSpinner />)
-    await screen.findByTestId('page-spinner')
-  })
-})
-
+describe("PageSpinner", () => {
+  it("should render a PageSpinner", async () => {
+    render(<PageSpinner />);
+    await screen.findByTestId("page-spinner");
+  });
+});
 ```
 
 ```tsx
@@ -1807,7 +1799,7 @@ const wrappedMount = (
 wrappedMount(Heroes);
 ```
 
-It is optimal to make that a Cypress command which we can use in any component without having to import. We could replace most `cy.mount`s in the component test suite - with the exception of `App.cy.tsx` -because the additional wrappers will not hurt. Change `./cypress/support/component.ts` to a `tsx` file. We align the command better with `cy.mount` in command version of the `wrappedMount`.
+It is optimal to make that a Cypress command which we can use in any component without having to import. We could replace most `cy.mount`s in the component test suite, with the exception of `App.cy.tsx` . Even when the custom mount is not needed, the additional wrappers will not hurt. Change `./cypress/support/component.ts` to a `tsx` file. We align the command better with `cy.mount` in command version of the `wrappedMount`.
 
 ```tsx
 // cypress/support/component.tsx
@@ -1857,8 +1849,8 @@ Here is the final version of the test with `cy.wrappedMount`. We included a chec
 
 - `src/components/Heroes.cy.tsx`
 - `src/components/HeroList.cy.tsx`
-- Not as useful but still possible:
-  - `src/components/HeroDetail.cy.tsx`
+- `src/components/HeroDetail.cy.tsx`
+- Not as useful but still possible (they only use `BrowserRouter` as the wrapper):
   - `src/components/HeaderBar.cy.tsx`
   - `src/components/HeaderBarBrand.cy.tsx`
   - `src/components/ListHeader.cy.tsx`
@@ -1870,7 +1862,7 @@ import Heroes from "./Heroes";
 import "../styles.scss";
 
 describe("Heroes", () => {
-  it("should go through the error flow", () => {
+  it("should see error on initial load with GET", () => {
     Cypress.on("uncaught:exception", () => false);
     cy.clock();
     cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
@@ -1915,7 +1907,7 @@ describe("Heroes", () => {
       cy.getByCy("delete-button").first().click();
       cy.getByCy("modal-yes-no").should("be.visible");
     };
-    it("should go through the modal flow", () => {
+    it("should go through the modal flow, and cover error on DELETE", () => {
       cy.getByCy("modal-yes-no").should("not.exist");
 
       cy.log("do not delete flow");
@@ -1925,125 +1917,143 @@ describe("Heroes", () => {
 
       cy.log("delete flow");
       invokeHeroDelete();
-      cy.intercept("DELETE", "*", { statusCode: 200 }).as("deleteHero");
+      cy.intercept("DELETE", "*", { statusCode: 500 }).as("deleteHero");
 
       cy.getByCy("button-yes").click();
       cy.wait("@deleteHero");
       cy.getByCy("modal-yes-no").should("not.exist");
+      cy.getByCy("error").should("be.visible");
     });
   });
 });
 ```
 
-We are covering the error that may happen in a `GET` call, but nothing about `DELETE`. We do not have any way to check the delete scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Once again we can move up in the pyramid and take a look at the e2e test; `delete-hero.cy.ts` . Similar to `edit-hero.cy.ts`, we can satisfy this check with a ui-integration test, stubbing the network. Once again a ui-integration is sufficient because we do not necessarily have to receive a 500 response from a real network to render the error
-
 ```tsx
-// Arrange: cy.mount
-it("should go through the error flow", () => {
-  // negating thrown error failing the test
-  Cypress.on("uncaught:exception", () => false);
-  // control the clock,
-  cy.clock();
-  // stub the network
-  cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
-    statusCode: 400,
-    delay: 100,
-  }).as("notFound");
-  // Act: mount
-  cy.wrappedMount(<Heroes />);
+// src/heroes/HeroList.cy.tsx
+import HeroList from "./HeroList";
+import "../styles.scss";
+import heroes from "../../cypress/fixtures/heroes.json";
 
-  // Assert
-  cy.getByCy("page-spinner").should("be.visible");
+describe("HeroList", () => {
+  it("no heroes should not display a list nor search bar", () => {
+    cy.wrappedMount(
+      <HeroList
+        heroes={[]}
+        handleDeleteHero={cy.stub().as("handleDeleteHero")}
+      />
+    );
 
-  Cypress._.times(4, () => {
-    cy.tick(5000);
-    cy.wait("@notFound");
+    cy.getByCy("hero-list").should("exist");
+    cy.getByCyLike("hero-list-item").should("not.exist");
+    cy.getByCy("search").should("not.exist");
   });
 
-  cy.getByCy("error");
+  context("with heroes in the list", () => {
+    beforeEach(() => {
+      cy.wrappedMount(
+        <HeroList
+          heroes={heroes}
+          handleDeleteHero={cy.stub().as("handleDeleteHero")}
+        />
+      );
+    });
+
+    it("should render the hero layout", () => {
+      cy.getByCyLike("hero-list-item").should("have.length", heroes.length);
+
+      cy.getByCy("card-content");
+      cy.contains(heroes[0].name);
+      cy.contains(heroes[0].description);
+
+      cy.get("footer").within(() => {
+        cy.getByCy("delete-button");
+        cy.getByCy("edit-button");
+      });
+    });
+
+    it("should search and filter hero by name and description", () => {
+      cy.getByCy("search").type(heroes[0].name);
+      cy.getByCyLike("hero-list-item")
+        .should("have.length", 1)
+        .contains(heroes[0].name);
+
+      cy.getByCy("search").clear().type(heroes[2].description);
+      cy.getByCyLike("hero-list-item")
+        .should("have.length", 1)
+        .contains(heroes[2].description);
+    });
+
+    it("should handle delete", () => {
+      cy.getByCy("delete-button").first().click();
+      cy.get("@handleDeleteHero").should("have.been.called");
+    });
+
+    it("should handle edit", () => {
+      cy.getByCy("edit-button").first().click();
+      cy.location("pathname").should("eq", "/heroes/edit-hero/" + heroes[0].id);
+    });
+  });
 });
 ```
 
-```ts
-// cypress/e2e/delete-hero.cy.ts
-it("should go through the DELETE error flow (ui-integration)", () => {
-  // Arrange: setup state
-  cy.visitStubbedHeroes();
-  // stub the network
-  cy.intercept("DELETE", `${Cypress.env("API_URL")}/heroes/*`, {
-    statusCode: 500,
-  }).as("isDeleteError");
-  // Act
-  cy.getByCy("delete-button").eq(0).click();
-  yesOnModal();
-  // Assert
-  cy.wait("@isDeleteError");
-  cy.getByCy("error");
-});
-```
-
-Here is an updated version of `delete-hero.cy.ts`, including a new ui-integration test for covering the delete error.
-
 ```tsx
-// cypress/e2e/delete-hero.cy.ts
-import { faker } from "@faker-js/faker";
-import { Hero } from "../../src/models/Hero";
-describe("Delete hero", () => {
-  before(cy.resetData);
+// src/heroes/HeroDetail.cy.tsx
+import HeroDetail from "./HeroDetail";
+import "../styles.scss";
 
-  const yesOnModal = () =>
-    cy.getByCy("modal-yes-no").within(() => cy.getByCy("button-yes").click());
-
-  it("should go through the cancel flow (ui-integration)", () => {
-    cy.visitStubbedHeroes();
-
-    cy.getByCy("delete-button").first().click();
-    cy.getByCy("modal-yes-no").within(() => cy.getByCy("button-no").click());
-    cy.getByCy("heroes").should("be.visible");
-    cy.get("modal-yes-no").should("not.exist");
+describe("HeroDetail", () => {
+  beforeEach(() => {
+    cy.wrappedMount(<HeroDetail />);
   });
 
-  it("should go through the DELETE error flow (ui-integration)", () => {
-    cy.visitStubbedHeroes();
-    cy.intercept("DELETE", `${Cypress.env("API_URL")}/heroes/*`, {
-      statusCode: 500,
-    }).as("isDeleteError");
+  it("should handle Save", () => {
+    cy.intercept("POST", "*", { statusCode: 200 }).as("postHero");
+    cy.getByCy("save-button").click();
+    cy.wait("@postHero");
+  });
 
-    cy.getByCy("delete-button").eq(0).click();
-    yesOnModal();
-
-    cy.wait("@isDeleteError");
+  it("should handle non-200 Save", () => {
+    cy.intercept("POST", "*", { statusCode: 400, delay: 100 }).as("postHero");
+    cy.getByCy("save-button").click();
+    cy.getByCy("spinner");
+    cy.wait("@postHero");
     cy.getByCy("error");
   });
 
-  it("should go through the edit flow (ui-e2e)", () => {
-    const hero: Hero = {
-      id: faker.datatype.uuid(),
-      name: faker.internet.userName(),
-      description: `description ${faker.internet.userName()}`,
-    };
+  it("should handle Cancel", () => {
+    cy.getByCy("cancel-button").click();
+    cy.location("pathname").should("eq", "/heroes");
+  });
 
-    cy.crud("POST", "heroes", { body: hero });
+  it("should handle name change", () => {
+    const newHeroName = "abc";
+    cy.getByCy("input-detail-name").type(newHeroName);
 
-    cy.visitHeroes();
+    cy.findByDisplayValue(newHeroName).should("be.visible");
+  });
 
-    cy.findHeroIndex(hero.id).then(({ heroIndex, heroesArray }) => {
-      cy.getByCy("delete-button").eq(heroIndex).click();
+  it("should handle description change", () => {
+    const newHeroDescription = "123";
+    cy.getByCy("input-detail-description").type(newHeroDescription);
 
-      yesOnModal();
+    cy.findByDisplayValue(newHeroDescription).should("be.visible");
+  });
 
-      cy.getByCy("hero-list")
-        .should("be.visible")
-        .should("not.contain", heroesArray[heroIndex].name)
-        .and("not.contain", heroesArray[heroIndex].description);
-    });
+  it("id: false, name: false - should verify the minimal state of the component", () => {
+    cy.get("p").then(($el) => cy.wrap($el.text()).should("equal", ""));
+    cy.getByCyLike("input-detail").should("have.length", 2);
+    cy.getByCy("input-detail-id").should("not.exist");
+
+    cy.findByPlaceholderText("e.g. Colleen").should("be.visible");
+    cy.findByPlaceholderText("e.g. dance fight!").should("be.visible");
+
+    cy.getByCy("save-button").should("be.visible");
+    cy.getByCy("cancel-button").should("be.visible");
   });
 });
 ```
 
-![SuspenseErrBoundary-Refactor4part2](../img/SuspenseErrBoundary-Refactor4part2.png)
-
-### Updating the unit test
+### Updating the RTL tests
 
 In RTL, being able to handle the spinner in the beginning is a bit different. We have to use an `act` to asynchronously wait. Here is the updated unit test:
 
@@ -2061,9 +2071,7 @@ describe("200 flow", () => {
   const handlers = [
     rest.get(
       `${process.env.REACT_APP_API_URL}/heroes`,
-      async (_req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(heroes));
-      }
+      async (_req, res, ctx) => res(ctx.status(200), ctx.json(heroes))
     ),
   ];
   const server = setupServer(...handlers);
@@ -2072,14 +2080,9 @@ describe("200 flow", () => {
       onUnhandledRequest: "warn",
     });
   });
+  afterEach(server.resetHandlers);
+  afterAll(server.close);
 
-  afterEach(() => {
-    server.resetHandlers();
-  });
-
-  afterAll(() => {
-    server.close();
-  });
   test("renders tour of heroes", async () => {
     render(<App />);
     await act(() => new Promise((r) => setTimeout(r, 0))); // spinner
@@ -2091,8 +2094,298 @@ describe("200 flow", () => {
     expect(screen.getByTestId("heroes")).toBeVisible();
   });
 });
+```
 
-// CT vs RTL: src/App.cy.tsx
+To mirror `cy.wrappedMount` in RTL, create a custom `render` at `src/test-utils.tsx`. This file also exports `'@testing-library/react'`, so we can import `screen`, `userEvent`, `waitFor` from here in case we are using the `wrappedRender`. Similar to the component tests, `wrappedRender` is the most useful in 3 components under `heroes` folder.
+
+```tsx
+// src/test-utils.tsx
+import React, { FC, ReactElement } from "react";
+import { render, RenderOptions } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorComp from "components/ErrorComp";
+import PageSpinner from "components/PageSpinner";
+import { Suspense } from "react";
+
+const AllTheProviders: FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <QueryClientProvider client={new QueryClient()}>
+      <ErrorBoundary fallback={<ErrorComp />}>
+        <Suspense fallback={<PageSpinner />}>
+          <BrowserRouter>{children}</BrowserRouter>
+        </Suspense>
+      </ErrorBoundary>
+    </QueryClientProvider>
+  );
+};
+
+/** Renders the component wrapped by all the providers:
+ * QueryClientProvider, ErrorBoundary, Suspense, BrowserRouter.
+ */
+const wrappedRender = (
+  ui: React.ReactNode,
+  options?: Omit<RenderOptions, "wrapper">
+  // @ts-expect-error - ok to ignore
+) => render(ui, { wrapper: AllTheProviders, ...options });
+
+export * from "@testing-library/react";
+export { wrappedRender };
+```
+
+`HeroList.test.tsx` is the RTL mirror of `HeroList.cy.tsx`
+
+```tsx
+// src/heroes/HeroList.test.tsx
+import HeroList from "./HeroList";
+import { render, screen, waitFor } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
+import { heroes } from "../../db.json";
+
+describe("HeroList", () => {
+  const handleDeleteHero = jest.fn();
+
+  it("no heroes should not display a list nor search bar", async () => {
+    render(
+      <BrowserRouter>
+        <HeroList heroes={[]} handleDeleteHero={handleDeleteHero} />
+      </BrowserRouter>
+    );
+
+    expect(await screen.findByTestId("hero-list")).toBeInTheDocument();
+    expect(screen.queryByTestId("hero-list-item-1")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("search-bar")).not.toBeInTheDocument();
+  });
+
+  describe("with heroes in the list", () => {
+    beforeEach(() => {
+      render(
+        <BrowserRouter>
+          <HeroList heroes={heroes} handleDeleteHero={handleDeleteHero} />
+        </BrowserRouter>
+      );
+    });
+
+    const cardContents = async () => screen.findAllByTestId("card-content");
+    const deleteButtons = async () => screen.findAllByTestId("delete-button");
+    const editButtons = async () => screen.findAllByTestId("edit-button");
+
+    it("should render the hero layout", async () => {
+      expect(
+        await screen.findByTestId(`hero-list-item-${heroes.length - 1}`)
+      ).toBeInTheDocument();
+
+      expect(await screen.findByText(heroes[0].name)).toBeInTheDocument();
+      expect(
+        await screen.findByText(heroes[0].description)
+      ).toBeInTheDocument();
+      expect(await cardContents()).toHaveLength(heroes.length);
+      expect(await deleteButtons()).toHaveLength(heroes.length);
+      expect(await editButtons()).toHaveLength(heroes.length);
+    });
+
+    it("should search and filter hero by name and description", async () => {
+      const search = await screen.findByTestId("search");
+
+      userEvent.type(search, heroes[0].name);
+      await waitFor(async () => expect(await cardContents()).toHaveLength(1));
+      await screen.findByText(heroes[0].name);
+
+      userEvent.clear(search);
+      await waitFor(async () =>
+        expect(await cardContents()).toHaveLength(heroes.length)
+      );
+
+      userEvent.type(search, heroes[2].description);
+      await waitFor(async () => expect(await cardContents()).toHaveLength(1));
+    });
+
+    it("should handle delete", async () => {
+      userEvent.click((await deleteButtons())[0]);
+      expect(handleDeleteHero).toHaveBeenCalled();
+    });
+
+    it("should handle edit", async () => {
+      userEvent.click((await editButtons())[0]);
+      await waitFor(() =>
+        expect(window.location.pathname).toEqual(
+          "/heroes/edit-hero/" + heroes[0].id
+        )
+      );
+    });
+  });
+});
+```
+
+With [msw](https://testing-library.com/docs/react-testing-library/example-intro/#mock) - think of `cy.intercept` for RTL use - it is not recommended to verify XHR calls going out of the app instead, the advice is the verify the changes in the UI. Alas, sometimes there are no changes in the component itself therefore we cannot mirror every single Cypress component testing 1:1 with RTL. Here is the RTL mirror of `HeroDetail.cy.tsx`.
+
+> Alternatively we could spy on the `react-query` hooks and verify they are called. While that is what most developers have been used to, it is an implementation detail because changes in the state management approach would break the tests.
+
+```tsx
+// src/heroes/HeroDetail.test.tsx
+import HeroDetail from "./HeroDetail";
+import { wrappedRender, act, screen, waitFor } from "test-utils";
+import userEvent from "@testing-library/user-event";
+
+describe("HeroDetail", () => {
+  beforeEach(() => {
+    wrappedRender(<HeroDetail />);
+  });
+
+  // should handle Save and should handle non-200 Save have no RTL mirrors
+  // because of difference between msw and cy.intercept
+
+  it("should handle Cancel", async () => {
+    // code that causes React state updates (ex: BrowserRouter)
+    // should be wrapped into act(...):
+    // userEvent.click(await screen.findByTestId('cancel-button')) // won't work
+    act(() => screen.getByTestId("cancel-button").click());
+
+    expect(window.location.pathname).toBe("/heroes");
+  });
+
+  it("should handle name change", async () => {
+    const newHeroName = "abc";
+    const inputDetailName = await screen.findByPlaceholderText("e.g. Colleen");
+    userEvent.type(inputDetailName, newHeroName);
+
+    await waitFor(async () =>
+      expect(inputDetailName).toHaveDisplayValue(newHeroName)
+    );
+  });
+
+  const inputDetailDescription = async () =>
+    screen.findByPlaceholderText("e.g. dance fight!");
+
+  it("should handle description change", async () => {
+    const newHeroDescription = "123";
+
+    userEvent.type(await inputDetailDescription(), newHeroDescription);
+    await waitFor(async () =>
+      expect(await inputDetailDescription()).toHaveDisplayValue(
+        newHeroDescription
+      )
+    );
+  });
+
+  it("id: false, name: false - should verify the minimal state of the component", async () => {
+    expect(await screen.findByTestId("input-detail-name")).toBeVisible();
+    expect(await screen.findByTestId("input-detail-description")).toBeVisible();
+    expect(screen.queryByTestId("input-detail-id")).not.toBeInTheDocument();
+
+    expect(await inputDetailDescription()).toBeVisible();
+
+    expect(await screen.findByTestId("save-button")).toBeVisible();
+    expect(await screen.findByTestId("cancel-button")).toBeVisible();
+  });
+});
+```
+
+`Heroes.test.tsx` is the RTL mirror of `Heroes.cy.tsx`.
+
+```tsx
+// src/heroes/Heroes.test.tsx
+import Heroes from "./Heroes";
+import { wrappedRender, screen, waitForElementToBeRemoved } from "test-utils";
+import userEvent from "@testing-library/user-event";
+import { rest } from "msw";
+import { setupServer } from "msw/node";
+import { heroes } from "../../db.json";
+
+describe("Heroes", () => {
+  // mute the expected console.error message, because we are mocking non-200 responses
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  jest.spyOn(console, "error").mockImplementation(() => {});
+
+  beforeEach(() => wrappedRender(<Heroes />));
+
+  it("should see error on initial load with GET", async () => {
+    const handlers = [
+      rest.get(
+        `${process.env.REACT_APP_API_URL}/heroes`,
+        async (_req, res, ctx) => res(ctx.status(500))
+      ),
+    ];
+    const server = setupServer(...handlers);
+    server.listen({
+      onUnhandledRequest: "warn",
+    });
+    jest.useFakeTimers();
+
+    expect(await screen.findByTestId("page-spinner")).toBeVisible();
+
+    jest.advanceTimersByTime(25000);
+    await waitForElementToBeRemoved(
+      () => screen.queryByTestId("page-spinner"),
+      {
+        timeout: 25000,
+      }
+    );
+
+    expect(await screen.findByTestId("error")).toBeVisible();
+    jest.useRealTimers();
+    server.resetHandlers();
+    server.close();
+  });
+
+  describe("200 flows", () => {
+    const handlers = [
+      rest.get(
+        `${process.env.REACT_APP_API_URL}/heroes`,
+        async (_req, res, ctx) => res(ctx.status(200), ctx.json(heroes))
+      ),
+      rest.delete(
+        `${process.env.REACT_APP_API_URL}/heroes/${heroes[0].id}`, // use /.*/ for all requests
+        async (_req, res, ctx) =>
+          res(ctx.status(400), ctx.json("expected error"))
+      ),
+    ];
+    const server = setupServer(...handlers);
+    beforeAll(() => {
+      server.listen({
+        onUnhandledRequest: "warn",
+      });
+    });
+    afterEach(server.resetHandlers);
+    afterAll(server.close);
+
+    it("should display the hero list on render, and go through hero add & refresh flow", async () => {
+      expect(await screen.findByTestId("list-header")).toBeVisible();
+      expect(await screen.findByTestId("hero-list")).toBeVisible();
+
+      await userEvent.click(await screen.findByTestId("add-button"));
+      expect(window.location.pathname).toBe("/heroes/add-hero");
+
+      await userEvent.click(await screen.findByTestId("refresh-button"));
+      expect(window.location.pathname).toBe("/heroes");
+    });
+
+    const deleteButtons = async () => screen.findAllByTestId("delete-button");
+    const modalYesNo = async () => screen.findByTestId("modal-yes-no");
+    const maybeModalYesNo = () => screen.queryByTestId("modal-yes-no");
+    const invokeHeroDelete = async () => {
+      userEvent.click((await deleteButtons())[0]);
+      expect(await modalYesNo()).toBeVisible();
+    };
+
+    it("should go through the modal flow, and cover error on DELETE", async () => {
+      expect(screen.queryByTestId("modal-dialog")).not.toBeInTheDocument();
+
+      await invokeHeroDelete();
+      await userEvent.click(await screen.findByTestId("button-no"));
+      expect(maybeModalYesNo()).not.toBeInTheDocument();
+
+      await invokeHeroDelete();
+      await userEvent.click(await screen.findByTestId("button-yes"));
+
+      expect(maybeModalYesNo()).not.toBeInTheDocument();
+      expect(await screen.findByTestId("error")).toBeVisible();
+      expect(screen.queryByTestId("modal-dialog")).not.toBeInTheDocument();
+    });
+  });
+});
 ```
 
 ## Summary
