@@ -6,7 +6,7 @@ In this chapter we will mirror heroes into villains, and apply the Context api t
 
 `HeroDetail` gets `hero` `{id, name, description}` state from the url with `useParams` & `useSearchParams` .
 
-We will explore how this can be different with context api.
+This is the extent of state management in our app. We do not really need context, but we will explore how things can be different with the context api.
 
 ## Update the current app to be more generic
 
@@ -39,27 +39,27 @@ export type EntityType = "hero" | "villain";
 
 ### Update the hooks
 
-We want to make to hooks more generic so that they can seamlessly be used in the villains group of components. Replace `useCRUDhero` hooks with `useCRUDentity`.
+We want to make our hooks more generic so that they can seamlessly be used in the villains group of components. In short, we will replace `useCRUDhero` hooks with `useCRUDentity`.
 
 `useDeleteEntity` replaces `useDeleteHero`.
 
 ```ts
 // src/hooks/useDeleteEntity.ts
-import { Hero } from "models/Hero";
-import { EntityType } from "models/types";
-import { Villain } from "models/Villain";
-import { useMutation, useQueryClient } from "react-query";
-import { useNavigate } from "react-router-dom";
-import { deleteItem } from "./api";
+import {Hero} from 'models/Hero'
+import {EntityType} from 'models/types'
+import {Villain} from 'models/Villain'
+import {useMutation, useQueryClient} from 'react-query'
+import {useNavigate} from 'react-router-dom'
+import {deleteItem} from './api'
 
 /**
- * Helper for DELETE to `/heroes` or `/villains` routes
+ * Helper for DELETE to `/heroes` or `/villains` routes.
  * @returns {object} {deleteEntity, isDeleting, isDeleteError, deleteError}
  */
 export function useDeleteEntity(entityType: EntityType) {
-  const entityRoute = entityType === "hero" ? "heroes" : "villains";
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const entityRoute = entityType === 'hero' ? 'heroes' : 'villains'
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const mutation = useMutation(
     (item: Hero | Villain) => deleteItem(`${entityRoute}/${item.id}`),
@@ -69,24 +69,24 @@ export function useDeleteEntity(entityType: EntityType) {
       onSuccess: (_, deletedEntity: Hero | Villain) => {
         // get all the entities from the cache
         const entities: Hero[] | Villain[] =
-          queryClient.getQueryData([`${entityRoute}`]) || [];
+          queryClient.getQueryData([`${entityRoute}`]) || []
         // set the entities cache without the delete one
         queryClient.setQueryData(
           [`${entityRoute}`],
-          entities.filter((h) => h.id !== deletedEntity.id)
-        );
+          entities.filter(h => h.id !== deletedEntity.id),
+        )
 
-        navigate(`/${entityRoute}`);
+        navigate(`/${entityRoute}`)
       },
-    }
-  );
+    },
+  )
 
   return {
     deleteEntity: mutation.mutate,
     isDeleting: mutation.isLoading,
     isDeleteError: mutation.isError,
     deleteError: mutation.error,
-  };
+  }
 }
 ```
 
@@ -109,7 +109,6 @@ export function useEntityParams() {
 
 ```ts
 // src/hooks/useGetEntities.ts
-
 import { EntityRoute } from "models/types";
 import { useQuery } from "react-query";
 import { getItem } from "./api";
@@ -135,7 +134,6 @@ export const useGetEntities = (entityRoute: EntityRoute) => {
 
 ```ts
 // src/hooks/usePostEntity.ts
-
 import { Hero } from "models/Hero";
 import { EntityType } from "models/types";
 import { useMutation, useQueryClient } from "react-query";
@@ -234,7 +232,7 @@ function updateEntityCache(
 
 ### Update the hero components
 
-Having changed the hook, the hero group of components need slight modifications.
+Having changed the hooks, the hero group of components need slight modifications.
 
 ```tsx
 // src/heroes/HeroDetail.tsx
@@ -514,7 +512,7 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
 
 There are no modifications needed to Cypress e2e, CT, or RTL tests with MSW because we did not test implementation details in any of them. They will all work as they are at the moment.
 
-With `cy.intercept` and MSW we checked that a network request goes out versus the operation caused a hook to be called. Therefore changing the hook had no impact on the tests, or the functionality. This is why we want to test at a slightly higher level of abstraction and verify the consequences of the implementation vs the implementation details themselves.
+With `cy.intercept` and MSW we checked that a network request goes out versus checking that the operation caused a hook to be called. Consequently changing the hooks had no impact on the tests, or the functionality. This is why we want to test at a slightly higher level of abstraction, and why we want to verify the consequences of the implementation vs the implementation details themselves.
 
 ### Modify the e2e commands to be more generic
 
@@ -1392,75 +1390,73 @@ describe("VillainDetail", () => {
 
 ```tsx
 // src/villains/VillainList.cy.tsx
-import VillainList from "./VillainList";
-import "../styles.scss";
-import villains from "../../cypress/fixtures/villains.json";
-import VillainsContext from "hooks/useVillainsContext";
+import VillainList from './VillainList'
+import '../styles.scss'
+import villains from '../../cypress/fixtures/villains.json'
 
-describe("VillainList", () => {
-  it("no villains should not display a list nor search bar", () => {
+describe('VillainList', () => {
+  it('no villains should not display a list nor search bar', () => {
     cy.wrappedMount(
-      <VillainList handleDeleteVillain={cy.stub().as("handleDeleteVillain")} />
-    );
+      <VillainList
+        villains={[]}
+        handleDeleteVillain={cy.stub().as('handleDeleteVillain')}
+      />,
+    )
 
-    cy.getByCy("villain-list").should("exist");
-    cy.getByCyLike("villain-list-item").should("not.exist");
-    cy.getByCy("search").should("not.exist");
-  });
+    cy.getByCy('villain-list').should('exist')
+    cy.getByCyLike('villain-list-item').should('not.exist')
+    cy.getByCy('search').should('not.exist')
+  })
 
-  context("with villains in the list", () => {
+  context('with villains in the list', () => {
     beforeEach(() => {
       cy.wrappedMount(
-        <VillainsContext.Provider value={villains}>
-          <VillainList
-            handleDeleteVillain={cy.stub().as("handleDeleteVillain")}
-          />
-        </VillainsContext.Provider>
-      );
-    });
+        <VillainList
+          villains={villains}
+          handleDeleteVillain={cy.stub().as('handleDeleteVillain')}
+        />,
+      )
+    })
 
-    it("should render the villain layout", () => {
-      cy.getByCyLike("villain-list-item").should(
-        "have.length",
-        villains.length
-      );
+    it('should render the villain layout', () => {
+      cy.getByCyLike('villain-list-item').should('have.length', villains.length)
 
-      cy.getByCy("card-content");
-      cy.contains(villains[0].name);
-      cy.contains(villains[0].description);
+      cy.getByCy('card-content')
+      cy.contains(villains[0].name)
+      cy.contains(villains[0].description)
 
-      cy.get("footer").within(() => {
-        cy.getByCy("delete-button");
-        cy.getByCy("edit-button");
-      });
-    });
+      cy.get('footer').within(() => {
+        cy.getByCy('delete-button')
+        cy.getByCy('edit-button')
+      })
+    })
 
-    it("should search and filter villain by name and description", () => {
-      cy.getByCy("search").type(villains[0].name);
-      cy.getByCyLike("villain-list-item")
-        .should("have.length", 1)
-        .contains(villains[0].name);
+    it('should search and filter villain by name and description', () => {
+      cy.getByCy('search').type(villains[0].name)
+      cy.getByCyLike('villain-list-item')
+        .should('have.length', 1)
+        .contains(villains[0].name)
 
-      cy.getByCy("search").clear().type(villains[2].description);
-      cy.getByCyLike("villain-list-item")
-        .should("have.length", 1)
-        .contains(villains[2].description);
-    });
+      cy.getByCy('search').clear().type(villains[2].description)
+      cy.getByCyLike('villain-list-item')
+        .should('have.length', 1)
+        .contains(villains[2].description)
+    })
 
-    it("should handle delete", () => {
-      cy.getByCy("delete-button").first().click();
-      cy.get("@handleDeleteVillain").should("have.been.called");
-    });
+    it('should handle delete', () => {
+      cy.getByCy('delete-button').first().click()
+      cy.get('@handleDeleteVillain').should('have.been.called')
+    })
 
-    it("should handle edit", () => {
-      cy.getByCy("edit-button").first().click();
-      cy.location("pathname").should(
-        "eq",
-        "/villains/edit-villain/" + villains[0].id
-      );
-    });
-  });
-});
+    it('should handle edit', () => {
+      cy.getByCy('edit-button').first().click()
+      cy.location('pathname').should(
+        'eq',
+        '/villains/edit-villain/' + villains[0].id,
+      )
+    })
+  })
+})
 ```
 
 ```tsx
@@ -1535,6 +1531,35 @@ describe("Villains", () => {
 });
 ```
 
+Create a new fixture for villains at `cypress/fixtures/villains.json`.
+
+```json
+[
+  {
+    "id": "VillainMadelyn",
+    "name": "Madelyn",
+    "description": "the cat whisperer"
+  },
+  {
+    "id": "VillainHaley",
+    "name": "Haley",
+    "description": "pen wielder"
+  },
+  {
+    "id": "VillainElla",
+    "name": "Ella",
+    "description": "fashionista"
+  },
+  {
+    "id": "VillainLandon",
+    "name": "Landon",
+    "description": "Mandalorian mauler"
+  }
+]
+```
+
+
+
 ### Mirror the RTL tests
 
 ```tsx
@@ -1603,81 +1628,76 @@ describe("VillainDetail", () => {
 
 ```tsx
 // src/villains/VillainList.test.tsx
-import VillainList from "./VillainList";
-import { wrappedRender, screen, waitFor } from "test-utils";
-import userEvent from "@testing-library/user-event";
-import { villains } from "../../db.json";
-import VillainsContext from "hooks/useVillainsContext";
+import VillainList from './VillainList'
+import {wrappedRender, screen, waitFor} from 'test-utils'
+import userEvent from '@testing-library/user-event'
+import {villains} from '../../db.json'
 
-describe("VillainList", () => {
-  const handleDeleteVillain = jest.fn();
+describe('VillainList', () => {
+  const handleDeleteVillain = jest.fn()
 
-  it("no villains should not display a list nor search bar", async () => {
-    wrappedRender(<VillainList handleDeleteVillain={handleDeleteVillain} />);
+  it('no villains should not display a list nor search bar', async () => {
+    wrappedRender(<VillainList handleDeleteVillain={handleDeleteVillain} />)
 
-    expect(await screen.findByTestId("villain-list")).toBeInTheDocument();
-    expect(screen.queryByTestId("villain-list-item-1")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("search-bar")).not.toBeInTheDocument();
-  });
+    expect(await screen.findByTestId('villain-list')).toBeInTheDocument()
+    expect(screen.queryByTestId('villain-list-item-1')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('search-bar')).not.toBeInTheDocument()
+  })
 
-  describe("with villains in the list", () => {
+  describe('with villains in the list', () => {
     beforeEach(() => {
-      wrappedRender(
-        <VillainsContext.Provider value={villains}>
-          <VillainList handleDeleteVillain={handleDeleteVillain} />
-        </VillainsContext.Provider>
-      );
-    });
+      wrappedRender(<VillainList handleDeleteVillain={handleDeleteVillain} />)
+    })
 
-    const cardContents = async () => screen.findAllByTestId("card-content");
-    const deleteButtons = async () => screen.findAllByTestId("delete-button");
-    const editButtons = async () => screen.findAllByTestId("edit-button");
+    const cardContents = async () => screen.findAllByTestId('card-content')
+    const deleteButtons = async () => screen.findAllByTestId('delete-button')
+    const editButtons = async () => screen.findAllByTestId('edit-button')
 
-    it("should render the villain layout", async () => {
+    it('should render the villain layout', async () => {
       expect(
-        await screen.findByTestId(`villain-list-item-${villains.length - 1}`)
-      ).toBeInTheDocument();
+        await screen.findByTestId(`villain-list-item-${villains.length - 1}`),
+      ).toBeInTheDocument()
 
-      expect(await screen.findByText(villains[0].name)).toBeInTheDocument();
+      expect(await screen.findByText(villains[0].name)).toBeInTheDocument()
       expect(
-        await screen.findByText(villains[0].description)
-      ).toBeInTheDocument();
-      expect(await cardContents()).toHaveLength(villains.length);
-      expect(await deleteButtons()).toHaveLength(villains.length);
-      expect(await editButtons()).toHaveLength(villains.length);
-    });
+        await screen.findByText(villains[0].description),
+      ).toBeInTheDocument()
+      expect(await cardContents()).toHaveLength(villains.length)
+      expect(await deleteButtons()).toHaveLength(villains.length)
+      expect(await editButtons()).toHaveLength(villains.length)
+    })
 
-    it("should search and filter villain by name and description", async () => {
-      const search = await screen.findByTestId("search");
+    it('should search and filter villain by name and description', async () => {
+      const search = await screen.findByTestId('search')
 
-      userEvent.type(search, villains[0].name);
-      await waitFor(async () => expect(await cardContents()).toHaveLength(1));
-      await screen.findByText(villains[0].name);
+      userEvent.type(search, villains[0].name)
+      await waitFor(async () => expect(await cardContents()).toHaveLength(1))
+      await screen.findByText(villains[0].name)
 
-      userEvent.clear(search);
+      userEvent.clear(search)
       await waitFor(async () =>
-        expect(await cardContents()).toHaveLength(villains.length)
-      );
+        expect(await cardContents()).toHaveLength(villains.length),
+      )
 
-      userEvent.type(search, villains[2].description);
-      await waitFor(async () => expect(await cardContents()).toHaveLength(1));
-    });
+      userEvent.type(search, villains[2].description)
+      await waitFor(async () => expect(await cardContents()).toHaveLength(1))
+    })
 
-    it("should handle delete", async () => {
-      userEvent.click((await deleteButtons())[0]);
-      expect(handleDeleteVillain).toHaveBeenCalled();
-    });
+    it('should handle delete', async () => {
+      userEvent.click((await deleteButtons())[0])
+      expect(handleDeleteVillain).toHaveBeenCalled()
+    })
 
-    it("should handle edit", async () => {
-      userEvent.click((await editButtons())[0]);
+    it('should handle edit', async () => {
+      userEvent.click((await editButtons())[0])
       await waitFor(() =>
         expect(window.location.pathname).toEqual(
-          "/villains/edit-villain/" + villains[0].id
-        )
-      );
-    });
-  });
-});
+          '/villains/edit-villain/' + villains[0].id,
+        ),
+      )
+    })
+  })
+})
 ```
 
 ```tsx
@@ -1954,116 +1974,83 @@ export default function VillainDetail() {
 
 ```tsx
 // src/villains/VillainList.tsx
-import { useNavigate } from "react-router-dom";
-import CardContent from "components/CardContent";
-import ButtonFooter from "components/ButtonFooter";
-import { FaEdit, FaRegSave } from "react-icons/fa";
-import {
-  ChangeEvent,
-  MouseEvent,
-  useTransition,
-  useEffect,
-  useState,
-  useDeferredValue,
-} from "react";
-import { Villain } from "models/Villain";
+import VillainList from './VillainList'
+import {wrappedRender, screen, waitFor} from 'test-utils'
+import userEvent from '@testing-library/user-event'
+import {villains} from '../../db.json'
 
-type VillainListProps = {
-  villains: Villain[];
-  handleDeleteVillain: (
-    villain: Villain
-  ) => (e: MouseEvent<HTMLButtonElement>) => void;
-};
+describe('VillainList', () => {
+  const handleDeleteVillain = jest.fn()
 
-export default function VillainList({
-  villains,
-  handleDeleteVillain,
-}: VillainListProps) {
-  const deferredVillains = useDeferredValue(villains);
-  const isStale = deferredVillains !== villains;
-  const [filteredVillains, setFilteredVillains] = useState(deferredVillains);
-  const navigate = useNavigate();
-  const [isPending, startTransition] = useTransition();
+  it('no villains should not display a list nor search bar', async () => {
+    wrappedRender(
+      <VillainList villains={[]} handleDeleteVillain={handleDeleteVillain} />,
+    )
 
-  // needed to refresh the list after deleting a villain
-  useEffect(() => setFilteredVillains(deferredVillains), [deferredVillains]);
+    expect(await screen.findByTestId('villain-list')).toBeInTheDocument()
+    expect(screen.queryByTestId('villain-list-item-1')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('search-bar')).not.toBeInTheDocument()
+  })
 
-  const handleSelectVillain = (villainId: string) => () => {
-    const villain = deferredVillains.find((h: Villain) => h.id === villainId);
-    navigate(
-      `/villains/edit-villain/${villain?.id}?name=${villain?.name}&description=${villain?.description}`
-    );
-  };
-
-  type VillainProperty =
-    | Villain["name"]
-    | Villain["description"]
-    | Villain["id"];
-
-  /** returns a boolean whether the villain properties exist in the search field */
-  const searchExists = (searchProperty: VillainProperty, searchField: string) =>
-    String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
-    -1;
-
-  /** given the data and the search field, returns the data in which the search field exists */
-  const searchProperties = (searchField: string, data: Villain[]) =>
-    [...data].filter((item: Villain) =>
-      Object.values(item).find((property: VillainProperty) =>
-        searchExists(property, searchField)
+  describe('with villains in the list', () => {
+    beforeEach(() => {
+      wrappedRender(
+        <VillainList
+          villains={villains}
+          handleDeleteVillain={handleDeleteVillain}
+        />,
       )
-    );
+    })
 
-  /** filters the villains data to see if the any of the properties exist in the list */
-  const handleSearch =
-    (data: Villain[]) => (event: ChangeEvent<HTMLInputElement>) => {
-      const searchField = event.target.value;
+    const cardContents = async () => screen.findAllByTestId('card-content')
+    const deleteButtons = async () => screen.findAllByTestId('delete-button')
+    const editButtons = async () => screen.findAllByTestId('edit-button')
 
-      return startTransition(() =>
-        setFilteredVillains(searchProperties(searchField, data))
-      );
-    };
+    it('should render the villain layout', async () => {
+      expect(
+        await screen.findByTestId(`villain-list-item-${villains.length - 1}`),
+      ).toBeInTheDocument()
 
-  return (
-    <div
-      style={{
-        opacity: isPending ? 0.5 : 1,
-        color: isStale ? "dimgray" : "black",
-      }}
-    >
-      {deferredVillains.length > 0 && (
-        <div className="card-content">
-          <span>Search </span>
-          <input data-cy="search" onChange={handleSearch(deferredVillains)} />
-        </div>
-      )}
-      &nbsp;
-      <ul data-cy="villain-list" className="list">
-        {filteredVillains.map((villain, index) => (
-          <li data-cy={`villain-list-item-${index}`} key={villain.id}>
-            <div className="card">
-              <CardContent
-                name={villain.name}
-                description={villain.description}
-              />
-              <footer className="card-footer">
-                <ButtonFooter
-                  label="Delete"
-                  IconClass={FaRegSave}
-                  onClick={handleDeleteVillain(villain)}
-                />
-                <ButtonFooter
-                  label="Edit"
-                  IconClass={FaEdit}
-                  onClick={handleSelectVillain(villain.id)}
-                />
-              </footer>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+      expect(await screen.findByText(villains[0].name)).toBeInTheDocument()
+      expect(
+        await screen.findByText(villains[0].description),
+      ).toBeInTheDocument()
+      expect(await cardContents()).toHaveLength(villains.length)
+      expect(await deleteButtons()).toHaveLength(villains.length)
+      expect(await editButtons()).toHaveLength(villains.length)
+    })
+
+    it('should search and filter villain by name and description', async () => {
+      const search = await screen.findByTestId('search')
+
+      userEvent.type(search, villains[0].name)
+      await waitFor(async () => expect(await cardContents()).toHaveLength(1))
+      await screen.findByText(villains[0].name)
+
+      userEvent.clear(search)
+      await waitFor(async () =>
+        expect(await cardContents()).toHaveLength(villains.length),
+      )
+
+      userEvent.type(search, villains[2].description)
+      await waitFor(async () => expect(await cardContents()).toHaveLength(1))
+    })
+
+    it('should handle delete', async () => {
+      userEvent.click((await deleteButtons())[0])
+      expect(handleDeleteVillain).toHaveBeenCalled()
+    })
+
+    it('should handle edit', async () => {
+      userEvent.click((await editButtons())[0])
+      await waitFor(() =>
+        expect(window.location.pathname).toEqual(
+          '/villains/edit-villain/' + villains[0].id,
+        ),
+      )
+    })
+  })
+})
 ```
 
 ```tsx
@@ -2159,15 +2146,64 @@ export default function Villains() {
 }
 ```
 
+Add `/villains` route to `App.tsx`.
+
+```tsx
+// src/App.tsx
+import {lazy, Suspense} from 'react'
+import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
+import {QueryClient, QueryClientProvider} from 'react-query'
+import {ErrorBoundary} from 'react-error-boundary'
+import HeaderBar from 'components/HeaderBar'
+import NavBar from 'components/NavBar'
+import PageSpinner from 'components/PageSpinner'
+import ErrorComp from 'components/ErrorComp'
+import Villains from 'villains/Villains'
+import './styles.scss'
+const Heroes = lazy(() => import('heroes/Heroes'))
+const NotFound = lazy(() => import('components/NotFound'))
+const About = lazy(() => import('About'))
+
+const queryClient = new QueryClient()
+
+function App() {
+  return (
+    <BrowserRouter>
+      <HeaderBar />
+      <div className="section columns">
+        <NavBar />
+        <main className="column">
+          <QueryClientProvider client={queryClient}>
+            <ErrorBoundary fallback={<ErrorComp />}>
+              <Suspense fallback={<PageSpinner />}>
+                <Routes>
+                  <Route path="/" element={<Navigate replace to="/heroes" />} />
+                  <Route path="/heroes/*" element={<Heroes />} />
+                  <Route path="/villains/*" element={<Villains />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
+          </QueryClientProvider>
+        </main>
+      </div>
+    </BrowserRouter>
+  )
+}
+
+export default App
+```
+
 ## Context API for villains
 
-At the moment we have a full mirror of heroes to villains, functioning and being tested exactly the same way. We will not need to change any of the tests. We will however modify the villains group and take advantage of Context api while doing so.
+At the moment we have a full mirror of heroes to villains, functioning and being tested exactly the same way. We will however modify the villains group and take advantage of Context api while doing so.
 
 `Villains.tsx` passes `villains` as a prop to `VillainList.tsx`. We will instead use the Context api so that `villains` is available in all components under `Villains.txt`.
 
 Here are the general steps with Context api:
 
-1. Create the context and export it. Usually this is in a separate file, which all other files access.
+1. Create the context and export it. Usually this is in a separate file, acting as an arbiter.
 
    ```tsx
    // src/villains/VillainsContext.tsx (the common node)
@@ -2323,7 +2359,7 @@ export default function Villains() {
 }
 ```
 
-`VillainsList.tsx` needs to be passed down the state via context versus a prop. So we import the context, and import`useContext` from React. We invoke `useContext` with the shared context as its argument, and assign to a variable (Steps 4, 5).
+`VillainsList.tsx` needs to be passed down the state via context versus a prop. So we import the context, and import`useContext` from React. We invoke `useContext` with the shared context as its argument, and assign to a variable `villains` (Steps 4, 5). Now, instead of the prop, we are getting the state from the `VillainsContext`.
 
 ```tsx
 // src/villains/VillainList.tsx
@@ -2339,7 +2375,6 @@ import {
   useState,
   useDeferredValue,
 } from "react";
-// import {useVillainsContext} from 'hooks/useVillainsContext'
 import { useContext } from "react";
 import { Villain } from "models/Villain";
 import VillainsContext from "./VillainsContext";
@@ -2440,7 +2475,7 @@ export default function VillainList({ handleDeleteVillain }: VillainListProps) {
 }
 ```
 
-Update the component test to also use the context provider.
+Update the component test to also use the context provider when mounting.
 
 ```tsx
 // src/villains/VillainList.cy.tsx
@@ -2515,9 +2550,90 @@ describe("VillainList", () => {
 });
 ```
 
+Update the RTL test to also use context provider when rendering.
+
+```tsx
+// src/villains/VillainList.test.tsx
+import VillainList from './VillainList'
+import {wrappedRender, screen, waitFor} from 'test-utils'
+import userEvent from '@testing-library/user-event'
+import {villains} from '../../db.json'
+import VillainsContext from './VillainsContext'
+
+describe('VillainList', () => {
+  const handleDeleteVillain = jest.fn()
+
+  it('no villains should not display a list nor search bar', async () => {
+    wrappedRender(<VillainList handleDeleteVillain={handleDeleteVillain} />)
+
+    expect(await screen.findByTestId('villain-list')).toBeInTheDocument()
+    expect(screen.queryByTestId('villain-list-item-1')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('search-bar')).not.toBeInTheDocument()
+  })
+
+  describe('with villains in the list', () => {
+    beforeEach(() => {
+      wrappedRender(
+        <VillainsContext.Provider value={villains}>
+          <VillainList handleDeleteVillain={handleDeleteVillain} />
+        </VillainsContext.Provider>,
+      )
+    })
+
+    const cardContents = async () => screen.findAllByTestId('card-content')
+    const deleteButtons = async () => screen.findAllByTestId('delete-button')
+    const editButtons = async () => screen.findAllByTestId('edit-button')
+
+    it('should render the villain layout', async () => {
+      expect(
+        await screen.findByTestId(`villain-list-item-${villains.length - 1}`),
+      ).toBeInTheDocument()
+
+      expect(await screen.findByText(villains[0].name)).toBeInTheDocument()
+      expect(
+        await screen.findByText(villains[0].description),
+      ).toBeInTheDocument()
+      expect(await cardContents()).toHaveLength(villains.length)
+      expect(await deleteButtons()).toHaveLength(villains.length)
+      expect(await editButtons()).toHaveLength(villains.length)
+    })
+
+    it('should search and filter villain by name and description', async () => {
+      const search = await screen.findByTestId('search')
+
+      userEvent.type(search, villains[0].name)
+      await waitFor(async () => expect(await cardContents()).toHaveLength(1))
+      await screen.findByText(villains[0].name)
+
+      userEvent.clear(search)
+      await waitFor(async () =>
+        expect(await cardContents()).toHaveLength(villains.length),
+      )
+
+      userEvent.type(search, villains[2].description)
+      await waitFor(async () => expect(await cardContents()).toHaveLength(1))
+    })
+
+    it('should handle delete', async () => {
+      userEvent.click((await deleteButtons())[0])
+      expect(handleDeleteVillain).toHaveBeenCalled()
+    })
+
+    it('should handle edit', async () => {
+      userEvent.click((await editButtons())[0])
+      await waitFor(() =>
+        expect(window.location.pathname).toEqual(
+          '/villains/edit-villain/' + villains[0].id,
+        ),
+      )
+    })
+  })
+})
+```
+
 ### Using a custom hook for sharing context
 
-The context, created at `VillainsContext` , is acting as the arbiter. `Villains.tsx` uses the context to share `villains` state to its child `VillainList`. `VillainList` acquires the state from `VillainsContext`. Instead of `VillainsContext` we can use a hook that will reduce the imports.
+The context, created at `VillainsContext` is acting as the arbiter. `Villains.tsx` uses the context to share `villains` state to its child `VillainList`. `VillainList` acquires the state from `VillainsContext`. Instead of `VillainsContext` we can use a hook that will reduce the imports.
 
 Remove `src/villains/VillainsContext.ts` and instead create a hook `src/hooks/useVillainsContext.ts`. The first half of the hook is the same as `VillainsContext`. We add a setter, so that the components that get passed down the state also gain the ability to set it. Additionally we manage the state and effects related to the hook’s functionality within the hook and return only the value(s) that components need.
 
@@ -2549,7 +2665,7 @@ export function useVillainsContext() {
 }
 ```
 
-At `Villains.tsx` the only chang is the import location of `VillainsContext`, and that we do not have to import `useContext` from React.
+At `Villains.tsx` the only change is the import location of `VillainsContext`.
 
 ```tsx
 // src/villains/Villains.tsx
@@ -2641,82 +2757,158 @@ export default function Villains() {
 }
 ```
 
-Similar.ly, at `VillainsList` component test, only the import changes. We are using the hook `useVillainsContext`.
+Similarly, at `VillainsList` component test, only the import changes. We are using the hook `useVillainsContext`. The same applies to `VillainList.test.tsx`.
 
 ```tsx
 // src/villains/VillainList.cy.tsx
-import VillainList from "./VillainList";
-import "../styles.scss";
-import villains from "../../cypress/fixtures/villains.json";
-import VillainsContext from "hooks/useVillainsContext";
+import VillainList from './VillainList'
+import '../styles.scss'
+import villains from '../../cypress/fixtures/villains.json'
+import VillainsContext from 'hooks/useVillainsContext'
 
-describe("VillainList", () => {
-  it("no villains should not display a list nor search bar", () => {
+describe('VillainList', () => {
+  it('no villains should not display a list nor search bar', () => {
     cy.wrappedMount(
-      <VillainList handleDeleteVillain={cy.stub().as("handleDeleteVillain")} />
-    );
+      <VillainList handleDeleteVillain={cy.stub().as('handleDeleteVillain')} />,
+    )
 
-    cy.getByCy("villain-list").should("exist");
-    cy.getByCyLike("villain-list-item").should("not.exist");
-    cy.getByCy("search").should("not.exist");
-  });
+    cy.getByCy('villain-list').should('exist')
+    cy.getByCyLike('villain-list-item').should('not.exist')
+    cy.getByCy('search').should('not.exist')
+  })
 
-  context("with villains in the list", () => {
+  context('with villains in the list', () => {
     beforeEach(() => {
       cy.wrappedMount(
         <VillainsContext.Provider value={villains}>
           <VillainList
-            handleDeleteVillain={cy.stub().as("handleDeleteVillain")}
+            handleDeleteVillain={cy.stub().as('handleDeleteVillain')}
           />
-        </VillainsContext.Provider>
-      );
-    });
+        </VillainsContext.Provider>,
+      )
+    })
 
-    it("should render the villain layout", () => {
-      cy.getByCyLike("villain-list-item").should(
-        "have.length",
-        villains.length
-      );
+    it('should render the villain layout', () => {
+      cy.getByCyLike('villain-list-item').should('have.length', villains.length)
 
-      cy.getByCy("card-content");
-      cy.contains(villains[0].name);
-      cy.contains(villains[0].description);
+      cy.getByCy('card-content')
+      cy.contains(villains[0].name)
+      cy.contains(villains[0].description)
 
-      cy.get("footer").within(() => {
-        cy.getByCy("delete-button");
-        cy.getByCy("edit-button");
-      });
-    });
+      cy.get('footer').within(() => {
+        cy.getByCy('delete-button')
+        cy.getByCy('edit-button')
+      })
+    })
 
-    it("should search and filter villain by name and description", () => {
-      cy.getByCy("search").type(villains[0].name);
-      cy.getByCyLike("villain-list-item")
-        .should("have.length", 1)
-        .contains(villains[0].name);
+    it('should search and filter villain by name and description', () => {
+      cy.getByCy('search').type(villains[0].name)
+      cy.getByCyLike('villain-list-item')
+        .should('have.length', 1)
+        .contains(villains[0].name)
 
-      cy.getByCy("search").clear().type(villains[2].description);
-      cy.getByCyLike("villain-list-item")
-        .should("have.length", 1)
-        .contains(villains[2].description);
-    });
+      cy.getByCy('search').clear().type(villains[2].description)
+      cy.getByCyLike('villain-list-item')
+        .should('have.length', 1)
+        .contains(villains[2].description)
+    })
 
-    it("should handle delete", () => {
-      cy.getByCy("delete-button").first().click();
-      cy.get("@handleDeleteVillain").should("have.been.called");
-    });
+    it('should handle delete', () => {
+      cy.getByCy('delete-button').first().click()
+      cy.get('@handleDeleteVillain').should('have.been.called')
+    })
 
-    it("should handle edit", () => {
-      cy.getByCy("edit-button").first().click();
-      cy.location("pathname").should(
-        "eq",
-        "/villains/edit-villain/" + villains[0].id
-      );
-    });
-  });
-});
+    it('should handle edit', () => {
+      cy.getByCy('edit-button').first().click()
+      cy.location('pathname').should(
+        'eq',
+        '/villains/edit-villain/' + villains[0].id,
+      )
+    })
+  })
+})
 ```
 
-At `VillainList.tsx`, as in `Villains.tsx` the import changes, we do not need to import `useContext`. More importantly we now de-structure villains; `const [villains] = useVillainsContext()`. If we needed to we could also get the setter out of the hook and set the context.
+```tsx
+// src/villains/VillainList.test.tsx
+import VillainList from './VillainList'
+import {wrappedRender, screen, waitFor} from 'test-utils'
+import userEvent from '@testing-library/user-event'
+import {villains} from '../../db.json'
+import VillainsContext from 'hooks/useVillainsContext'
+
+describe('VillainList', () => {
+  const handleDeleteVillain = jest.fn()
+
+  it('no villains should not display a list nor search bar', async () => {
+    wrappedRender(<VillainList handleDeleteVillain={handleDeleteVillain} />)
+
+    expect(await screen.findByTestId('villain-list')).toBeInTheDocument()
+    expect(screen.queryByTestId('villain-list-item-1')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('search-bar')).not.toBeInTheDocument()
+  })
+
+  describe('with villains in the list', () => {
+    beforeEach(() => {
+      wrappedRender(
+        <VillainsContext.Provider value={villains}>
+          <VillainList handleDeleteVillain={handleDeleteVillain} />
+        </VillainsContext.Provider>,
+      )
+    })
+
+    const cardContents = async () => screen.findAllByTestId('card-content')
+    const deleteButtons = async () => screen.findAllByTestId('delete-button')
+    const editButtons = async () => screen.findAllByTestId('edit-button')
+
+    it('should render the villain layout', async () => {
+      expect(
+        await screen.findByTestId(`villain-list-item-${villains.length - 1}`),
+      ).toBeInTheDocument()
+
+      expect(await screen.findByText(villains[0].name)).toBeInTheDocument()
+      expect(
+        await screen.findByText(villains[0].description),
+      ).toBeInTheDocument()
+      expect(await cardContents()).toHaveLength(villains.length)
+      expect(await deleteButtons()).toHaveLength(villains.length)
+      expect(await editButtons()).toHaveLength(villains.length)
+    })
+
+    it('should search and filter villain by name and description', async () => {
+      const search = await screen.findByTestId('search')
+
+      userEvent.type(search, villains[0].name)
+      await waitFor(async () => expect(await cardContents()).toHaveLength(1))
+      await screen.findByText(villains[0].name)
+
+      userEvent.clear(search)
+      await waitFor(async () =>
+        expect(await cardContents()).toHaveLength(villains.length),
+      )
+
+      userEvent.type(search, villains[2].description)
+      await waitFor(async () => expect(await cardContents()).toHaveLength(1))
+    })
+
+    it('should handle delete', async () => {
+      userEvent.click((await deleteButtons())[0])
+      expect(handleDeleteVillain).toHaveBeenCalled()
+    })
+
+    it('should handle edit', async () => {
+      userEvent.click((await editButtons())[0])
+      await waitFor(() =>
+        expect(window.location.pathname).toEqual(
+          '/villains/edit-villain/' + villains[0].id,
+        ),
+      )
+    })
+  })
+})
+```
+
+At `VillainList.tsx`, as in `Villains.tsx` the import changes. Additionally, we do not need to import `useContext`. We now de-structure villains; `const [villains] = useVillainsContext()`. If we needed to we could also get the setter out of the hook to set the context.
 
 ```tsx
 // src/villains/VillainList.tsx
@@ -2833,3 +3025,11 @@ export default function VillainList({ handleDeleteVillain }: VillainListProps) {
 ```
 
 ## Summary & Takeaways
+
+- Context api lets us pass a value deep into the component tree, without explicitly threading it through every component. 
+
+- Use a custom hook, manage state and effects within the hook, and only return the values that the components need which may be a value and a setValue.  
+
+- With `cy.intercept` and MSW we checked that a network request goes out versus checking that the operation caused a hook to be called. Consequently changing the hooks had no impact on the tests, or the functionality. This is why we want to test at a slightly higher level of abstraction, and why we want to verify the consequences of the implementation vs the implementation details themselves.
+
+  
