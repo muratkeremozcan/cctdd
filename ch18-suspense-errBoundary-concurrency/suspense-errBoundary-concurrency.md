@@ -667,7 +667,7 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
 }
 ```
 
-The conditional rendering gives another clue; do we need a search bar when there is no data? Let's add that feature, starting with a failing test. We will rearrange `HeroLIst.cy.tsx` a bit so that we can capture the test in two contexts; mount without hero data, and mount with hero data (Red 2).
+The conditional rendering gives another clue; do we need a search bar when there is no data? Let's add that feature, starting with a failing test. We will rearrange `HeroList.cy.tsx` a bit so that we can capture the test in two contexts; mount without hero data, and mount with hero data (Red 2).
 
 ```tsx
 // src/heroes/HeroList.cy.tsx
@@ -1274,7 +1274,7 @@ export default function HeroDetail() {
 }
 ```
 
-We do not have any way to check the update scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Any time we are not able to cover a test at a low level with component tests, move up to ui-integration tests. Most the time a ui-integration test will suffice, and when it is not enough we can use a true e2e that hits the backend. In our case ui-integration is sufficient because we do not necessarily have to receive a 500 response from a real network to render the error . Therefore we can add a ui-integration test to `edit-hero.cy.ts` e2e test that covers the update scenario. We see the boundaries between test types begin to get thinner; we use the least costly kind of test to gain the highest confidence. Where they are in the pyramid is only relevant by the ability to perform that kind of test in the given context (Refactor 4).
+We do not have any way to check the update scenario in the component test, because we are not able to setup such state that would trigger a back-end modification. Any time we are not able to cover a test at a low level with component tests, move up to ui-integration tests. Most the time a ui-integration test will suffice, and when it is not enough we can use a true e2e that hits the backend. In our case ui-integration is preferred because it would be hard to have the backend respond with a 500 response. We also do not need a response from a real network to render the error . Therefore we can add a ui-integration test to `edit-hero.cy.ts` e2e test that covers the update scenario. We see the boundaries between test types begin to get thinner; we use the least costly kind of test to gain the highest confidence. Where they are in the pyramid is only relevant by the ability to perform that kind of test in the given context (Refactor 4).
 
 The new test is similar to other ui-integration tests; we stub the network and visit the main route. We go to the edit page for any random hero. We setup the network stub that will happen on update via `cy.intercept`. Finally we repeat a similar spinner -> wait on network -> error flow from the component test. The only distinction here is `PUT` vs `POST`.
 
@@ -1464,8 +1464,6 @@ import Heroes from "./Heroes";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import "../styles.scss";
-import { ErrorBoundary } from "react-error-boundary";
-import ErrorComp from "@components/ErrorComp";
 
 describe("Heroes", () => {
   const mounter = (queryClient: QueryClient) =>
@@ -1531,8 +1529,6 @@ import Heroes from "./Heroes";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import "../styles.scss";
-import { ErrorBoundary } from "react-error-boundary";
-import ErrorComp from "@components/ErrorComp";
 
 describe("Heroes", () => {
   const mounter = (queryClient: QueryClient) =>
@@ -2211,9 +2207,9 @@ describe("HeroList", () => {
 });
 ```
 
-With [msw](https://testing-library.com/docs/react-testing-library/example-intro/#mock) - think of `cy.intercept` for RTL use - it is not recommended to verify XHR calls going out of the app instead, the advice is the verify the changes in the UI. Alas, sometimes there are no changes in the component itself therefore we cannot mirror every single Cypress component testing 1:1 with RTL. Here is the RTL mirror of `HeroDetail.cy.tsx`.
+With [msw](https://testing-library.com/docs/react-testing-library/example-intro/#mock) - think of `cy.intercept` for RTL use - it is not recommended to verify XHR calls going out of the app. Instead, the advice is the verify the changes in the UI. Alas, sometimes there are no changes in the component itself therefore we cannot mirror every single Cypress component testing 1:1 with RTL. Here is the RTL mirror of `HeroDetail.cy.tsx`.
 
-> Alternatively we could spy on the `react-query` hooks and verify they are called. While that is what most developers have been used to, it is an implementation detail because changes in the state management approach would break the tests.
+> Alternatively we could spy on the `react-query` hooks and verify they are called. While that is what most developers have been used to, it is an implementation detail because changes to our state management approach would break the tests.
 
 ```tsx
 // src/heroes/HeroDetail.test.tsx
