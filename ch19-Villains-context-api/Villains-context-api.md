@@ -1212,7 +1212,9 @@ describe("Backend e2e", () => {
       description: `description ${faker.internet.userName()}`,
     };
 
-    cy.crud("POST", "heroes", { body: newHero });
+    cy.crud("POST", "heroes", { body: newHero })
+      .its("status")
+      .should("eq", 201);
 
     cy.crud("GET", "heroes")
       .its("body")
@@ -1221,12 +1223,16 @@ describe("Backend e2e", () => {
       });
 
     const editedHero = { ...newHero, name: "Murat" };
-    cy.crud("PUT", `heroes/${editedHero.id}`, { body: editedHero });
+    cy.crud("PUT", `heroes/${editedHero.id}`, { body: editedHero })
+      .its("status")
+      .should("eq", 200);
     cy.crud("GET", `heroes/${editedHero.id}`)
       .its("body")
       .should("deep.eq", editedHero);
 
-    cy.crud("DELETE", `heroes/${editedHero.id}`);
+    cy.crud("DELETE", `heroes/${editedHero.id}`)
+      .its("status")
+      .should("eq", 200);
     cy.crud("GET", `heroes/${editedHero.id}`, { allowedToFail: true })
       .its("status")
       .should("eq", 404);
@@ -1239,7 +1245,9 @@ describe("Backend e2e", () => {
       description: `description ${faker.internet.userName()}`,
     };
 
-    cy.crud("POST", "villains", { body: newVillain });
+    cy.crud("POST", "villains", { body: newVillain })
+      .its("status")
+      .should("eq", 201);
 
     cy.crud("GET", "villains")
       .its("body")
@@ -1248,12 +1256,16 @@ describe("Backend e2e", () => {
       });
 
     const editedVillain = { ...newVillain, name: "Murat" };
-    cy.crud("PUT", `villains/${editedVillain.id}`, { body: editedVillain });
+    cy.crud("PUT", `villains/${editedVillain.id}`, { body: editedVillain })
+      .its("status")
+      .should("eq", 200);
     cy.crud("GET", `villains/${editedVillain.id}`)
       .its("body")
       .should("deep.eq", editedVillain);
 
-    cy.crud("DELETE", `villains/${editedVillain.id}`);
+    cy.crud("DELETE", `villains/${editedVillain.id}`)
+      .its("status")
+      .should("eq", 200);
     cy.crud("GET", `villains/${editedVillain.id}`, { allowedToFail: true })
       .its("status")
       .should("eq", 404);
