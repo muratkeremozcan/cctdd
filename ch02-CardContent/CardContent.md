@@ -19,7 +19,7 @@ describe("CardContent", () => {
 });
 ```
 
-We do the minimal to make the compiler green.
+We do the mimimum to make the compiler green.
 
 ```tsx
 // src/components/CardContent.tsx

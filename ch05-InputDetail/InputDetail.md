@@ -95,7 +95,7 @@ describe("InputDetail", () => {
     const name = "name";
     cy.mount(<InputDetail name={name} placeholder={placeholder} />);
 
-    cy.contains("label", name);
+    cy.contains(name);
     cy.findByPlaceholderText(placeholder);
   });
 });
@@ -166,7 +166,7 @@ describe("InputDetail", () => {
       <InputDetail name={name} value={value} placeholder={placeholder} />
     );
 
-    cy.contains("label", name);
+    cy.contains(name);
     cy.get("input").should("have.value", value);
     cy.findByPlaceholderText(placeholder);
   });
@@ -226,7 +226,7 @@ describe("InputDetail", () => {
       <InputDetail name={name} value={value} placeholder={placeholder} />
     );
 
-    cy.contains("label", name);
+    cy.contains(name);
     cy.findByPlaceholderText(placeholder).clear().type(newValue);
     cy.get("input").should("have.value", newValue);
   });
@@ -244,7 +244,7 @@ describe("InputDetail", () => {
       />
     );
 
-    cy.contains("label", name);
+    cy.contains(name);
     cy.findByPlaceholderText(placeholder).should("have.attr", "readOnly");
   });
 });
@@ -307,7 +307,7 @@ describe("InputDetail", () => {
       />
     );
 
-    cy.contains("label", name);
+    cy.contains(name);
     cy.findByPlaceholderText(placeholder).clear().type(newValue);
     cy.get("input").should("have.value", newValue);
     cy.get("@onChange").should("have.been.called");
@@ -326,7 +326,7 @@ describe("InputDetail", () => {
       />
     );
 
-    cy.contains("label", name);
+    cy.contains(name);
     cy.findByPlaceholderText(placeholder).should("have.attr", "readOnly");
     cy.get("input").should("have.value", value);
   });
@@ -375,6 +375,7 @@ export default function InputDetail({
 We can enhance the test to be more specific with the onChange check. It should be called 2 times when typing 42 (Refactor 5).
 
 ```tsx
+// src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 import "../styles.scss";
 
@@ -396,8 +397,10 @@ describe("InputDetail", () => {
 
     cy.contains("label", name);
     cy.findByPlaceholderText(placeholder).clear().type(newValue);
-    cy.get("input").should("have.value", newValue);
-    cy.get("@onChange").should("have.been.calledTwice");
+    cy.findByDisplayValue(newValue);
+    cy.get("@onChange")
+      .its("callCount")
+      .should("eq", newValue.length + 1);
   });
 
   it("should not allow the input field to be modified", () => {
@@ -411,8 +414,9 @@ describe("InputDetail", () => {
     );
 
     cy.contains("label", name);
-    cy.findByPlaceholderText(placeholder).should("have.attr", "readOnly");
-    cy.get("input").should("have.value", value);
+    cy.findByPlaceholderText(placeholder)
+      .should("have.value", value)
+      .and("have.attr", "readOnly");
   });
 });
 ```
@@ -463,7 +467,6 @@ export default function InputDetail({
 import InputDetail from "./InputDetail";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import "@testing-library/jest-dom";
 
 describe("InputDetail", () => {
   const placeholder = "Aslaug";
@@ -487,6 +490,7 @@ describe("InputDetail", () => {
     await userEvent.clear(inputField);
     await userEvent.type(inputField, newValue);
     expect(inputField).toHaveDisplayValue(newValue);
+    expect(onChange).toHaveBeenCalledTimes(newValue.length);
   });
 
   it("should not allow the input field to be modified", async () => {
@@ -501,8 +505,8 @@ describe("InputDetail", () => {
 
     await screen.findByText(name);
     const inputField = await screen.findByPlaceholderText(placeholder);
-    expect(inputField).toHaveAttribute("readOnly");
     expect(inputField).toHaveDisplayValue(value);
+    expect(inputField).toHaveAttribute("readOnly");
   });
 });
 ```

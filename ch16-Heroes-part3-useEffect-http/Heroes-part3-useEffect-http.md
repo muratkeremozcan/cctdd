@@ -404,7 +404,7 @@ describe("ct sanity", () => {
 });
 ```
 
-We also have to update the RTL unit test `src/App.test.tsx` which mirrors `App.cy.tsx`. Note that running the unit test it does not fail but the error will be a merge blocker. We only know what the problem is because either we have seen this before, or because we saw the network call happen on component mount in the component test runner using the real browser. **Component testing with Cypress, using the real browser, can help diagnose issues in the app that may be harder to do so using Jest / RTL.**
+We also have to update the RTL unit test `src/App.test.tsx` which mirrors `App.cy.tsx`. Note that running the unit test it does not fail but the error will be a merge blocker. We only know what the problem is because either we have seen this before, or because we saw the network call happen on component mount in the component test runner using the real browser. **Component testing with Cypress, using the real browser, can help diagnose issues in the app that may be harder to do using Jest / RTL.**
 
 ![HeroesPart3-RTL-fail](../img/HeroesPart3-RTL-fail.png)
 
@@ -599,8 +599,8 @@ describe("InputDetail", () => {
 
     cy.contains("label", name);
     cy.findByPlaceholderText(placeholder).clear().type(newValue);
-    cy.get("input").should("have.value", newValue);
-    cy.get("@onChange").should("have.been.calledTwice");
+    cy.findByDisplayValue(newValue);
+    cy.get("@onChange").its("callCount").should("eq", newValue.length);
   });
 
   it("should not allow the input field to be modified", () => {
@@ -614,8 +614,9 @@ describe("InputDetail", () => {
     );
 
     cy.contains("label", name);
-    cy.findByPlaceholderText(placeholder).should("have.attr", "readOnly");
-    cy.get("input").should("have.value", value);
+    cy.findByPlaceholderText(placeholder)
+      .should("have.value", value)
+      .and("have.attr", "readOnly");
   });
 });
 ```
@@ -886,6 +887,6 @@ We used a hook `useAxios` to yield the data at the component in an abstracted wa
   - `useEffect(fn)` -> run the effect at every render
 - Wrap expensive functions in `useCallback` to memoize repeated calls.
 - We can manage most http state with `useState` & `useEffect`, however the implementation can grow as the app scales.
-- Component testing with Cypress, using the real browser, can help diagnose issues in the app that may be harder to do so using Jest/RTL.
+- Component testing with Cypress, using the real browser, can help diagnose issues in the app that may be harder to do using Jest/RTL.
 - If component tests are making network calls, we can stub the network with the [`cy.intercept`](https://docs.cypress.io/api/commands/intercept) api. The contrast to `cy.intercept` is [`msw`](https://mswjs.io/docs/) for Jest/RTL .
 - Similar to routing, when our concerns about the app are higher level as in state management and flows, e2e tests are effective at catching edge cases that we might not be able to cover with component tests.

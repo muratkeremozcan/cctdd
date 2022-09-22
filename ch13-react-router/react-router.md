@@ -109,7 +109,7 @@ export default App;
 
 Looking at `NavBar.cy.tsx` we see that we already covered click navigation to heroes, villains, and about. We do not have to repeat this test in e2e. Always check the test coverage of lower level tests and prefer not to duplicate the effort at a higher level, because it will have extra cost but might not provide extra confidence.
 
-Whether using e2e or component tests, the flow of TDD is the same; start with something failing, do the minimal to get it to work, and then make it better. The main distinction is scale; with e2e we need to be even more careful to have small incremental steps because the impact on the large scale of the app can be higher, making failures harder to diagnose. The obvious, but hard to implement, practice in test driven design is to write very small incremental tests at a time.
+Whether using e2e or component tests, the flow of TDD is the same; start with something failing, do the mimimum to get it to work, and then make it better. The main distinction is scale; with e2e we need to be even more careful to have small incremental steps because the impact on the large scale of the app can be higher, making failures harder to diagnose. The obvious, but hard to implement, practice in test driven design is to write very small incremental tests at a time.
 
 ## Routing
 
@@ -290,8 +290,6 @@ export default App;
 
 Any time we have passing tests, we want to consider a refactor or add more tests before adding more source code. We can supplement the tests with url checks, in addition to the component render when navigating to a url (Refactor 4).
 
-> Here `cy.url().should('include', route)` could also be `cy.url().should('contain', route)`, but `cy.url().contains(route)` will not work because that is a different API for checking text content on the page.
-
 ```tsx
 // cypress/e2e/routes-nav.cy.ts
 describe("e2e sanity", () => {
@@ -303,14 +301,14 @@ describe("e2e sanity", () => {
   it("should land on not found when visiting an non-existing route", () => {
     const route = "/route48";
     cy.visit(route);
-    cy.url().should("include", route);
+    cy.location('pathname').should('eq', route);
     cy.getByCy("not-found").should("be.visible");
   });
 
   it("should direct-navigate to about", () => {
     const route = "/about";
     cy.visit(route);
-    cy.url().should("include", route);
+    cy.location('pathname').should('eq' route);
     cy.getByCy("about").contains("CCTDD");
   });
 });
@@ -326,19 +324,19 @@ describe("e2e sanity", () => {
     cy.getByCy("header-bar").should("be.visible");
     cy.getByCy("nav-bar").should("be.visible");
 
-    cy.url().should("include", "heroes");
+    cy.location('pathname').should('eq' "heroes");
   });
   it("should land on not found when visiting an non-existing route", () => {
     const route = "/route48";
     cy.visit(route);
-    cy.url().should("include", route);
+    cy.location('pathname').should('eq' route);
     cy.getByCy("not-found").should("be.visible");
   });
 
   it("should direct-navigate to about", () => {
     const route = "/about";
     cy.visit(route);
-    cy.url().should("include", route);
+    cy.location('pathname').should('eq' route);
     cy.getByCy("about").contains("CCTDD");
   });
 });
@@ -388,28 +386,28 @@ describe("Routes and navigation", () => {
     cy.getByCy("header-bar").should("be.visible");
     cy.getByCy("nav-bar").should("be.visible");
 
-    cy.url().should("include", "/heroes");
+    cy.location('pathname').should('eq' "/heroes");
     cy.getByCy("heroes").should("be.visible");
   });
 
   it("should direct-navigate to /heroes", () => {
     const route = "/heroes";
     cy.visit(route);
-    cy.url().should("include", route);
+    cy.location('pathname').should('eq' route);
     cy.getByCy("heroes").should("be.visible");
   });
 
   it("should land on not found when visiting an non-existing route", () => {
     const route = "/route48";
     cy.visit(route);
-    cy.url().should("include", route);
+    cy.location('pathname').should('eq' route);
     cy.getByCy("not-found").should("be.visible");
   });
 
   it("should direct-navigate to about", () => {
     const route = "/about";
     cy.visit(route);
-    cy.url().should("include", route);
+    cy.location('pathname').should('eq' route);
     cy.getByCy("about").contains("CCTDD");
   });
 });
@@ -425,46 +423,46 @@ describe("e2e sanity", () => {
     cy.getByCy("header-bar").should("be.visible");
     cy.getByCy("nav-bar").should("be.visible");
 
-    cy.url().should("include", "/heroes");
+    cy.location('pathname').should('eq' "/heroes");
     cy.getByCy("heroes").should("be.visible");
   });
 
   it("should direct-navigate to /heroes", () => {
     const route = "/heroes";
     cy.visit(route);
-    cy.url().should("include", route);
+    cy.location('pathname').should('eq' route);
     cy.getByCy("heroes").should("be.visible");
   });
 
   it("should land on not found when visiting an non-existing route", () => {
     const route = "/route48";
     cy.visit(route);
-    cy.url().should("include", route);
+    cy.location('pathname').should('eq' route);
     cy.getByCy("not-found").should("be.visible");
   });
 
   it("should direct-navigate to about", () => {
     const route = "/about";
     cy.visit(route);
-    cy.url().should("include", route);
+    cy.location('pathname').should('eq' route);
     cy.getByCy("about").contains("CCTDD");
   });
 
   it("should cover route history with browser back and forward", () => {
-    cy.visit("/")
+    cy.visit("/");
     const routes = ["villains", "heroes", "about"];
     cy.wrap(routes).each((route: string) =>
       cy.get(`[href="/${route}"]`).click()
     );
 
     const lastIndex = routes.length - 1;
-    cy.url().should("include", routes[lastIndex]);
+    cy.location('pathname').should('eq' routes[lastIndex]);
     cy.go("back");
-    cy.url().should("include", routes[lastIndex - 1]);
+    cy.location('pathname').should('eq' routes[lastIndex - 1]);
     cy.go("back");
-    cy.url().should("include", routes[lastIndex - 2]);
+    cy.location('pathname').should('eq' routes[lastIndex - 2]);
     cy.go("forward").go("forward");
-    cy.url().should("include", routes[lastIndex]);
+    cy.location('pathname').should('eq' routes[lastIndex]);
   });
 });
 ```
@@ -487,7 +485,7 @@ describe("ct sanity", () => {
       const routes = ["heroes", "villains", "about"];
       cy.getByCy("menu-list").children().should("have.length", routes.length);
 
-      cy.wrap(routes).each((route: string) => {
+      routes.forEach((route: string) => {
         cy.get(`[href="/${route}"]`)
           .contains(route, { matchCase: false })
           .click()
@@ -495,7 +493,7 @@ describe("ct sanity", () => {
           .siblings()
           .should("not.have.class", "active-link");
 
-        cy.url().should("contain", route);
+        cy.location("pathname").should("eq", route);
       });
     });
   });
@@ -597,7 +595,7 @@ We updated the App RTL test to mirror the App sanity component test.
 ### Takeaways
 
 - E2e testing lets us cover the app's routing features and possible flows in a better way.
-- Whether using e2e or component tests, the main idea of TDD is the same; start with something failing, do the minimal to get it to work, and then make it better.
+- Whether using e2e or component tests, the main idea of TDD is the same; start with something failing, do the mimimum to get it to work, and then make it better.
 - The obvious, but hard to implement, practice in test driven design is to write very small incremental tests at a time. Be more considerate about smaller increments with e2e tests, because of the higher impact radius of the changes.
 - Whenever we are testing a component that includes other components, take a look at the child component source and the component test. The same rule applies to e2e as well. Always check the test coverage of lower level tests and prefer not to duplicate the effort at a higher level, because it will have extra cost but might not provide extra confidence.
 - Any time we have passing tests, we want to prefer to refactor or add more tests before adding more source code.
