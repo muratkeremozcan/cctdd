@@ -575,4 +575,4 @@ We enhance the visuals with additional css (Refactor 8).
 
 - The test tool can serve as the design tool in order to aid RedGreenRefactor cycles with incremental visual enhancements.
 
-- Like we saw in chapter one, the key idea is to start with something failing, do the minimal to get it to work, and then make it better. In this chapter, to make things better at the end, we kept improving the test and the visuals.
+- Like we saw in chapter one, the key idea is to start with something failing, do the mimimum to get it to work, and then make it better. In this chapter, to make things better at the end, we kept improving the test and the visuals.

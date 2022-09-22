@@ -372,16 +372,15 @@ describe("NavBar", () => {
       const routes = ["heroes", "villains", "about"];
       cy.getByCy("menu-list").children().should("have.length", routes.length);
 
-      cy.wrap(routes).each((route: string) => {
+      routes.forEach((route: string) => {
         cy.get(`[href="/${route}"]`)
-          .contains(route, { matchCase: false })
+          .contains(route, {matchCase: false})
           .click()
-          .should("have.class", "active-link")
+          .should('have.class', 'active-link')
           .siblings()
-          .should("not.have.class", "active-link");
+          .should('not.have.class', 'active-link')
 
-        cy.url().should("contain", route);
-      });
+        cy.url().should('contain', route)
     });
   });
 });
@@ -470,4 +469,4 @@ Finally, we refactored the component test to take advantage of Cypress' chaining
 
 ## Takeaway
 
-Of significance here was component testing aiding us as the design tool to create a new failing test. We wrote as many test as we could think of, but only when we saw that all links are always active, we thought about an additional feature.
+Of significance here was component testing aiding us as the design tool to create a new failing test. We wrote as many tests as we could think of, but only when we saw that all links are always active, we thought about an additional feature.

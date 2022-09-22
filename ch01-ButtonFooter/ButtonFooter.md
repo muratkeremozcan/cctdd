@@ -455,6 +455,6 @@ And we refactored the test to be leaner (Refactor 6).
 - Having first a failing test, ensures a fault-finding one.
 - TypeScript and ESlint can serve as "tests" that give us a Red.
 - Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
-- The RedGreenRefactor cycles do not always have to be in that order. It can be a few cycles of Red + Green, and then Refactor. Or it can be a Red, followed by a few Greens, and no Refactor. The key idea is to start with something failing, do the minimal to get it to work, and then make it better.
+- The RedGreenRefactor cycles do not always have to be in that order. It can be a few cycles of Red + Green, and then Refactor. Or it can be a Red, followed by a few Greens, and no Refactor. The key idea is to start with something failing, do the mimimum to get it to work, and then make it better.
 - Using `data-cy` attributes for selectors, with template literals and JSX, we can have a precise and effortless way to refer to a component or its variants (ex: save vs edit).
 - Refactoring can be applied to tests so long as they will not be detrimental to failure diagnosis, evaluate case by case.
