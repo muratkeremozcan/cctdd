@@ -418,13 +418,11 @@ We added a component to pass the test (Green 1).
 
 \
 
-
 We made the hard-coded string into a variable in the test, and made it so that it is a prop being passed in to `cy.mount`. (Red 2)
 
 We added the prop `label` and its type to the component (Green 2).
 
 \
-
 
 We added an icon to the component as a new prop and got a failing test (Red 3).
 
@@ -432,13 +430,11 @@ We enhanced the test to also use that new prop (Green 3).
 
 \
 
-
 We added a test for the onClick event (Red 4).
 
 We enhanced the component to accommodate the new feature (Green 4).
 
 \
-
 
 We decided to use a data-cy query for the button click (Red 5).
 
@@ -448,19 +444,17 @@ We enhanced the test and made sure that the `svg` is rendered.
 
 \
 
-
 We increased the test coverage by trying a different component; a Save button (Green 6).
 
 And we refactored the test to be leaner (Refactor 6).
 
 \
 
-
 ## Takeaways
 
-* Having first a failing test, ensures a fault-finding one.
-* TypeScript and ESlint can serve as "tests" that give us a Red.
-* Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
-* The RedGreenRefactor cycles do not always have to be in that order. It can be a few cycles of Red + Green, and then Refactor. Or it can be a Red, followed by a few Greens, and no Refactor. The key idea is to start with something failing, do the mimimum to get it to work, and then make it better.
-* Using `data-cy` attributes for selectors, with template literals and JSX, we can have a precise and effortless way to refer to a component or its variants (ex: save vs edit).
-* Refactoring can be applied to tests so long as they will not be detrimental to failure diagnosis, evaluate case by case.
+- Having first a failing test, ensures a fault-finding one.
+- TypeScript and ESlint can serve as "tests" that give us a Red.
+- Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
+- The RedGreenRefactor cycles do not always have to be in that order. It can be a few cycles of Red + Green, and then Refactor. Or it can be a Red, followed by a few Greens, and no Refactor. The key idea is to start with something failing, do the mimimum to get it to work, and then make it better.
+- Using `data-cy` attributes for selectors, with template literals and JSX, we can have a precise and effortless way to refer to a component or its variants (ex: save vs edit).
+- Refactoring can be applied to tests so long as they will not be detrimental to failure diagnosis, evaluate case by case.
