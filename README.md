@@ -1,6 +1,34 @@
 # CCTDD: Cypress Component Test Driven Design
 
-We will recreate Angular's Tour of Heroes, in a component test driven manner, using Cypress, React and TS. John Papa has the same app in Angular, Vue and ReactJS, alas the React version is dated, and as the React community we know how frequently the meta changes. The approach gives readers coming from Vue and Angular to make 1:1 comparisons when writing Cypress component tests, and even a possibility to redo this exercise in one of those frameworks.
+## Foreword
+
+I believe applying TDD with Cypress Component Testing can take our front end engineering to the next level.
+
+In this book we will recreate Angular's Tour of Heroes, in a component test driven manner, using Cypress, React and TS. Once we build up the components, we will investigate how TDD can be practiced with routing, state management and Cypress e2e testing. We will also learn about API e2e testing with Cypress, and see where UI-integration tests fit.
+
+Years ago John Papa created the same app in Angular, Vue and ReactJS, alas the React version is dated, and as the React community we know how frequently the meta changes. The approach gives readers coming from Vue and Angular to make 1:1 comparisons when writing Cypress component tests, and even a possibility to redo this exercise in one of those frameworks.
+
+## Acknowledgements
+
+Many thanks to the reviewers of this content; [Matthew Schrepel](https://www.linkedin.com/in/mschrepel/), [Stefano Magni](https://www.linkedin.com/in/noriste/), [Gleb Bahmutov](https://www.linkedin.com/in/bahmutov/) and to [Kent C. Dodds](https://www.linkedin.com/in/kentcdodds/) for continuously answering questions during his Epic React office hours.
+
+## Links & References
+
+These are the resources that have inspired the content of this book.
+
+[React Hooks in Action - Manning Publications](https://www.manning.com/books/react-hooks-in-action)
+
+[Epic React by Kent C. Dodds](https://epicreact.dev/)
+
+[Learning TDD - Saleem Siddiqui](https://www.oreilly.com/library/view/learning-test-driven-development/9781098106461/)
+
+[Tour of Heroes by John Papa](https://papa-heroes-angular.azurewebsites.net/heroes)
+
+## Future
+
+Making comparisons and contrasts are a great way to learn new tech. There aren't too many resources that are fashioned in this style. For example in this content Heroes are using React props to pass state between components, and their mirror Villains are using the React context api.
+
+This is a live book keeping updated and improved daily. We can have a Redux mirror, a Redux Toolkit mirror, an X-State mirror, perhaps one day we can migrate the application to NextJs. Expect to see more chapters in the future and learn more about front-end development together.
 
 ## Setup
 
@@ -42,11 +70,3 @@ For the requirement spec, we will use the [Angular version of the app](https://p
 In the later chapters when we tackle state and routing, Cypress e2e testing will become more relevant for TDD, and the component test suite will serve as the reassurance that our app still works as expected.
 
 In every chapter we will explicitly capture Red Green Refactor cycles of TDD, and will wrap with a summary & key takeaways. Every code sample is meant to be copy pastable and to give reproducible results, however the reader is encouraged to write and incrementally improve the code rather than copy paste. One final disclaimer; in the early chapters, to avoid major rehash of files and code later, we might make some decisions towards being more aligned with the final version of the app.
-
-## Links & References
-
-[React Hooks in Action - Manning Publications](https://www.manning.com/books/react-hooks-in-action)
-
-https://epicreact.dev/
-
-[Tour of Heroes](https://papa-heroes-angular.azurewebsites.net/heroes)
