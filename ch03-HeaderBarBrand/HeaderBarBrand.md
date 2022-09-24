@@ -6,7 +6,7 @@ This is what our component might look like eventually. We need two links; one to
 
 Create a branch `feat/headerBarBrand`. Create 2 files under `src/components/` folder; `HeaderBarBrand.cy.tsx`, `HeaderBarBrand.tsx`. As usual, start minimal with a component rendering; copy the below to the files and execute the test after opening the runner with `yarn cy:open-ct`.
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 import "../styles.scss";
@@ -18,7 +18,7 @@ describe("HeaderBarBrand", () => {
 });
 ```
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 
 export default function HeaderBarBrand() {
@@ -30,7 +30,7 @@ export default function HeaderBarBrand() {
 
 We need a `div` wrapping two links. Let's start with the easier one in a failing test (Red 1).
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 import "../styles.scss";
@@ -45,7 +45,7 @@ describe("HeaderBarBrand", () => {
 
 Add the link to the component to make the test pass (Green 1).
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 
 export default function HeaderBarBrand() {
@@ -59,7 +59,7 @@ export default function HeaderBarBrand() {
 
 Let's click that link and see if there is any navigation. Cypress runner will complain that the element is not visible (Red 2).
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 import "../styles.scss";
@@ -78,7 +78,7 @@ We could add a force to the click operation `.click({force: true})`, but let's d
 
 For now, remove the `.click()` in the test, and just check for visibility.
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 import { FaReact } from "react-icons/fa";
 
@@ -93,7 +93,7 @@ export default function HeaderBarBrand() {
 }
 ```
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 import "../styles.scss";
@@ -114,7 +114,7 @@ The icon renders (Green 2).
 
 We want the link to open a new tab to https://reactjs.org. We can achieve this by adding `target='_blank'` and `rel="noopener noreferrer">` attributes to the link. Let's write a failing test for the new functionality (Red 3).
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 import "../styles.scss";
@@ -132,7 +132,7 @@ describe("HeaderBarBrand", () => {
 
 We add the attributes to the component to have the test pass (Green 3).
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 import { FaReact } from "react-icons/fa";
 
@@ -151,7 +151,7 @@ export default function HeaderBarBrand() {
 
 Looking at the css, we have classes `navbar-brand` and `navbar-item`. We can add those to make the render look better (Refactor 3).
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 import { FaReact } from "react-icons/fa";
 
@@ -173,7 +173,7 @@ export default function HeaderBarBrand() {
 
 At the moment we are only checking the link. We could also verify that there is an `svg` inside the component. We want to have a `data-cy` attribute for the component instead of referring to with a css selector. Let's add a failing test for it (Red 4).
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 import "../styles.scss";
@@ -192,7 +192,7 @@ describe("HeaderBarBrand", () => {
 
 Include the `data-cy` attribute in the component and we are done with the link portion of the component.
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 import { FaReact } from "react-icons/fa";
 
@@ -220,7 +220,7 @@ We are going to be using `react-router` as the routing solution in our app. Reac
 
 Add React-router to our app with `yarn add react-router-dom`. Add the `NavLink` under the `div` and let's see what things are looking like.
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 import { FaReact } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
@@ -248,7 +248,7 @@ We get two failures. One is a compiler warning about a missing attribute, the ot
 
 We can address the compiler warning by adding a `to` attribute to `NavLink` (Green 5).
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 import { FaReact } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
@@ -272,7 +272,7 @@ export default function HeaderBarBrand() {
 
 We can address the component test failure by wrapping the mounted component in `BrowserRouter`. This is something we will see often see in the future component tests that have to do with routing.
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 import { BrowserRouter } from "react-router-dom";
@@ -300,7 +300,7 @@ The test is green again, but there is no visual difference. We are using the [An
 
 We can write a new failing test checking for this content. We want to check that `NavLink` is rendered, and we want to verify the strings under the spans. We can also verify that when clicking on this link, we are at the home route (Red 6). There is no concept of url in a Cypress component test, however clicking on links does indeed change a url value, which we can verify.
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.cy.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 import { BrowserRouter } from "react-router-dom";
@@ -333,7 +333,7 @@ describe("HeaderBarBrand", () => {
 
 To address the failures, we add the `data-cy` attribute, and copy the DOM structure from the Angular version of the app (Green 6).
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.tsx
 import { FaReact } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
@@ -372,7 +372,7 @@ In our case, it is a simple component, we can either keep the test long or use a
 
 > Tip: In a long test [`cy.log()`](https://docs.cypress.io/api/commands/log#Syntax) can be used for delimitation.
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.cy.tsx
 // single it block
 import HeaderBarBrand from "./HeaderBarBrand";
@@ -404,7 +404,7 @@ describe("HeaderBarBrand", () => {
 });
 ```
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.cy.tsx
 // 2 it blocks with a beforeEach hook for mount
 import HeaderBarBrand from "./HeaderBarBrand";
@@ -443,7 +443,7 @@ describe("HeaderBarBrand", () => {
 
 ### RTL version of the component test
 
-```tsx
+```typescriptx
 // src/components/HeaderBarBrand.test.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 import { render, screen, within } from "@testing-library/react";

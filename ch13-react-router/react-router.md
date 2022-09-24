@@ -20,7 +20,7 @@ Our requirement is to serve our app, be able to click on the links, land on the 
 
 Starting top down, our first failing test is to see if we can render the `HeaderBar` component (Red 1).
 
-```tsx
+```typescriptx
 // cypress/e2e/routes-nav.cy.ts
 describe("e2e sanity", () => {
   it("passes sanity", () => {
@@ -32,7 +32,7 @@ describe("e2e sanity", () => {
 
 Whenever we are testing a component that includes other components, we have a best practice to take a look at the child component source and the component test. This is all the same when testing the app with e2e. `src/components/HeaderBar.cy.tsx` uses `BrowserRouter` to wrap the `HeaderBar` while mounting it, that means our main app will need `DataBrowserRouter` as well (Green 1).
 
-```tsx
+```typescriptx
 // src/App.tsx
 import HeaderBar from "components/HeaderBar";
 import { BrowserRouter } from "react-router-dom";
@@ -51,7 +51,7 @@ export default App;
 
 Our second requirement is to display the `NavBar` component (Red 2).
 
-```tsx
+```typescriptx
 // cypress/e2e/routes-nav.cy.ts
 describe("e2e sanity", () => {
   it("should render header bar and nav bar", () => {
@@ -64,7 +64,7 @@ describe("e2e sanity", () => {
 
 Add the `NavBar />` to our app and the test is passing (Green 2).
 
-```tsx
+```typescriptx
 // src/App.tsx
 import HeaderBar from "components/HeaderBar";
 import NavBar from "components/NavBar";
@@ -85,7 +85,7 @@ export default App;
 
 We can fine tune the render by adding some of the css from the original app (Refactor 2).
 
-```tsx
+```typescriptx
 // src/App.tsx
 import HeaderBar from "components/HeaderBar";
 import NavBar from "components/NavBar";
@@ -115,7 +115,7 @@ Whether using e2e or component tests, the flow of TDD is the same; start with so
 
 Write a failing test that checks that we render the `NotFound` component when visiting a non-existing route (Red 3).
 
-```tsx
+```typescriptx
 // cypress/e2e/routes-nav.cy.ts
 describe("e2e sanity", () => {
   it("should render header bar and nav bar", () => {
@@ -132,7 +132,7 @@ describe("e2e sanity", () => {
 
 To use `react-router` we need to import and wrap our component in a `Routes` component. Each component becomes an `element` prop in a `Route` component. We map the component to a `path` prop. `*` means that anything that does not match other routes will fall-over to this one (Green 3)
 
-```tsx
+```typescriptx
 // src/App.tsx
 import HeaderBar from "components/HeaderBar";
 import NavBar from "components/NavBar";
@@ -158,7 +158,7 @@ export default App;
 
 We can slightly enhance the render with styling (Refactor 3).
 
-```tsx
+```typescriptx
 // src/App.tsx
 import HeaderBar from "components/HeaderBar";
 import NavBar from "components/NavBar";
@@ -189,7 +189,7 @@ export default App;
 
 Let's make the route setup a bit more interesting by adding the `About` component. Copy the below into `src/About.tsx`
 
-```tsx
+```typescriptx
 // src/About.tsx
 import React from "react";
 
@@ -235,7 +235,7 @@ export default About;
 
 Now we can write a failing test that directly navigates to the route. Recall that we already wrote the click-nav version in the `NavBar` component test and we are not repeating that in the e2e (Red 4).
 
-```tsx
+```typescriptx
 // cypress/e2e/routes-nav.cy.ts
 describe("e2e sanity", () => {
   it("should render header bar and nav bar", () => {
@@ -257,7 +257,7 @@ describe("e2e sanity", () => {
 
 We setup the `About` component for the `/about` route to pass the test (Green 4).
 
-```tsx
+```typescriptx
 // src/App.tsx
 import About from "About";
 import HeaderBar from "components/HeaderBar";
@@ -290,7 +290,7 @@ export default App;
 
 Any time we have passing tests, we want to consider a refactor or add more tests before adding more source code. We can supplement the tests with url checks, in addition to the component render when navigating to a url (Refactor 4).
 
-```tsx
+```typescriptx
 // cypress/e2e/routes-nav.cy.ts
 describe("e2e sanity", () => {
   it("should render header bar and nav bar", () => {
@@ -316,7 +316,7 @@ describe("e2e sanity", () => {
 
 The first test begs the question, what should the default url be for our app? The most involved component is `Heroes`, so that is an appropriate choice. We want to be redirected to `/heroes` route and display `Heroes` component when navigating to an empty route. Let's add a failing test for this need (Red 5).
 
-```tsx
+```typescriptx
 // cypress/e2e/routes-nav.cy.ts
 describe("e2e sanity", () => {
   it("should render header bar and nav bar", () => {
@@ -344,7 +344,7 @@ describe("e2e sanity", () => {
 
 The way to implement this feature in `react-router` is by using `Navigate` component. We also need the `/heroes` route now so that it can be navigated to (Green 5).
 
-```tsx
+```typescriptx
 // src/App.tsx
 import About from "About";
 import HeaderBar from "components/HeaderBar";
@@ -378,7 +378,7 @@ export default App;
 
 We can tweak the initial test that checks for `HeaderBar` and `NavBar` render, which are true in all routing tests. Here it is preferred to add on to the test rather than writing a new one for redirect. Always look for opportunities to tweak what test is already existing as opposed to writing partially duplicated tests for new specs. What matters from a test perspective is the beginning state of a test; if reaching that state is common, then it is an opportunity for a test enhancement vs partial test duplication. We can also add a new test checking the direct-navigation functionality for `/heroes` route (Refactor 5).
 
-```tsx
+```typescriptx
 // cypress/e2e/routes-nav.cy.ts
 describe("Routes and navigation", () => {
   it("should land on baseUrl, redirect to /heroes", () => {
@@ -415,7 +415,7 @@ describe("Routes and navigation", () => {
 
 What other tests can we think of at this point? How about route history? We can add a test for it, because it is low cost and confident to cover in an e2e test. We can also make the test a bit more interesting by using a different order of routes than heroes -> villains -> about (Refactor 5).
 
-```tsx
+```typescriptx
 // cypress/e2e/routes-nav.cy.ts
 describe("e2e sanity", () => {
   it("should land on baseUrl, redirect to /heroes", () => {
@@ -471,7 +471,7 @@ describe("e2e sanity", () => {
 
 We are very confident about direct-navigation & routing related tests with e2e. We also covered click navigation in `src/components/NotFound.cy.tsx`. In a component test, the url does not exist upon mount, and we cannot use `cy.visit`. But we can use click navigation. We can update `App.cy.tsx` as such. Switch to component testing from Cypress runner, or start it with `yarn cy:open-ct`.
 
-```tsx
+```typescriptx
 import App from "./App";
 
 describe("ct sanity", () => {
@@ -502,7 +502,7 @@ describe("ct sanity", () => {
 
 We check that upon mount the url is uncertain using `cy.getByCy('not-found').should('be.visible')`. The rest of the test is a copy paste from `src/components/NotFound.cy.tsx`. We could instead check the render of the child components of App component.
 
-```tsx
+```typescriptx
 import App from "./App";
 
 describe("ct sanity", () => {
@@ -523,7 +523,7 @@ describe("ct sanity", () => {
 
 This test does not add additional confidence, because it does not do anything extra over the existing e2e and component tests. At best, it can serve as a sanity test. We will keep it for now for a side project where we will compare Cypress component testing to React Testing library. Here is the initial RTL replica of the same test.
 
-```tsx
+```typescriptx
 // src/App.test.tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -544,7 +544,7 @@ test("renders tour of heroes", async () => {
 
 Update `src/setupTests.ts` to overwrite the default test id selector as `data-cy`.
 
-```tsx
+```typescriptx
 // src/setupTests.ts
 import "@testing-library/jest-dom";
 

@@ -136,7 +136,7 @@ Cypress is a great tool as an API client to test any live backend; check out [CR
 
 We create a backend-e2e test to show case TDD with Cypress api testing. Create a file `cypress/e2e/backend/crud.cy.ts`, and request a simple `GET`.
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 describe("Backend e2e", () => {
   it("should ", () => {
@@ -158,7 +158,7 @@ Start the runner with `yarn cy:open-e2e` and execute the test. If we scrutinize 
 
 We can test deeper and ensure that each entity has `id`, `name` and `description` properties.
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 describe("Backend e2e", () => {
   it("should ", () => {
@@ -182,7 +182,7 @@ describe("Backend e2e", () => {
 
 It would be more ideal to have the backend served on a `/api` route so that it is not confused by the front end, and it is more aligned with the convention. Modify the url with this change for a failing test (Red 1).
 
-```tsx
+```typescriptx
 // cypress/e2e/backend/crud.cy.ts
 describe("Backend e2e", () => {
   it("should ", () => {
@@ -206,7 +206,7 @@ describe("Backend e2e", () => {
 
 To satisfy the change, we need 2 modifications. First, create a file `routes.json` at the project root:
 
-```tsx
+```typescriptx
 {
   "/api/*": "/$1"
 }
@@ -222,7 +222,7 @@ Modify the `package.json` script by appending `--routes routes.json` so that thi
 
 We can have a similar test for `villains` with a slight refactor (Refactor 1).
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 describe("Backend e2e", () => {
   it("should GET heroes and villains ", () => {
@@ -258,7 +258,7 @@ describe("Backend e2e", () => {
 
 We can refactor that further to be DRYer.
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 describe("Backend e2e", () => {
   const apiUrl = "http://localhost:4000/api";
@@ -292,7 +292,7 @@ describe("Backend e2e", () => {
 
 Let's write a new test, this time adding a hero and verifying that it got added.
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 describe("Backend e2e", () => {
   const apiUrl = "http://localhost:4000/api";
@@ -366,7 +366,7 @@ Make sure to remove the additional entity added to db.json in our initial test, 
 
 Now all we need is a payload, however if we import `db.json` to our test and also use it to reset itself, reset call will keep repeating infinitely. Make a copy of `db.json` to `cypress/fixtures/db.json`, so that we can import from there and also fully be able to stub our network later. We can modify our script to reset the data before each test as shown below (Green 2).
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 import data from "../../fixtures/db.json";
 
@@ -425,7 +425,7 @@ describe("Backend e2e", () => {
 
 We can now add the rest of the test to update and delete the hero. Note that we are able use the `id` property in a route to get, update or delete that entity directly. Since we have a passing test, we keep adding new tests until we run into a failure. We are effectively testing `json-server`, therefore failures are not likely. This is the common scenario when applying a TDD-like approach after the development is done, therefore the true value of TDD is realized during development. Let's enhance the test with an update and delete (Refactor 2).
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 import data from "../../fixtures/db.json";
 
@@ -520,7 +520,7 @@ As you can see, covering the update scenario satisfies it all, otherwise there i
 
 After the final delete, we should ensure that the entity is removed from the database. Add a final get to check for this (Red 3).
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 import data from "../../fixtures/db.json";
 
@@ -608,7 +608,7 @@ We will get a failure about the 404 status because Cypress retries commands (for
 
 We can control those two together in an argument flag `allowedToFail` with default value of `false`. When we expect to have non-200 status codes, we can set that to true. Here is the api enhancement (Green 3).
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 import data from "../../fixtures/db.json";
 
@@ -693,7 +693,7 @@ We can refactor the api to be better readable and extendible by putting the opti
 
 We can also improve the type by casting the `cy.request` response, indicating the type of the value we will get.
 
-```tsx
+```typescriptx
 const getRoute = (
   // required args
   route: string,
@@ -711,7 +711,7 @@ const getRoute = (
 
 Here is the refactored test (Refactor 3).
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 import data from "../../fixtures/db.json";
 
@@ -799,7 +799,7 @@ describe("Backend e2e", () => {
 
 That is a better readable api, but there is some duplication between the CRUD functions. Consider the below function that can do any crud operation, with type safety. `method` and `route` are required. `body` and `allowedToFail` flag are optional, if they are not passed in then `body` is empty but `allowedToFail` still is `false`. If the body is passed in and the method is `POST` or `PUT`, the payload will be taken, otherwise undefined for `GET` and `DELETE`.
 
-```ts
+```typescript
 const crud = (
   // required args
   method: "GET" | "POST" | "PUT" | "DELETE",
@@ -822,7 +822,7 @@ const crud = (
 
 Here is the refactor using the above function (Refactor 4):
 
-```ts
+```typescript
 import data from "../../fixtures/db.json";
 
 describe("Backend e2e", () => {
@@ -898,7 +898,7 @@ We kept adding tests, and got green repeatedly. Now we can keep refactoring unti
 
 Add the command `crud` and `resetData` to Cypress commands (Refactor 4).
 
-```ts
+```typescript
 // cypress/support/commands.ts
 import "@testing-library/cypress/add-commands";
 import data from "../fixtures/db.json";
@@ -942,7 +942,7 @@ Cypress.Commands.add("resetData", () =>
 
 Add the type definition of the command to `./cypress.d.ts`.
 
-````ts
+````typescript
 // cypress.d.ts
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -1022,7 +1022,7 @@ declare global {
 
 Use the commands in the spec file. We will do a final touch up here to use [`faker`](https://fakerjs.dev/api/) for the data we are working with. `yarn add -D @faker-js/faker ` (Refactor 4).
 
-```ts
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 import type {Hero} from '../../support/commands'
 import {faker} from '@faker-js/faker'

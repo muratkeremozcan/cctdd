@@ -6,7 +6,7 @@ In the Angular version of the app, we can see that this component will be a `div
 
 Create a branch `feat/inputDetail`. Create 2 files under `src/components/` folder; `InputDetail.cy.tsx`, `InputDetail.tsx`. As usual, start minimal with a component rendering; copy the below to the files and execute the test after opening the runner with `yarn cy:open-ct`.
 
-```tsx
+```typescriptx
 // src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 
@@ -17,7 +17,7 @@ describe("InputDetail", () => {
 });
 ```
 
-```tsx
+```typescriptx
 // src/components/InputDetail.tsx
 export default function InputDetail() {
   return <div>hello</div>;
@@ -26,7 +26,7 @@ export default function InputDetail() {
 
 Let's add our first failing test. There needs to be an `input` with a placeholder attribute. We can use Testing Library's `findByPlaceholderText` to check for both (Red 1).
 
-```tsx
+```typescriptx
 // src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 
@@ -40,7 +40,7 @@ describe("InputDetail", () => {
 
 We enhance to component, with hard-coding, to pass the test (Green 1).
 
-```tsx
+```typescriptx
 // src/components/InputDetail.tsx
 export default function InputDetail() {
   return (
@@ -53,7 +53,7 @@ export default function InputDetail() {
 
 We can immediately tell that this needs to be a property, because of the hard-coded value. We enhance the test and the component to accept a prop (Refactor 1).
 
-```tsx
+```typescriptx
 // src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 
@@ -66,7 +66,7 @@ describe("InputDetail", () => {
 });
 ```
 
-```tsx
+```typescriptx
 // src/components/InputDetail.tsx
 type InputDetailProps = {
   placeholder: string;
@@ -85,7 +85,7 @@ export default function InputDetail({ placeholder }: InputDetailProps) {
 
 The next tag we need is `label`. This is a usual pattern in forms, a `div` wrapping a `label` and an `input` with css & attributes. Let's write a failing test (Red 2).
 
-```tsx
+```typescriptx
 // src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 
@@ -103,7 +103,7 @@ describe("InputDetail", () => {
 
 Add the new prop to the types, to the component arguments and into a label tag to get a passing test (Green 2).
 
-```tsx
+```typescriptx
 // src/components/InputDetail.tsx
 type InputDetailProps = {
   name: string;
@@ -126,7 +126,7 @@ We can add the css from the specification, alongside the usual form field attrib
 
 `label htmlFor={someValue}` links the `label` and `input` tags (Refactor 2).
 
-```tsx
+```typescriptx
 // src/components/InputDetail.tsx
 type InputDetailProps = {
   name: string;
@@ -152,7 +152,7 @@ export default function InputDetail({ name, placeholder }: InputDetailProps) {
 
 Form fields also have a `value` attribute, which can be used display a `readonly` value from the network, or writable form fields. For now, let's write a failing test checking for the `defaultValue` of a form, while also adding the styles (Red 3).
 
-```tsx
+```typescriptx
 // src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 import "../styles.scss";
@@ -175,7 +175,7 @@ describe("InputDetail", () => {
 
 We make the test green by adding a `defaultValue` attribute, with a `value` prop. We also add it as a type and as an argument to the component (Green 3).
 
-```tsx
+```typescriptx
 // src/components/InputDetail.tsx
 type InputDetailProps = {
   name: string;
@@ -211,7 +211,7 @@ The component is rendering nicely with the css.
 
 We suggested 2 variants of the form field; a readonly vs a writable field. Let's create two cases. The first test which checks that a field can be modified should pass. The second test checking that the input is readonly should fail for now. We also get a compiler indicator that we are trying to pass a non-existing `readOnly` prop (Red 4).
 
-```tsx
+```typescriptx
 //  src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 import "../styles.scss";
@@ -252,7 +252,7 @@ describe("InputDetail", () => {
 
 We can add the readOnly prop to the types, to the arguments and the readonly attribute of the component to get a passing test (Green 4). At this time, it is worth noting that `name` and `value` are the mandatory fields, and the rest are optional.
 
-```tsx
+```typescriptx
 //  src/components/InputDetail.tsx
 type InputDetailProps = {
   name: string;
@@ -287,7 +287,7 @@ export default function InputDetail({
 
 The final attribute we need for a form field is `onChange`, in case it is a writable field. Let's enhance the test to check that the `onChange` event is called when the form field changes (Red 5). The value of `onChange` is simply `cy.stub().as('onChange')`
 
-```tsx
+```typescriptx
 //  src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 import "../styles.scss";
@@ -335,7 +335,7 @@ describe("InputDetail", () => {
 
 To make the test pass, once again we have to add the type for the new prop `onChange`, the prop as the argument to the component, and we need an attribute for the input tag (Green 5).
 
-```tsx
+```typescriptx
 import { ChangeEvent } from "react";
 
 type InputDetailProps = {
@@ -374,7 +374,7 @@ export default function InputDetail({
 
 We can enhance the test to be more specific with the onChange check. It should be called 2 times when typing 42 (Refactor 5).
 
-```tsx
+```typescriptx
 // src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 import "../styles.scss";
@@ -423,7 +423,7 @@ describe("InputDetail", () => {
 
 As a final touch up, we add a `data-cy` selector to make the component easier to reference when it is used as a child.
 
-```tsx
+```typescriptx
 import { ChangeEvent } from "react";
 
 type InputDetailProps = {
@@ -462,7 +462,7 @@ export default function InputDetail({
 
 ## RTL version of the component test
 
-```tsx
+```typescriptx
 // src/components/InputDetail.test.tsx
 import InputDetail from "./InputDetail";
 import { render, screen } from "@testing-library/react";

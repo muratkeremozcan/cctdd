@@ -6,7 +6,7 @@ In the Angular version of the app, we can see that the component will be a `div`
 
 Create a branch `feat/listHeader`. Create 2 files under `src/components/` folder; `ListHeader.cy.tsx`, `ListHeader.tsx`. As usual, start minimal with a component rendering; copy the below to the files and execute the test after opening the runner with `yarn cy:open-ct`.
 
-```tsx
+```typescriptx
 // src/components/ListHeader.cy.tsx
 import ListHeader from "./ListHeader";
 
@@ -17,7 +17,7 @@ describe("ListHeader", () => {
 });
 ```
 
-```tsx
+```typescriptx
 // src/components/ListHeader.tsx
 
 export default function ListHeader() {
@@ -27,7 +27,7 @@ export default function ListHeader() {
 
 We will start with the add button, and write a failing test (Red 1).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.cy.tsx
 import ListHeader from "./ListHeader";
 describe("ListHeader", () => {
@@ -41,7 +41,7 @@ describe("ListHeader", () => {
 
 We add the `data-cy` attribute for the button to pass the test (Green 1). We also add a `data-cy` attribute for the top level tag, for when the component is used in a larger scale.
 
-```tsx
+```typescriptx
 // src/components/ListHeader.tsx
 export default function ListHeader() {
   return (
@@ -54,7 +54,7 @@ export default function ListHeader() {
 
 Buttons have `onClick` handlers. We add a test which mounts the component with a prop called `handleAdd` and we expect it to be called upon click (Red 2).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.cy.tsx
 import ListHeader from "./ListHeader";
 
@@ -78,7 +78,7 @@ We recall from the previous chapters the flow when adding new props to a compone
 
 Here the attribute is `onClick` and it gets added to the `button` tag. We have our first passing test (Green 2).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.tsx
 import { MouseEvent } from "react";
 
@@ -99,7 +99,7 @@ export default function ListHeader({ handleAdd }: ListHeaderProps) {
 
 We can create another check for the refresh button, with a similar prop and similar assertion, just different name; `handleRefresh` (Red 3).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.cy.tsx
 import ListHeader from "./ListHeader";
 
@@ -123,7 +123,7 @@ describe("ListHeader", () => {
 
 Adding the prop type, prop argument, and the `onClick` attribute is a mirror of the add button (Green 3).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.tsx
 import { MouseEvent } from "react";
 
@@ -147,7 +147,7 @@ export default function ListHeader({
 
 We can conveniently copy the aria labels from the Angular app (Refactor 3).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.tsx
 import { MouseEvent } from "react";
 
@@ -179,7 +179,7 @@ export default function ListHeader({
 
 The visuals show that we are missing the icons for the buttons. We can use [react-icons](https://react-icons.github.io/react-icons) to pick any refresh and add icon (Refactor 4). This is another example of our testing tool serving as the design tool in order to aid RedGreenRefactor cycles with incremental visual enhancements.
 
-```tsx
+```typescriptx
 // src/components/ListHeader.tsx
 import { MouseEvent } from "react";
 import { FiRefreshCcw } from "react-icons/fi";
@@ -215,7 +215,7 @@ export default function ListHeader({
 
 The final remaining piece is the title link. We write a failing check with a `data-cy` attribute, and we hypothesize that it should contain some text (Red 5).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.cy.tsx
 import ListHeader from "./ListHeader";
 import "../styles.scss";
@@ -242,7 +242,7 @@ describe("ListHeader", () => {
 
 We make the test pass with a hard-coded title in a link (Green 5).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.tsx
 import { MouseEvent } from "react";
 import { FiRefreshCcw } from "react-icons/fi";
@@ -279,7 +279,7 @@ export default function ListHeader({
 
 As with all hard coded value, we recall the pattern of passing it as a prop. We add the prop `title` to the component test (Red 6).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.cy.tsx
 import ListHeader from "./ListHeader";
 import "../styles.scss";
@@ -308,7 +308,7 @@ describe("ListHeader", () => {
 
 We also recall the pattern of passing the prop as a type, a component argument, and a variable in the component render (Green 6).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.tsx
 import { MouseEvent } from "react";
 import { FiRefreshCcw } from "react-icons/fi";
@@ -347,7 +347,7 @@ export default function ListHeader({
 
 In the previous component `HeaderBarBrand` we used a `NavLink` from `react-router`.The application hints that this `a` link is in fact a route in our app that can either be Heroes, Villians or About. We use `NavLink` instead of `a`, and `to` attribute is one of the routes. We can enhance the string type to be a union of the 3 possibilities as well (Refactor 6).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.tsx
 import { MouseEvent } from "react";
 import { NavLink } from "react-router-dom";
@@ -387,7 +387,7 @@ export default function ListHeader({
 
 With that change, we run into the familiar test error complaining about the `Router` component. Any time we are using `react-router`, we have to wrap the mounted component in `BrowserRouter`.
 
-```tsx
+```typescriptx
 // src/components/ListHeader.cy.tsx
 import ListHeader from "./ListHeader";
 import { BrowserRouter } from "react-router-dom";
@@ -419,7 +419,7 @@ describe("ListHeader", () => {
 
 We notice a test enhancement. We can check that when navigating to the route with a click, we end up on that url. We have done this before in the `HeaderBarBrand` component (Refactor 7).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.cy.tsx
 import ListHeader from "./ListHeader";
 import { BrowserRouter } from "react-router-dom";
@@ -454,7 +454,7 @@ describe("ListHeader", () => {
 
 Our test is looking great with high coverage. The render is lacking though. We can copy the css in the wrapper `div` from the original app, and use our test tool as the design tool to aid us in RGF cycles (Refactor 8).
 
-```tsx
+```typescriptx
 // src/components/ListHeader.tsx
 import { MouseEvent } from "react";
 import { NavLink } from "react-router-dom";
@@ -496,7 +496,7 @@ export default function ListHeader({
 
 ## RTL version of the component test
 
-```tsx
+```typescriptx
 // src/components/ListHeader.test.tsx
 import ListHeader from "./ListHeader";
 import { render, screen } from "@testing-library/react";

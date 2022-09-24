@@ -8,7 +8,7 @@ Create a branch `feat/cardContent`. Create 2 files under `src/components/` folde
 
 We start minimal with a test that renders the component (Red 1).
 
-```tsx
+```typescriptx
 // src/components/CardContent.cy.tsx
 import CardContent from "./CardContent";
 
@@ -21,7 +21,7 @@ describe("CardContent", () => {
 
 We do the mimimum to make the compiler green.
 
-```tsx
+```typescriptx
 // src/components/CardContent.tsx
 
 export default function CardContent() {
@@ -33,7 +33,7 @@ Start the Cypress component test runner and execute the test; `yarn cy:open-ct`.
 
 Let's test that the string renders (Green 1).
 
-```tsx
+```typescriptx
 // src/components/CardContent.cy.tsx
 import CardContent from "./CardContent";
 
@@ -49,7 +49,7 @@ describe("CardContent", () => {
 
 Let's write a test for the divs we want; we need two divs, one contains a name, the other a description (Red 2).
 
-```tsx
+```typescriptx
 // src/components/CardContent.cy.tsx
 import CardContent from "./CardContent";
 
@@ -65,7 +65,7 @@ describe("CardContent", () => {
 
 We make it green by hard-coding the values being tested for (Green 2).
 
-```tsx
+```typescriptx
 // src/components/CardContent.tsx
 export default function CardContent() {
   return (
@@ -79,7 +79,7 @@ export default function CardContent() {
 
 It is becoming obvious we should be passing name and description as props (Red 3).
 
-```tsx
+```typescriptx
 // src/components/CardContent.cy.tsx
 import CardContent from "./CardContent";
 
@@ -97,7 +97,7 @@ describe("CardContent", () => {
 
 The test still passes, but the compiler is complaining about the props that don not exist. Let's add those to the component (Green 3). We can also add the types for these props since we know they will both be strings.
 
-```tsx
+```typescriptx
 // src/components/CardContent.tsx
 type CardContentProps = {
   name: string;
@@ -116,7 +116,7 @@ export default function CardContent({ name, description }: CardContentProps) {
 
 Now we can add some styles to our component.
 
-```tsx
+```typescriptx
 // src/components/CardContent.cy.tsx
 import CardContent from "./CardContent";
 import "../styles.scss";
@@ -126,7 +126,7 @@ import "../styles.scss";
 
 Our component is still looking the same in the Cypress runner. Let's add some css classes to make it look nicer (Refactor 3).
 
-```tsx
+```typescriptx
 // src/components/CardContent.tsx
 type CardContentProps = {
   name: string;
@@ -145,7 +145,7 @@ export default function CardContent({ name, description }: CardContentProps) {
 
 Finally, we add a `data-cy` attribute to top tag of the component to make it easier to reference when it is used.
 
-```tsx
+```typescriptx
 type CardContentProps = {
   name: string;
   description: string;
@@ -167,7 +167,7 @@ This finalizes our work with the component.
 
 ## RTL version of the component test
 
-```tsx
+```typescriptx
 // src/components/CardContent.test.tsx
 import CardContent from "./CardContent";
 import { render, screen } from "@testing-library/react";

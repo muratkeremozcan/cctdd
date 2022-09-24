@@ -10,7 +10,7 @@ _"HTTP requests are another common side-effect that we need to do in application
 
 As we load the `HeroList`, we need our application to make a `GET` request to the backend. Let's write a failing e2e test for it (Red 1). For now we can name the file anything. We load the `HeroList` but at the moment there are not `GET` requests to the server.
 
-```ts
+```typescript
 // cypress/e2e/network.cy.ts
 describe("network requests", () => {
   it("should ", () => {
@@ -27,7 +27,7 @@ describe("network requests", () => {
 
 We will opt to use `axios` instead of the built in `fetch` api. `yarn add axios`. Use `axios.get` in a `useEffect` hook to make a `GET` request to our server (Green 1). `useEffect` takes a clean up function that can help us know if the component unmounted.
 
-```ts
+```typescript
 // src/heroes/Heroes.tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";
@@ -120,7 +120,7 @@ We have been importing the `heroes` data from `db.json` file. Time to get that f
 
 We are getting some data with useEffect, but we have to store that data in a state variable in the component. We will utilize `useState` as in `const [heroes, setHeroes] = useState([])` and set the heroes with what we get from the network.
 
-```ts
+```typescript
 // src/heroes/Heroes.tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";
@@ -203,7 +203,7 @@ export default function Heroes() {
 
 That will work, but if we leave the test open we will see that we are making repeated `GET` requests to the server, and the component keeps mounting. We can use an empty `useEffect` dependency array to have the effect occur once when the component is rendered. For brevity, here is the changed code (Green 2):
 
-```ts
+```typescript
 useEffect(() => {
   console.log("mounting");
   console.log("heroes is :", heroes);
@@ -217,7 +217,7 @@ useEffect(() => {
 
 We can do a little bit more of a refactor adding support for `axios` error messages, and wrapping the expensive `axios.get` in a `useCallBack`. Why `useCallback`? In short, custom functions get defined on every render and can be costly especially if the network state is the same. `useCallback` lets us memoize such expensive operations, by preventing the redefinition or recalculation of values. The signature is `useCallBack(updaterFn, [dependencies])` (Refactor 2).
 
-```tsx
+```typescriptx
 // src/heroes/Heroes.tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";
@@ -320,7 +320,7 @@ We used the e2e test to to drive the design of http requests in the `Heroes` com
 
 We need to be stubbing the network with some data, so that the component can render it. Add a `cy.intercept` using a fixture file for the network data to `src/heroes/Heroes.cy.tsx` and `src/App.cy,tsx` files, which both use the `Heroes` component. The intercept will ensure that all `GET` requests to `http://localhost:4000/api/heroes` will respond with the stubbed data from `heroes.json` file in Cypress fixtures.
 
-```tsx
+```typescriptx
 // src/heroes/Heroes.cy.tsx
 import Heroes from "./Heroes";
 import { BrowserRouter } from "react-router-dom";
@@ -382,7 +382,7 @@ describe("Heroes", () => {
 });
 ```
 
-```tsx
+```typescriptx
 // src/App.cy.tsx
 import App from "./App";
 
@@ -410,7 +410,7 @@ We also have to update the RTL unit test `src/App.test.tsx` which mirrors `App.c
 
 In RTL, the equivalent of `cy.intercept` is [`msw`](https://mswjs.io/). Install with ` yarn add -D msw`. Modify the file as such:
 
-```tsx
+```typescriptx
 // src/App.test.tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -454,7 +454,7 @@ test("renders tour of heroes", async () => {
 
 Finally, in all the e2e tests, now we have to wait for the network data after visiting the url. To ensure that the page is stable and has loaded the network data, in `create-hero.cy.tsx`, `edit-hero.cy.tsx` `network.cy.tsx` files, wrap all instances of `cy.visit` with an intercept and wait:
 
-```ts
+```typescript
 cy.intercept("GET", "http://localhost:4000/api/heroes").as("getHeroes");
 cy.visit("/");
 cy.wait("@getHeroes");
@@ -464,7 +464,7 @@ cy.wait("@getHeroes");
 
 Using the `ListHeader` component's `+` button, we can add a hero from any screen. Our existing e2e test gets to `HeroDetails` by either navigating from hero list, or direct navigating to the url. Alas, we can also get to `HeroDetails` from edit hero, which is another render of `HeroDetais` with the hero data. This flow is interesting because the rendered Id field, and the data in the name and description fields need to clear upon clicking the `+` button. Let's write a test for it (Red 3).
 
-```ts
+```typescript
 // cypress/e2e/edit-hero.cy.ts
 describe("Edit hero", () => {
   beforeEach(() => {
@@ -530,7 +530,7 @@ The test fails. The conditional rendering is working, but the state of the `Inpu
 
 Instead of taking the value and just displaying it, we need to make `InputDetail` aware of state. We can accomplish this by managing state where its most relevant, the component itself, and by utilizing a combination of `useState` and `useEffect`. We come up with a variable `shownValue` and a setter for it. As the component mounts, we utilize `useEffect` to set the value. We also specify a dependency array for the value (Green 3).
 
-```tsx
+```typescriptx
 // src/components/InputDetail.tsx
 import { ChangeEvent, useEffect, useState } from "react";
 
@@ -576,7 +576,7 @@ export default function InputDetail({
 
 Similar to routing, when our concerns about the app are higher level as in state management and flows, e2e tests are effective at catching defects that we might not be able to test with component tests. The e2e test now works, and the component test serves as a regression assurance. The `onChange` now gets called twice vs thrice, and that is the only update.
 
-```tsx
+```typescriptx
 // src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 import "../styles.scss";
@@ -631,7 +631,7 @@ It is time to refactor all the references to `http://localhost:4000/api` with an
 REACT_APP_API_URL=http://localhost:4000/api
 ```
 
-```tsx
+```typescriptx
 // src/heroes/Heroes.tsx
 const getData = useCallback(async () => {
   const response = await axios.get(`${process.env.REACT_APP_API_URL}/heroes`);
@@ -639,7 +639,7 @@ const getData = useCallback(async () => {
 }, []);
 ```
 
-```tsx
+```typescriptx
 // src/App.test.tsx
 const handlers = [
   rest.get(
@@ -707,7 +707,7 @@ Similarly, replace instances of the string `http://localhost:4000/api` in the co
 
 We can extract 20-30 lines of http logic into its own hook, and then use the hook in the `Heroes` component. Our hook accepts a route as the argument, returns an object of data, status & error. It also handles the concerns with `useEffect` cleanup. We will cover the details in the comments, and in the upcoming chapters promise to use a better solution.
 
-```ts
+```typescript
 // src/hooks/useAxios.ts
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
@@ -770,7 +770,7 @@ export default function useAxios(url: string) {
 
 At `Heroes` component, we do not need to utilize `useState` because now we get the data from `useAxios`. We just have to rename and initialize `data` variable into `heroes` .
 
-```tsx
+```typescriptx
 // src/heroes/Heroes.tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";

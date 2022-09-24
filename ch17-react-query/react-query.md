@@ -26,7 +26,7 @@ In this chapter we will be creating our api, creating hooks for CRUD operations 
 
 We will be replicating the `getItem` function in the `useAxios` hook, and making it compatible with the rest of the CRUD requests. Create a file `src/hooks/api.ts` and paste in the following code. We have a type protected `client` function which wraps `Axios`, with which we can make any CRUD request. We wrap them again in functions with less arguments, which are easier to use.
 
-```ts
+```typescript
 // src/hooks/api.ts
 import axios from "axios";
 import { Hero } from "models/Hero";
@@ -68,7 +68,7 @@ Compare to `useAxios`, which also returns a status and error that we did not use
 
 Whenever any component subsequently calls useQuery with the key, `react-query` will return the previously fetched data from its cache and then fetch the latest data in the background (very similar to PWAs and service workers). Our query key here is the string `heroes` and the callback function is `getItem` from our api, calling the `/heroes` route. `useQuery` returns `data`, `status`, and `error`, we reshape those nicely for an easier use in our component.
 
-```tsx
+```typescriptx
 // src/hooks/useGetHeroes.ts
 import { useQuery } from "react-query";
 import { getItem } from "./api";
@@ -90,7 +90,7 @@ export const useGetHeroes = () => {
 
 Before replacing `useAxios` in `Heroes` component, we have to wrap our app JSX in a provider component called `QueryClientProvider` , instantiate a `queryClient` and use it as the `client` prop of `QueryClientProvider`. This is how we make the cache available for components to access and share.
 
-```tsx
+```typescriptx
 // src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -129,7 +129,7 @@ export default App;
 
 `useGetHeroes` is a drop-in replacement for `useAxios`, and it does not even need an argument. We will use `status` and `getError` in the next chapter.
 
-```tsx
+```typescriptx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";
 import ModalYesNo from "components/ModalYesNo";
@@ -203,7 +203,7 @@ Serve the app with `yarn dev`, and toggle `useAxios` vs `useGetHeroes`. Switch b
 
 Until now we have not had a feature to add a hero. Our backend supports it, but our front end does not. Let's start with a failing test which goes through the add hero flow. Our new test simply visits the main route, clicks the add button, verifies the new page, fills in randomized hero name and description, saves the changes (Red 1)
 
-```tsx
+```typescriptx
 // cypress/e2e/create-hero.cy.ts
 import { faker } from "@faker-js/faker";
 describe("Create hero", () => {
@@ -275,7 +275,7 @@ The first arg is a function that that executes a non-idempotent request. The sec
 
 Here is our incomplete hook we derive off of that knowledge. We expect that it will create something in the backend with our api call, it will log some new data, and it will navigate to `/heroes`
 
-```tsx
+```typescriptx
 // src/hooks/usePostHero.ts
 import { Hero } from "models/Hero";
 import { useMutation } from "react-query";
@@ -319,7 +319,7 @@ When there is no hero, there are no url search parameters. Therefore we can repl
 
 Here is the updated `HeroDetail` component (Green 1):
 
-```tsx
+```typescriptx
 // src/heroes/HeroDetail.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -395,7 +395,7 @@ export default function HeroDetail() {
 
 Now we can verify if the hero we just created appears in the list after the save. For brevity we are showing only the running test (Red 2).
 
-```ts
+```typescript
 // cypress/e2e/create-hero.cy.ts
 it.only("should go through the add hero flow (ui-e2e)", () => {
   cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`).as("getHeroes");
@@ -426,7 +426,7 @@ it.only("should go through the add hero flow (ui-e2e)", () => {
 
 We see the new entity created at the backend (`db.json` got updated), and if we navigate to another tab and back we also see the newly created entity. Alas, it is not in the `HeroList` immediately after saving. This points to a shortcoming in cache management. When we mutate the backend, we also have to update the new cache. For this we use `queryClient`'s `setQueryData` method. [`setQueryData`](https://tanstack.com/query/v4/docs/reference/QueryClient#queryclientsetquerydata) takes a key as the first arg, the 2nd arg is a callback that takes the old query cache and returns the new one. With that enhancement, our test is passing (Green 2).
 
-```ts
+```typescript
 // src/hooks/usePostHero.ts
 import { Hero } from "models/Hero";
 import { useMutation, useQueryClient } from "react-query";
@@ -455,7 +455,7 @@ export function usePostHero() {
 
 Here is our e2e test at the moment:
 
-```ts
+```typescript
 // cypress/e2e/create-hero.cy.ts
 import { faker } from "@faker-js/faker";
 describe("Create hero", () => {
@@ -525,7 +525,7 @@ Always evaluate if you need the backend to gain confidence in your app's functio
 
 Let's refactor our test file to use ui-integration tests for cancel and refresh flows. Instead of the network data, we will use the `heroes.json` file under `cypress/fixtures`. We will also refactor some of the common navigation between the tests (Refactor 2).
 
-```ts
+```typescript
 // cypress/e2e/create-hero.cy.ts
 import { faker } from "@faker-js/faker";
 describe("Create hero", () => {
@@ -593,7 +593,7 @@ There are two more refactors remaining. We will be needing to visit the baseUrl 
 
 Add 3 commands `getEntityByName`, `visitStubbedHeroes`, `visitHeroes` to the commands file.
 
-```ts
+```typescript
 // cypress/support/commands.ts
 import { Hero } from "../../src/models/Hero";
 import data from "../fixtures/db.json";
@@ -661,7 +661,7 @@ Cypress.Commands.add("visitHeroes", () => {
 
 Add the type definitions to `cypress.d.ts`
 
-````ts
+````typescript
 // cypress.d.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MountOptions, MountReturn } from "cypress/react";
@@ -757,7 +757,7 @@ In the refactored test we reset the db before every execution, we use the comman
 
 Before finishing, take a look at the test `cypress/e2e/network.cy.ts`. The main checks in this test are making sure the `Heroes` component and `HeroList` components are rendering:
 
-```ts
+```typescript
 // cypress/e2e/network.cy.ts
 cy.getByCy("heroes").should("be.visible");
 cy.getByCyLike("hero-list-item").should("have.length.gt", 0);
@@ -769,7 +769,7 @@ _Always look for opportunities to tweak what test is already existing as opposed
 
 We can include the two checks in the createhero e2e test when navigating back to heroes list, and we can remove the `cypress/e2e/network.cy.ts` entirely. We are saving 8 lines of code and a few seconds of testing, without adding any new time in testing; this would not be an easy call to make in a BDD framework.
 
-```ts
+```typescript
 // cypress/e2e/create-hero.cy.ts
 import { faker } from "@faker-js/faker";
 describe("Create hero", () => {
@@ -835,7 +835,7 @@ There is one more ui-integration enhancement we can make in `cypress/e2e/routes-
 
 > Tip: In a large project, you might be separating `ui-integration` from `ui-e2e` tests in folders. And/or you might be applying other types of selective testing ([there are over 32](https://dev.to/muratkeremozcan/the-32-ways-of-selective-testing-with-cypress-a-unified-concise-approach-to-selective-testing-in-ci-and-local-machines-1c19)), such as tagging the tests with [`cypress-grep`](https://github.com/cypress-io/cypress-grep).
 
-```ts
+```typescript
 // cypress/e2e/routes-nav.cy.ts
 describe("routes navigation", () => {
   beforeEach(() => {
@@ -898,7 +898,7 @@ We will start with a test that adds a hero via an api call, and then begins to e
 
 Start by adding `findHeroIndex` command and its type definition. For brevity we are showing only the new parts of the files.
 
-```tsx
+```typescriptx
 // cypress/support/commands.ts
 Cypress.Commands.add(
   "findHeroIndex",
@@ -918,7 +918,7 @@ Cypress.Commands.add(
 );
 ```
 
-```ts
+```typescript
 // cypress.d.ts
 /**
 * Given a hero property (name, description or id),
@@ -931,7 +931,7 @@ findHeroIndex(
 
 Now we can add a hero to the database via an api call, visit the app, get the hero index, and click on the nth Edit button. So far we are not testing anything relevant to the feature, just navigating to a hero which is existing functionality.
 
-```ts
+```typescript
 // cypress/e2e/edit-hero.cy.ts
 import { faker } from "@faker-js/faker";
 import { Hero } from "../../src/models/Hero";
@@ -1009,7 +1009,7 @@ describe("Edit hero", () => {
 
 If we look at the first two tests, we are already covering click-navigation from the `HeroList` to `HeroDetails` in them. We are repeating the same in the final test. We could instead direct-navigate via url. We can pass the query parameters to [`cy.visit`](https://docs.cypress.io/api/commands/visit#Arguments). With e2e tests, always think if you are duplicating the test effort covered elsewhere. If the cost does not add any confidence, then find opportunities to cover different functionalities. In this case we are gaining confidence on direct navigation but also being able to extract state from the url (remember `useParams` & `useSearchParams`).
 
-```tsx
+```typescriptx
 // cypress/e2e/edit-hero.cy.ts
 it.only("should go through the edit flow (ui-e2e)", () => {
   const newHero: Hero = {
@@ -1028,7 +1028,7 @@ it.only("should go through the edit flow (ui-e2e)", () => {
 
 In the rest of the test all we have to do is change the name & description, hit save, end up on `HeroList` and verify the new data. Mind how spacing is used to communicate separation between the tasks to ease readability. This is our first failing test (Red 3).
 
-```ts
+```typescript
 // cypress/e2e/edit-hero.cy.ts
 it.only("should go through the edit flow (ui-e2e)", () => {
   const newHero: Hero = {
@@ -1071,7 +1071,7 @@ Time for our custom hook `usePutHero`. Create a file `src/hooks/usePutHero.ts`. 
 
 For the return, instead of name aliasing the variables at the component, we can showcase how to return an object and alias in place.
 
-```ts
+```typescript
 // src/hooks/usePutHero.ts
 import { Hero } from "models/Hero";
 import { useMutation } from "react-query";
@@ -1112,7 +1112,7 @@ We can instead use the `updateHero` returned from our hook. Similar to `usePostH
 
 With the below changes, we are sending out the `PUT` request and changing the hero after having edited it. We can confirm it in the runner, and in `db.json`. We also auto-navigate back to heroes list. However, we have a similar cache problem; if we navigate away and come back the edited item is there, but it does not update immediately.
 
-```tsx
+```typescriptx
 // src/heroes/HeroDetail.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -1187,7 +1187,7 @@ export default function HeroDetail() {
 
 We need a way to replace the hero in the cache with the updated version. First we get all the heroes from the cache. Then we find the index in the cache of the hero that's been edited. If the hero is found, replace the pre-edited hero with the updated one, else we do not do anything. With that change, our e2e edit test passes (Green 3)
 
-```ts
+```typescript
 // src/hooks/usePutHero.ts
 import { Hero } from "models/Hero";
 import { useMutation, useQueryClient } from "react-query";
@@ -1250,7 +1250,7 @@ Let's also not forget to reset the database in the beginning, and clean up after
 
 Here are the refactored files (Refactor 3):
 
-```ts
+```typescript
 // cypress/support/commands.ts
 import { Hero } from "../../src/models/Hero";
 import data from "../fixtures/db.json";
@@ -1328,7 +1328,7 @@ Cypress.Commands.add("visitHeroes", () => {
 });
 ```
 
-````ts
+````typescript
 // cypress.d.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MountOptions, MountReturn } from "cypress/react";
@@ -1430,7 +1430,7 @@ declare global {
 }
 ````
 
-```ts
+```typescript
 // cypress/e2e/edit-hero.cy.ts
 import { faker } from "@faker-js/faker";
 import { Hero } from "../../src/models/Hero";
@@ -1523,7 +1523,7 @@ describe("Edit hero", () => {
 
 We start the creation of our final hook with a test, as usual. We want to use the api to create a new hero, we want to know the hero's index, then we want to attempt to delete it. We have a `cy.findHeroIndex` command which gets all heroes and finds the index of the hero we are looking for. We can enhance it to return an object instead, which returns both the hero index and the heroes array. Modify the `findHeroIndex` command and the type definition as such:
 
-```ts
+```typescript
 // cypress/support/commands.ts
 Cypress.Commands.add("findHeroIndex", (property: HeroProperty) =>
   getHeroes().then((body: Hero[]) => ({
@@ -1533,7 +1533,7 @@ Cypress.Commands.add("findHeroIndex", (property: HeroProperty) =>
 );
 ```
 
-```ts
+```typescript
 // cypress.d.ts
 /**
  * Given a hero property (name, description or id),
@@ -1546,7 +1546,7 @@ findHeroIndex(
 
 Here is our entire test. We are covering the cancel delete flow as a ui-integration test. We delete the hero and expect to not find it on the list (Red 4).
 
-```ts
+```typescript
 // cypress/e2e/delete-hero.cy.ts
 import { faker } from "@faker-js/faker";
 import { Hero } from "../../src/models/Hero";
@@ -1588,7 +1588,7 @@ describe("Delete hero", () => {
 
 As the test fails, we see a `console.log` of `handleDeleteFromModal` which exists in the `Heroes` component. For our hook, we are going to utilize `useMutation` once again. We are using `deleteItem` from our api. `onSuccess`, which has used the first argument until now (the created / edited item) is going to be using the second argument which is the original (deleted) item. Cache will need management once again; we need to get all the heroes from the cache, and set the cache without the deleted hero. We should consistently use the same cache key which we used for `POST` and `PUT` operations; `['heroes']`. We will apply a similar return value to `usePutHero` hook.
 
-```ts
+```typescript
 // src/hooks/useDeleteHero.ts
 import { Hero } from "models/Hero";
 import { useMutation, useQueryClient } from "react-query";
@@ -1637,7 +1637,7 @@ Our `Heroes` component can begin to use the hook like so:
 
 Alas, in these two handler functions, we have to pass the hook a `hero` to mutate:
 
-```ts
+```typescript
 // src/heroes/Heroes.tsx
 const handleDeleteHero = () => {
   setShowModal(true);
@@ -1650,7 +1650,7 @@ const handleDeleteFromModal = () => {
 
 The component not only needs to know which hero to delete, it is displaying the whole list, but it also needs to tell `HeroList` that information in a prop `handleDeleteHero`. We can identify the hero via `useState`; in the beginning we do not know it, when we are letting `HeroList` know about it then we can identify the hero.
 
-```ts
+```typescript
 // src/heroes/Heroes.tsx
 const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null);
 
@@ -1667,7 +1667,7 @@ const handleDeleteFromModal = () => {
 
 Before moving forward, we need to make a slight modification to `HeroList`. The prop `handleDeleteHero` needs to take a hero as an argument. Additionally the click handler for `handleDeleteHero` needs to become a function that returns `handleDeleteHero`, similar to `handleSelectHero`.
 
-```tsx
+```typescriptx
 // src/heroes/HeroList.tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
@@ -1717,7 +1717,7 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
 
 Now we can apply the key changes to `Heroes` component (Green 4).
 
-```ts
+```typescript
 // we identify the hero to delete as state
 const [heroToDelete, setHeroToDelete] = useState<Hero | null>(null);
 // we use the new hook
@@ -1741,7 +1741,7 @@ const handleDeleteFromModal = () => {
 };
 ```
 
-```tsx
+```typescriptx
 // src/heroes/Heroes.tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";
@@ -1823,7 +1823,7 @@ We can see the `DELETE` request going out, and the test verifies that the hero i
 
 We have a similar refactor opportunity with the event handlers in chapter 14. In `HeroList` we can change the event handlers like so:
 
-```ts
+```typescript
 onClick={() => handleDeleteHero(hero)}
 
 onClick{handleDeleteHero(hero)}
@@ -1831,7 +1831,7 @@ onClick{handleDeleteHero(hero)}
 
 To accomplish that we need to curry `handleSelectHero`. Similar to chapter 14, the outer function takes our custom argument and returns a function that takes the event. We need to align the prop type to communicate that.
 
-```tsx
+```typescriptx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
 import ButtonFooter from "components/ButtonFooter";
@@ -1882,7 +1882,7 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
 
 We only need to apply the same refactor to `handleDeleteHero` in `Heroes` component (Refactor 4).
 
-```ts
+```typescript
 // src/heroes/Heroes.tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";
@@ -1965,7 +1965,7 @@ Now that `react-query`'s `QueryClientProvider` is being used, `Heroes` and `Hero
 
 Update `HeroDetail` component test as below. When covering the test `should handle Save`, we now see an aborted `POST` going out which we can verify and satisfy the todo item. Other than that, the only change is that we are wrapping the component mounts in `QueryClientProvider`.
 
-```tsx
+```typescriptx
 // src/heroes/HeroDetail.cy.tsx
 import HeroDetail from "./HeroDetail";
 import { BrowserRouter } from "react-router-dom";
@@ -2052,7 +2052,7 @@ describe("HeroDetail", () => {
 
 In `Heroes` component test, we wrap the component in `QueryClientProvider`. We can also stop spying on console.log and instead stub the `DELETE` request going out when going through the delete hero modal flow.
 
-```tsx
+```typescriptx
 // src/heroes/Heroes.cy.tsx
 import Heroes from "./Heroes";
 import { BrowserRouter } from "react-router-dom";

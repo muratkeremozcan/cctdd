@@ -6,7 +6,7 @@ In the Angular version of the app, the component consists of a `nav`, a `p` with
 
 Create a branch `feat/NavBar`. Create 2 files under `src/components/` folder; `NavBar.cy.tsx`, `NavBar.tsx`. As usual, start minimal with a component rendering; copy the below to the files and execute the test after opening the runner with `yarn cy:open-ct`.
 
-```tsx
+```typescriptx
 // src/components/NavBar.cy.tsx
 import NavBar from "./NavBar";
 
@@ -17,7 +17,7 @@ describe("NavBar", () => {
 });
 ```
 
-```tsx
+```typescriptx
 // src/components/NavBar.tsx
 
 export default function NavBar() {
@@ -27,7 +27,7 @@ export default function NavBar() {
 
 We start with a failing test that verifies the skeleton of the component. We want the top tag to have a `data-cy` attribute with the component name, making the component easier to reference when it is used. We can also add `data-cy` attributes for the tags that may be of importance later (Red 1).
 
-```tsx
+```typescriptx
 // src/components/NavBar.cy.tsx
 import NavBar from "./NavBar";
 
@@ -45,7 +45,7 @@ describe("NavBar", () => {
 
 The minimal component that passes this test is like so (Green 1):
 
-```tsx
+```typescriptx
 // src/components/NavBar.tsx
 export default function NavBar() {
   return (
@@ -63,7 +63,7 @@ export default function NavBar() {
 
 In the previous components that had to do with application routes (`HeaderBarBrand`, `ListHeader`), we used `NavLink` from `react-router-dom`. We can refactor the component the same way. The refactor results in a familiar `Router` error we saw in the previous routing related components. In the component test, we wrap the mount with `BrowserRouter` to address the issue (Refactor 1).
 
-```tsx
+```typescriptx
 // src/components/NavBar.tsx
 import { NavLink } from "react-router-dom";
 
@@ -81,7 +81,7 @@ export default function NavBar() {
 }
 ```
 
-```tsx
+```typescriptx
 // src/components/NavBar.tsx
 import NavBar from "./NavBar";
 import { BrowserRouter } from "react-router-dom";
@@ -104,7 +104,7 @@ describe("NavBar", () => {
 
 We have a new failure in the test `*(uncaught exception)**TypeError: Cannot read properties of undefined (reading 'pathname')*`. There is also a TS error that gives us a hint `Property 'to' is missing in type '{}' but required in type 'NavLinkProps` (Red 2). We need to enhance the links with `to` attributes (Green 2). It is of significance here that TS also aids us, alongside a failing test, figuring out the source of the failure.
 
-```tsx
+```typescriptx
 // src/components/NavBar.tsx
 import { NavLink } from "react-router-dom";
 
@@ -132,7 +132,7 @@ Any time we have a green test, we can either refactor or add additional tests un
 
 Adding the route checks, the test is still green.
 
-```tsx
+```typescriptx
 // src/components/NavBar.cy.tsx
 import NavBar from "./NavBar";
 import { BrowserRouter } from "react-router-dom";
@@ -164,7 +164,7 @@ describe("NavBar", () => {
 
 The repetition is not looking great. Let's refactor the test a bit (Refactor 3).
 
-```tsx
+```typescriptx
 // src/components/NavBar.cy.tsx
 import NavBar from "./NavBar";
 import { BrowserRouter } from "react-router-dom";
@@ -192,7 +192,7 @@ describe("NavBar", () => {
 
 The test is still green as a part of the refactor. The only additional test we can think of at this time is checking the string in the link. We can indicate that the `route` is of type `string`, and we can match either casing with `{matchCase: false}` (Refactor 3).
 
-```tsx
+```typescriptx
 // src/components/NavBar.cy.tsx
 import NavBar from "./NavBar";
 import { BrowserRouter } from "react-router-dom";
@@ -225,7 +225,7 @@ describe("NavBar", () => {
 
 We went through RedGreenRefactor cycles, we enhanced the test as much as possible, and we did not get any failures. At this time we can use the test tool as the design tool and enhance the visuals. Let's add the css from the Angular version of the component. Remember to add `import '../styles.scss'` to the component test.
 
-```tsx
+```typescriptx
 // src/components/NavBar.cy.tsx
 import { NavLink } from "react-router-dom";
 
@@ -253,7 +253,7 @@ Adding the styles, we realize an issue in the visuals; every link is active all 
 
 Of significance here is component test aiding us as the design tool to create a new failing test. What we need is the active node to have the class `active-link` and the other nodes not to have it. Let's write a failing test (Red 4).
 
-```tsx
+```typescriptx
 // src/components/NavBar.cy.tsx
 import NavBar from "./NavBar";
 import { BrowserRouter } from "react-router-dom";
@@ -288,7 +288,7 @@ describe("NavBar", () => {
 
 To pass this test, we need a logic per link to have the `active-link` css if the link is active, otherwise have no css (Green 4).
 
-```tsx
+```typescriptx
 // src/components/NavBar.tsx
 import { NavLink } from "react-router-dom";
 
@@ -323,7 +323,7 @@ export default function NavBar() {
 
 We can refactor the repeated code into a helper (Refactor 4).
 
-```tsx
+```typescriptx
 // src/components/NavBar.tsx
 import { NavLink } from "react-router-dom";
 
@@ -352,7 +352,7 @@ export default function NavBar() {
 
 In the component test, we also realize that the subject `cy.get(`[href="/${*route*}"]`)` is common to each assertion. We can take advantage of Cypress' chain syntax to lean out the assertions. We can also have a little less hard-coding with the menu length assertion (Refactor 4).
 
-```tsx
+```typescriptx
 // src/components/NavBar.cy.tsx
 import NavBar from "./NavBar";
 import { BrowserRouter } from "react-router-dom";
@@ -390,7 +390,7 @@ describe("NavBar", () => {
 
 ## RTL version of the component test
 
-```tsx
+```typescriptx
 // src/components/NavBar.test.tsx
 import NavBar from "./NavBar";
 import { render, screen, within, waitFor } from "@testing-library/react";
