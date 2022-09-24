@@ -1,9 +1,10 @@
-## Caching and [`react-query`](https://react-query-v3.tanstack.com/overview)
+# react-query
+
+### Caching and [`react-query`](https://react-query-v3.tanstack.com/overview)
 
 Having learned well from Kent C. Dodds, In the previous chapters we stated that we can drastically simplify our UI state management if we split out the server cache into something separate. State can be lumped into two buckets:
 
 1. UI state: Modal is open, item is highlighted, etc. _(we used `useState` hook for this)_
-
 2. Server cache: User data, tweets, contacts, etc. _(`react-query` is useful here)_
 
 Why `react-query`? To prevent duplicated data-fetching, we want to move all the data-fetching code into a central store and access that single source from the components that need it. With React Query, we don’t need to do any of the work involved in creating such a store. It lets us keep the data-fetching code in the components that need the data, but behind the scenes it manages a data cache, passing already-fetched data to components when they ask for them.
@@ -16,13 +17,12 @@ React-query's [`useQuery`](https://tanstack.com/query/v4/docs/reference/useQuery
 
 `const { dataToMutate, status, error } = useMutation((*url*) => fetch(*url*) {...})`
 
-- `useQuery` fetches state: UI state <- server/url , and caches it.
-
-- `useMutation` is just the opposite: UI state -> server , and still caches it.
+* `useQuery` fetches state: UI state <- server/url , and caches it.
+* `useMutation` is just the opposite: UI state -> server , and still caches it.
 
 In this chapter we will be creating our api, creating hooks for CRUD operations on heroes, and we will be using them in the components.
 
-## API
+### API
 
 We will be replicating the `getItem` function in the `useAxios` hook, and making it compatible with the rest of the CRUD requests. Create a file `src/hooks/api.ts` and paste in the following code. We have a type protected `client` function which wraps `Axios`, with which we can make any CRUD request. We wrap them again in functions with less arguments, which are easier to use.
 
@@ -56,7 +56,7 @@ export const deleteItem = (route: string) => client(route, "DELETE");
 export const getItem = (route: string) => client(route, "GET");
 ```
 
-## `useGetHeroes`
+### `useGetHeroes`
 
 We can create a simple hook and replace our complex `useAxios`, while showcasing the performance gains of cache management by `react-query`. `yarn add react-query`, and create a file `src/hooks/useGetHeroes.ts`. `react-query`'s [`useQuery`](https://tanstack.com/query/v4/docs/reference/useQuery) is similar to our custom useAxios: takes a url, returns an object of data, status & error.
 
@@ -68,7 +68,7 @@ Compare to `useAxios`, which also returns a status and error that we did not use
 
 Whenever any component subsequently calls useQuery with the key, `react-query` will return the previously fetched data from its cache and then fetch the latest data in the background (very similar to PWAs and service workers). Our query key here is the string `heroes` and the callback function is `getItem` from our api, calling the `/heroes` route. `useQuery` returns `data`, `status`, and `error`, we reshape those nicely for an easier use in our component.
 
-```typescriptx
+```tsx
 // src/hooks/useGetHeroes.ts
 import { useQuery } from "react-query";
 import { getItem } from "./api";
@@ -90,7 +90,7 @@ export const useGetHeroes = () => {
 
 Before replacing `useAxios` in `Heroes` component, we have to wrap our app JSX in a provider component called `QueryClientProvider` , instantiate a `queryClient` and use it as the `client` prop of `QueryClientProvider`. This is how we make the cache available for components to access and share.
 
-```typescriptx
+```tsx
 // src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -129,7 +129,7 @@ export default App;
 
 `useGetHeroes` is a drop-in replacement for `useAxios`, and it does not even need an argument. We will use `status` and `getError` in the next chapter.
 
-```typescriptx
+```tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";
 import ModalYesNo from "components/ModalYesNo";
@@ -199,11 +199,11 @@ export default function Heroes() {
 
 Serve the app with `yarn dev`, and toggle `useAxios` vs `useGetHeroes`. Switch between the tabs and observe the performance difference thanks to caching.
 
-## `usePostHero`
+### `usePostHero`
 
 Until now we have not had a feature to add a hero. Our backend supports it, but our front end does not. Let's start with a failing test which goes through the add hero flow. Our new test simply visits the main route, clicks the add button, verifies the new page, fills in randomized hero name and description, saves the changes (Red 1)
 
-```typescriptx
+```tsx
 // cypress/e2e/create-hero.cy.ts
 import { faker } from "@faker-js/faker";
 describe("Create hero", () => {
@@ -259,13 +259,12 @@ describe("Create hero", () => {
 
 Let's remember [`useMutation`](https://tanstack.com/query/v4/docs/reference/useMutation) before proceeding further.
 
-- useParams (from `react-router`) and useQuery (from `react-query`) fetch state:
+*   useParams (from `react-router`) and useQuery (from `react-query`) fetch state:
 
-  UI state <- server/url , and caches it
+    UI state <- server/url , and caches it
+*   useMutation is just the opposite:
 
-- useMutation is just the opposite:
-
-  UI state -> server , and still caches it
+    UI state -> server , and still caches it
 
 `useMutation` yields data, status, error just like useQuery.
 
@@ -275,7 +274,7 @@ The first arg is a function that that executes a non-idempotent request. The sec
 
 Here is our incomplete hook we derive off of that knowledge. We expect that it will create something in the backend with our api call, it will log some new data, and it will navigate to `/heroes`
 
-```typescriptx
+```tsx
 // src/hooks/usePostHero.ts
 import { Hero } from "models/Hero";
 import { useMutation } from "react-query";
@@ -303,7 +302,7 @@ In `HeroDetail` component we have a `createHero` function that `console.log`s. O
 
 `const {mutate: createHero, status: postStatus, error: postError} = usePostHero()`
 
-We can remove ` const createHero = () => console.log('createHero')`, instead use the `createHero` yielded from the hook. We need to pass to it an item argument. The type for it comes from our `usePostHero` hook's `useMutation` callback:
+We can remove `const createHero = () => console.log('createHero')`, instead use the `createHero` yielded from the hook. We need to pass to it an item argument. The type for it comes from our `usePostHero` hook's `useMutation` callback:
 
 `useMutation((item: Hero) => createItem('heroes', item)`
 
@@ -319,7 +318,7 @@ When there is no hero, there are no url search parameters. Therefore we can repl
 
 Here is the updated `HeroDetail` component (Green 1):
 
-```typescriptx
+```tsx
 // src/heroes/HeroDetail.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -513,7 +512,7 @@ describe("Create hero", () => {
 });
 ```
 
-### ui-e2e vs ui-integration tests
+#### ui-e2e vs ui-integration tests
 
 Pay attention to the first two tests. They end the add flow with cancel or refresh. Neither of them sends a write request to the backend, they just read the data from it. The fact that we are reading the data from the backend, and the fact that we are writing to the backend is covered in the 3rd test, which should stay e2e. But the first two tests can entirely stub the network, and thereby become ui-integration tests. What are `ui-integration` tests? From [List of Test Methodologies](https://dev.to/muratkeremozcan/mostly-incomplete-list-of-test-methodologies-52no) post:
 
@@ -892,13 +891,13 @@ describe("routes navigation", () => {
 });
 ```
 
-## `usePutHero`
+### `usePutHero`
 
 We will start with a test that adds a hero via an api call, and then begins to edit it.
 
 Start by adding `findHeroIndex` command and its type definition. For brevity we are showing only the new parts of the files.
 
-```typescriptx
+```
 // cypress/support/commands.ts
 Cypress.Commands.add(
   "findHeroIndex",
@@ -1009,7 +1008,7 @@ describe("Edit hero", () => {
 
 If we look at the first two tests, we are already covering click-navigation from the `HeroList` to `HeroDetails` in them. We are repeating the same in the final test. We could instead direct-navigate via url. We can pass the query parameters to [`cy.visit`](https://docs.cypress.io/api/commands/visit#Arguments). With e2e tests, always think if you are duplicating the test effort covered elsewhere. If the cost does not add any confidence, then find opportunities to cover different functionalities. In this case we are gaining confidence on direct navigation but also being able to extract state from the url (remember `useParams` & `useSearchParams`).
 
-```typescriptx
+```typescript
 // cypress/e2e/edit-hero.cy.ts
 it.only("should go through the edit flow (ui-e2e)", () => {
   const newHero: Hero = {
@@ -1067,7 +1066,7 @@ it.only("should go through the edit flow (ui-e2e)", () => {
 
 Time for our custom hook `usePutHero`. Create a file `src/hooks/usePutHero.ts`. Replicate a similar usage to `usePostHero`, this time utilizing `editItem` from our api :
 
-` (item: Hero) => editItem(`heroes/${_item_.id}`, item)`
+`(item: Hero) => editItem(`heroes/${_item_.id}`, item)`
 
 For the return, instead of name aliasing the variables at the component, we can showcase how to return an object and alias in place.
 
@@ -1112,7 +1111,7 @@ We can instead use the `updateHero` returned from our hook. Similar to `usePostH
 
 With the below changes, we are sending out the `PUT` request and changing the hero after having edited it. We can confirm it in the runner, and in `db.json`. We also auto-navigate back to heroes list. However, we have a similar cache problem; if we navigate away and come back the edited item is there, but it does not update immediately.
 
-```typescriptx
+```tsx
 // src/heroes/HeroDetail.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -1519,7 +1518,7 @@ describe("Edit hero", () => {
 });
 ```
 
-## `useDeleteHero`
+### `useDeleteHero`
 
 We start the creation of our final hook with a test, as usual. We want to use the api to create a new hero, we want to know the hero's index, then we want to attempt to delete it. We have a `cy.findHeroIndex` command which gets all heroes and finds the index of the hero we are looking for. We can enhance it to return an object instead, which returns both the hero index and the heroes array. Modify the `findHeroIndex` command and the type definition as such:
 
@@ -1667,7 +1666,7 @@ const handleDeleteFromModal = () => {
 
 Before moving forward, we need to make a slight modification to `HeroList`. The prop `handleDeleteHero` needs to take a hero as an argument. Additionally the click handler for `handleDeleteHero` needs to become a function that returns `handleDeleteHero`, similar to `handleSelectHero`.
 
-```typescriptx
+```tsx
 // src/heroes/HeroList.tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
@@ -1741,7 +1740,7 @@ const handleDeleteFromModal = () => {
 };
 ```
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";
@@ -1819,7 +1818,7 @@ export default function Heroes() {
 
 We can see the `DELETE` request going out, and the test verifies that the hero is removed from the list.
 
-## ![ReactQuery-Green4](../img/ReactQuery-Green4.png)
+### ![ReactQuery-Green4](../img/ReactQuery-Green4.png)
 
 We have a similar refactor opportunity with the event handlers in chapter 14. In `HeroList` we can change the event handlers like so:
 
@@ -1831,7 +1830,7 @@ onClick{handleDeleteHero(hero)}
 
 To accomplish that we need to curry `handleSelectHero`. Similar to chapter 14, the outer function takes our custom argument and returns a function that takes the event. We need to align the prop type to communicate that.
 
-```typescriptx
+```tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
 import ButtonFooter from "components/ButtonFooter";
@@ -1959,13 +1958,13 @@ export default function Heroes() {
 }
 ```
 
-## Updating the component tests
+### Updating the component tests
 
 Now that `react-query`'s `QueryClientProvider` is being used, `Heroes` and `HeroDetail` components will also need to be wrapped in `QueryClientProvider`. Running the component tests, we get an error: `(uncaught exception)**Error: No QueryClient set, use QueryClientProvider to set one`.
 
 Update `HeroDetail` component test as below. When covering the test `should handle Save`, we now see an aborted `POST` going out which we can verify and satisfy the todo item. Other than that, the only change is that we are wrapping the component mounts in `QueryClientProvider`.
 
-```typescriptx
+```tsx
 // src/heroes/HeroDetail.cy.tsx
 import HeroDetail from "./HeroDetail";
 import { BrowserRouter } from "react-router-dom";
@@ -2052,7 +2051,7 @@ describe("HeroDetail", () => {
 
 In `Heroes` component test, we wrap the component in `QueryClientProvider`. We can also stop spying on console.log and instead stub the `DELETE` request going out when going through the delete hero modal flow.
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.cy.tsx
 import Heroes from "./Heroes";
 import { BrowserRouter } from "react-router-dom";
@@ -2112,17 +2111,19 @@ describe("Heroes", () => {
 });
 ```
 
-## Summary
+### Summary
 
 We replaced `useAxios` with `useGetHeroes` and saw performance increases thanks to caching.
 
-<br />
+\
+
 
 We wrote an e2e test to add a hero with the UI and check the redirect (Red 1).
 
 We wrote the `usePostHero` hook and used it in `HeroDetail` component (Green 1).
 
-<br />
+\
+
 
 We enhanced the test to check that the new hero is in the list (Red 2).
 
@@ -2132,7 +2133,8 @@ We refactored some of our tests into ui-integration tests since they did not nec
 
 We created commands to be able to use natural or stubbed data upon loading the baseUrl. We also ensured that the test are stateless; resetting the db before each test, and cleaning up after themselves using the api commands we created previously.
 
-<br />
+\
+
 
 We wrote an e2e test to navigate to a hero, edit it, verify the redirect and the updated data on the hero list (Red 3).
 
@@ -2140,7 +2142,8 @@ We wrote the `usePutHero` hook, with caching support for update, and used it in 
 
 We onced again refactored the tests that do not need the backend into ui-integration tests (Refactor 3).
 
-<br />
+\
+
 
 We wrote a test to delete a hero (Red 4)
 
@@ -2148,13 +2151,13 @@ We wrote the `useDeleteHero` hook and used it in `Heroes` component (Green 4).
 
 We refactored the event handlers with currying and updated the component tests (Refactor 4).
 
-## Takeaways
+### Takeaways
 
-- `useQuery` fetches state: UI state <- server/url , and caches it.
-- `useMutation` is just the opposite: UI state -> server , and still caches it.
-- When we mutate the backend, we also have to update the new cache.
-- When using `react-query`, some of our component test mounts may need to be wrapped with `QueryClientProvider`.
-- Always evaluate if you need the backend to gain confidence in your app's functionality. You should only use true e2e tests when you need this confidence, and you should not have to repeat the same costly e2e tests everywhere. Instead utilize ui-integration tests. If your backend is tested by its own e2e tests, your UI e2e needs at the front end are even less; be careful not to duplicate too much of the backend effort.
-- Order-independent, stateless tests must be fundamental anywhere so that tests can pass and fail in isolation without side effects. This is especially important in e2e tests which make non-idempotent requests. This is why we reset the db before each test, and clean up after ourselves using the api commands we created previously.
-- When writing tests, always think if you are duplicating the test effort covered elsewhere. If the cost does not add any confidence, then find opportunities to cover different functionalities. We removed a test that was duplicating the coverage that can be provided by another test. We used direct navigation to not repeat click navigation.
-- Use spacing to communicate intent and separate tasks / actions within the e2e test.
+* `useQuery` fetches state: UI state <- server/url , and caches it.
+* `useMutation` is just the opposite: UI state -> server , and still caches it.
+* When we mutate the backend, we also have to update the new cache.
+* When using `react-query`, some of our component test mounts may need to be wrapped with `QueryClientProvider`.
+* Always evaluate if you need the backend to gain confidence in your app's functionality. You should only use true e2e tests when you need this confidence, and you should not have to repeat the same costly e2e tests everywhere. Instead utilize ui-integration tests. If your backend is tested by its own e2e tests, your UI e2e needs at the front end are even less; be careful not to duplicate too much of the backend effort.
+* Order-independent, stateless tests must be fundamental anywhere so that tests can pass and fail in isolation without side effects. This is especially important in e2e tests which make non-idempotent requests. This is why we reset the db before each test, and clean up after ourselves using the api commands we created previously.
+* When writing tests, always think if you are duplicating the test effort covered elsewhere. If the cost does not add any confidence, then find opportunities to cover different functionalities. We removed a test that was duplicating the coverage that can be provided by another test. We used direct navigation to not repeat click navigation.
+* Use spacing to communicate intent and separate tasks / actions within the e2e test.

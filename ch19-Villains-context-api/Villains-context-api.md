@@ -92,7 +92,7 @@ export function useDeleteEntity(entityType: EntityType) {
 
 `useEntityParams` replaces `useHeroParams`.
 
-```typescriptx
+```
 // src/hooks/useEntityParams.ts
 import { useSearchParams } from "react-router-dom";
 
@@ -234,7 +234,7 @@ function updateEntityCache(
 
 Having changed the hooks, the hero group of components need slight modifications.
 
-```typescriptx
+```tsx
 // src/heroes/HeroDetail.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -320,7 +320,7 @@ export default function HeroDetail() {
 }
 ```
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.tsx
 import { useState } from "react";
 import { useNavigate, Routes, Route } from "react-router-dom";
@@ -406,7 +406,7 @@ export default function Heroes() {
 }
 ```
 
-```typescriptx
+```tsx
 // src/heroes/HeroList.tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
@@ -520,7 +520,7 @@ The e2e tests for villains will look exactly the same, however our commands are 
 
 In the commands file we will change most references to `hero` to `entity`, and for types we will include the `villain` varieties next to `hero`. The change will require small updates to type definitions and e2e tests.
 
-```typescriptx
+```tsx
 // cypress/support/commands.ts
 import { Villain } from "./../../src/models/Villain";
 import { Hero } from "../../src/models/Hero";
@@ -616,7 +616,7 @@ Cypress.Commands.add("visitEntities", (entityRoute: EntityRoute) => {
 });
 ```
 
-````typescriptx
+````typescript
 // cypress.d.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MountOptions, MountReturn } from "cypress/react";
@@ -1341,7 +1341,7 @@ describe("routes navigation (ui-integration)", () => {
 
 ### Mirror the Cypress component tests
 
-```typescriptx
+```tsx
 // src/villains/VillainDetail.cy.tsx
 import VillainDetail from "./VillainDetail";
 import "../styles.scss";
@@ -1400,7 +1400,7 @@ describe("VillainDetail", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/villains/VillainList.cy.tsx
 import VillainList from "./VillainList";
 import "../styles.scss";
@@ -1474,7 +1474,7 @@ describe("VillainList", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/villains/Villains.cy.tsx
 import Villains from "./Villains";
 import "../styles.scss";
@@ -1575,7 +1575,7 @@ Create a new fixture for villains at `cypress/fixtures/villains.json`.
 
 ### Mirror the RTL tests
 
-```typescriptx
+```tsx
 // src/villains/VillainDetail.test.tsx
 import VillainDetail from "./VillainDetail";
 import "@testing-library/jest-dom";
@@ -1639,7 +1639,7 @@ describe("VillainDetail", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/villains/VillainList.test.tsx
 import VillainList from "./VillainList";
 import { wrappedRender, screen, waitFor } from "test-utils";
@@ -1713,7 +1713,7 @@ describe("VillainList", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/villains/Villains.test.tsx
 import Villains from "./Villains";
 import { wrappedRender, screen, waitForElementToBeRemoved } from "test-utils";
@@ -1818,7 +1818,7 @@ describe("Villains", () => {
 
 ### Enhance `App.cy.tsx` and `App.test.tsx`
 
-```typescriptx
+```tsx
 // src/App.cy.tsx
 import App from "./App";
 
@@ -1847,7 +1847,7 @@ describe("ct sanity", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/App.test.tsx
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -1897,7 +1897,7 @@ describe("200 flow", () => {
 
 We are creating 3 components for villains, mirroring heroes group as they are.
 
-```typescriptx
+```tsx
 // src/villains/VillainDetail.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -1985,7 +1985,7 @@ export default function VillainDetail() {
 }
 ```
 
-```typescriptx
+```tsx
 // src/villains/VillainList.tsx
 import VillainList from "./VillainList";
 import { wrappedRender, screen, waitFor } from "test-utils";
@@ -2066,7 +2066,7 @@ describe("VillainList", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/villains/Villains.tsx
 import { useState } from "react";
 import { useNavigate, Routes, Route } from "react-router-dom";
@@ -2161,7 +2161,7 @@ export default function Villains() {
 
 Add `/villains` route to `App.tsx`.
 
-```typescriptx
+```tsx
 // src/App.tsx
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -2216,49 +2216,45 @@ At the moment we have a full mirror of heroes to villains, functioning and being
 
 Here are the general steps with Context api:
 
-1. Create the context and export it. Usually this is in a separate file, acting as an arbiter.
+1.  Create the context and export it. Usually this is in a separate file, acting as an arbiter.
 
-   ```typescriptx
-   // src/villains/VillainsContext.tsx (the common node)
-   import { Villain } from "models/Villain";
-   import { createContext } from "react";
+    ```tsx
+    // src/villains/VillainsContext.tsx (the common node)
+    import { Villain } from "models/Villain";
+    import { createContext } from "react";
 
-   const VillainsContext = createContext<Villain[]>([]);
-   export default VillainsContext;
-   ```
+    const VillainsContext = createContext<Villain[]>([]);
+    export default VillainsContext;
+    ```
+2.  Identify the state to be passed down to child components. Import the context there.
 
-2. Identify the state to be passed down to child components. Import the context there.
+    ```tsx
+    // src/villains/Villains.tsx
+    import { VillainsContext } from "./VillainsContext";
 
-   ```typescriptx
-   // src/villains/Villains.tsx
-   import { VillainsContext } from "./VillainsContext";
+    // ...
 
-   // ...
+    const { villains, status, getError } = useGetEntity();
+    ```
+3.  Wrap the UI with the context’s Provider component, assign the state to be passed down to the `value` prop:
 
-   const { villains, status, getError } = useGetEntity();
-   ```
+    ```tsx
+    // src/villains/Villains.tsx (the sharer)
 
-3. Wrap the UI with the context’s Provider component, assign the state to be passed down to the `value` prop:
+    <VillainsContext.Provider value={villains}>
+      <Routes>...</Routes>
+    </VillainsContext.Provider>
+    ```
+4.  In any component that is needing the state, consume Context API; import the `useContext` hook, and the context object:
 
-   ```typescriptx
-   // src/villains/Villains.tsx (the sharer)
-
-   <VillainsContext.Provider value={villains}>
-     <Routes>...</Routes>
-   </VillainsContext.Provider>
-   ```
-
-4. In any component that is needing the state, consume Context API; import the `useContext` hook, and the context object:
-
-   ```typescriptx
-   // src/villains/VillainList.tsx
-   import { useContext } from "react";
-   import { VillainsContext } from "./VillainsContext";
-   ```
-
+    ```tsx
+    // src/villains/VillainList.tsx
+    import { useContext } from "react";
+    import { VillainsContext } from "./VillainsContext";
+    ```
 5. Call useContext with the shared context, assign to a var:
 
-```typescriptx
+```tsx
 // src/villains/VillainList.tsx (the sharee)
 import { useContext } from "react";
 import { VillainsContext } from "./VillainsContext";
@@ -2270,7 +2266,7 @@ const villains = useContext(VillainsContext);
 
 Following step 1, we create the context at a new file, and export it:
 
-```typescriptx
+```tsx
 // src/villains/VillainsContext.ts
 import { Villain } from "models/Villain";
 import { createContext } from "react";
@@ -2282,7 +2278,7 @@ export default VillainsContext;
 
 In our example, from `Villains.tsx`, we are passing `villains` to `VillainDetail.tsx`. We get `villains` from the hook `useGetEntity` . We are currently using a prop to pass `villains` to `VillainDetail.tsx`, and we want to instead use the context api. So we import the context, and wrap the routes with the context provider, which has a `value` prop with `villains` assigned to it (Steps 2, 3).
 
-```typescriptx
+```tsx
 // src/villains/Villains.tsx
 import { useState } from "react";
 import { useNavigate, Routes, Route } from "react-router-dom";
@@ -2374,7 +2370,7 @@ export default function Villains() {
 
 `VillainsList.tsx` needs to be passed down the state via context versus a prop. So we import the context, and import`useContext` from React. We invoke `useContext` with the shared context as its argument, and assign to a variable `villains` (Steps 4, 5). Now, instead of the prop, we are getting the state from the `VillainsContext`.
 
-```typescriptx
+```tsx
 // src/villains/VillainList.tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
@@ -2490,7 +2486,7 @@ export default function VillainList({ handleDeleteVillain }: VillainListProps) {
 
 Update the component test to also use the context provider when mounting.
 
-```typescriptx
+```tsx
 // src/villains/VillainList.cy.tsx
 import VillainList from "./VillainList";
 import "../styles.scss";
@@ -2565,7 +2561,7 @@ describe("VillainList", () => {
 
 Update the RTL test to also use context provider when rendering.
 
-```typescriptx
+```tsx
 // src/villains/VillainList.test.tsx
 import VillainList from "./VillainList";
 import { wrappedRender, screen, waitFor } from "test-utils";
@@ -2680,7 +2676,7 @@ export function useVillainsContext() {
 
 At `Villains.tsx` the only change is the import location of `VillainsContext`.
 
-```typescriptx
+```tsx
 // src/villains/Villains.tsx
 import { useState } from "react";
 import { useNavigate, Routes, Route } from "react-router-dom";
@@ -2772,7 +2768,7 @@ export default function Villains() {
 
 Similarly, at `VillainsList` component test, only the import changes. We are using the hook `useVillainsContext`. The same applies to `VillainList.test.tsx`.
 
-```typescriptx
+```tsx
 // src/villains/VillainList.cy.tsx
 import VillainList from "./VillainList";
 import "../styles.scss";
@@ -2845,7 +2841,7 @@ describe("VillainList", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/villains/VillainList.test.tsx
 import VillainList from "./VillainList";
 import { wrappedRender, screen, waitFor } from "test-utils";
@@ -2926,7 +2922,7 @@ describe("VillainList", () => {
 
 At `VillainList.tsx`, as in `Villains.tsx` the import changes. Additionally, we do not need to import `useContext`. We now de-structure villains; `const [villains] = useVillainsContext()`. If we needed to we could also get the setter out of the hook to set the context.
 
-```typescriptx
+```tsx
 // src/villains/VillainList.tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
@@ -3042,8 +3038,6 @@ export default function VillainList({ handleDeleteVillain }: VillainListProps) {
 
 ## Summary & Takeaways
 
-- Context api lets us pass a value deep into the component tree, without explicitly threading it through every component.
-
-- Use a custom hook, manage state and effects within the hook, and only return the values that the components need which may be a value and a setValue.
-
-- With `cy.intercept` and MSW we checked that a network request goes out versus checking that the operation caused a hook to be called. Consequently changing the hooks had no impact on the tests, or the functionality. This is why we want to test at a slightly higher level of abstraction, and why we want to verify the consequences of the implementation vs the implementation details themselves.
+* Context api lets us pass a value deep into the component tree, without explicitly threading it through every component.
+* Use a custom hook, manage state and effects within the hook, and only return the values that the components need which may be a value and a setValue.
+* With `cy.intercept` and MSW we checked that a network request goes out versus checking that the operation caused a hook to be called. Consequently changing the hooks had no impact on the tests, or the functionality. This is why we want to test at a slightly higher level of abstraction, and why we want to verify the consequences of the implementation vs the implementation details themselves.

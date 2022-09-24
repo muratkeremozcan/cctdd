@@ -6,7 +6,7 @@ In the Angular version of the app, there is a parent component above `HeaderBarB
 
 Create a branch `feat/headerBar`. Create 2 files under `src/components/` folder; `HeaderBar.cy.tsx`, `HeaderBar.tsx`. As usual, start minimal with a component rendering; copy the below to the files and execute the test after opening the runner with `yarn cy:open-ct`.
 
-```typescriptx
+```typescript
 // src/components/HeaderBar.cy.tsx
 import HeaderBar from "./HeaderBar";
 
@@ -17,7 +17,7 @@ describe("HeaderBar", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/components/HeaderBar.tsx
 
 export default function HeaderBar() {
@@ -27,7 +27,7 @@ export default function HeaderBar() {
 
 In `HeaderBar` component, which is the child of `HeaderBar`, we added a top level `data-cy` selector with the value of `header-bar-brand`. Let's add a failing test to check the existence of the child component (Red 1).
 
-```typescriptx
+```tsx
 // src/components/HeaderBar.cy.tsx
 import HeaderBar from "./HeaderBar";
 
@@ -41,7 +41,7 @@ describe("HeaderBar", () => {
 
 Insert the child component into the parent.
 
-```typescriptx
+```tsx
 // src/components/HeaderBar.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 
@@ -56,7 +56,7 @@ export default function HeaderBar() {
 
 We get the same `react-router` related error that we got with the `HeaderBarBrand` component. If a child component is using `react-router`, when testing the parent component, we also have to wrap the parent in `BrowserRouter` (Green 1).
 
-```typescriptx
+```tsx
 // src/components/HeaderBar.cy.tsx
 import HeaderBar from "./HeaderBar";
 import { BrowserRouter } from "react-router-dom";
@@ -80,7 +80,7 @@ The child component renders.
 
 The specification shows that the child component is wrapped by a `header` and a `nav` There is also some css that gives it the dark theme. We can copy those off of the browser. We also add a `data-cy` selector to the top tag of the component.
 
-```typescriptx
+```tsx
 // src/components/HeaderBar.tsx
 import HeaderBarBrand from "./HeaderBarBrand";
 
@@ -107,7 +107,7 @@ Realize that we did not necessarily go through a traditional RedGreenRefactor cy
 
 What else can be tested at this point? We do not need to repeat the tests for the child component, because we covered all of it at the child. The only valuable additional check would be to check for an attribute of the `nav` tag. We can easily add that with [Cypress testing library](https://testing-library.com/docs/cypress-testing-library/intro/) (Refactor 1).
 
-```typescriptx
+```tsx
 // src/components/HeaderBar.cy.tsx
 import HeaderBar from "./HeaderBar";
 import { BrowserRouter } from "react-router-dom";
@@ -128,7 +128,7 @@ describe("HeaderBar", () => {
 
 ## RTL version of the component test
 
-```typescriptx
+```tsx
 // src/components/HeaderBar.test.tsx
 import HeaderBar from "./HeaderBar";
 import { render, screen } from "@testing-library/react";

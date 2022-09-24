@@ -6,7 +6,7 @@ In the Angular version of the app, the component mainly consists of an icon and 
 
 Create a branch `feat/NotFound`. Create 2 files under `src/components/` folder; `NotFound.cy.tsx`, `NotFound.tsx`. As usual, start minimal with a component rendering; copy the below to the files and execute the test after opening the runner with `yarn cy:open-ct`.
 
-```typescriptx
+```tsx
 // src/components/NotFound.cy.tsx
 import NotFound from "./NotFound";
 
@@ -17,7 +17,7 @@ describe("NotFound", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/components/NotFound.tsx
 
 export default function NotFound() {
@@ -27,7 +27,7 @@ export default function NotFound() {
 
 Write a test for the skeleton of the component we would like to have (Red 1). Until now we have been using Cypress' [within](https://docs.cypress.io/api/commands/within). Since we are testing a component and everything is under one tag, using within is optional. We can also import the styles into component at the beginning, since we will do it later as with every component.
 
-```typescriptx
+```tsx
 // src/components/NotFound.cy.tsx
 import NotFound from "./NotFound";
 import "../styles.scss";
@@ -45,7 +45,7 @@ describe("NotFound", () => {
 
 To make the test pass, we create a minimal component (Green 1).
 
-```typescriptx
+```tsx
 // src/components/NotFound.tsx
 export default function NotFound() {
   return (
@@ -59,7 +59,7 @@ export default function NotFound() {
 
 We would like that `svg` to be an actual icon. Let's import a triangle icon with an exclamation inside from [react-icons](https://react-icons.github.io/react-icons/search?q=tria). Of significance here is the test tool aiding our design in a RedGreenRefactor cycle (Refactor 1).
 
-```typescriptx
+```tsx
 // src/components/NotFound.tsx
 import { FaExclamationTriangle } from "react-icons/fa";
 
@@ -75,7 +75,7 @@ export default function NotFound() {
 
 This one is a simple component, there aren't any more worthwhile tests to add. All we have left are the styles. We can copy those from the Angular version of the app (Refactor 1).
 
-```typescriptx
+```tsx
 import { FaExclamationTriangle } from "react-icons/fa";
 
 export default function NotFound() {
@@ -97,7 +97,7 @@ export default function NotFound() {
 
 ## RTL version of the component test
 
-```typescriptx
+```tsx
 // src/components/NotFound.test.tsx
 import NotFound from "./NotFound";
 import { render, screen } from "@testing-library/react";

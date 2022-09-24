@@ -1,4 +1,4 @@
-# Heroes part 3 - `useEffect` and HTTP
+# Heroes part 3 - useEffect and HTTP
 
 ## HTTP requests
 
@@ -107,10 +107,10 @@ export default function Heroes() {
 
 The test passes, but looking at the console we see that the component gets mounted, unmounted, and mounted again. Meanwhile, there are 2 calls to the api. The first does not have anything in the response body, the second gets the heroes. We will drop a side note here regarding the`useEffect` dependency array and revisit the topic later.
 
-- `useEffect(fn, [a, b, c])` -> run the effect when a, or b, or c change
-- `useEffect(fn, [a])` -> run the effect when a changes
-- `useEffect(fn, [])` -> run the effect when... nothing changes, that's why it runs just once
-- `useEffect(fn)` -> run the effect at every render
+* `useEffect(fn, [a, b, c])` -> run the effect when a, or b, or c change
+* `useEffect(fn, [a])` -> run the effect when a changes
+* `useEffect(fn, [])` -> run the effect when... nothing changes, that's why it runs just once
+* `useEffect(fn)` -> run the effect at every render
 
 ![HeroesPart3-green1](../img/HeroesPart3-green1.png)
 
@@ -217,7 +217,7 @@ useEffect(() => {
 
 We can do a little bit more of a refactor adding support for `axios` error messages, and wrapping the expensive `axios.get` in a `useCallBack`. Why `useCallback`? In short, custom functions get defined on every render and can be costly especially if the network state is the same. `useCallback` lets us memoize such expensive operations, by preventing the redefinition or recalculation of values. The signature is `useCallBack(updaterFn, [dependencies])` (Refactor 2).
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";
@@ -320,7 +320,7 @@ We used the e2e test to to drive the design of http requests in the `Heroes` com
 
 We need to be stubbing the network with some data, so that the component can render it. Add a `cy.intercept` using a fixture file for the network data to `src/heroes/Heroes.cy.tsx` and `src/App.cy,tsx` files, which both use the `Heroes` component. The intercept will ensure that all `GET` requests to `http://localhost:4000/api/heroes` will respond with the stubbed data from `heroes.json` file in Cypress fixtures.
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.cy.tsx
 import Heroes from "./Heroes";
 import { BrowserRouter } from "react-router-dom";
@@ -382,7 +382,7 @@ describe("Heroes", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/App.cy.tsx
 import App from "./App";
 
@@ -408,9 +408,9 @@ We also have to update the RTL unit test `src/App.test.tsx` which mirrors `App.c
 
 ![HeroesPart3-RTL-fail](../img/HeroesPart3-RTL-fail.png)
 
-In RTL, the equivalent of `cy.intercept` is [`msw`](https://mswjs.io/). Install with ` yarn add -D msw`. Modify the file as such:
+In RTL, the equivalent of `cy.intercept` is [`msw`](https://mswjs.io/). Install with `yarn add -D msw`. Modify the file as such:
 
-```typescriptx
+```tsx
 // src/App.test.tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -530,7 +530,7 @@ The test fails. The conditional rendering is working, but the state of the `Inpu
 
 Instead of taking the value and just displaying it, we need to make `InputDetail` aware of state. We can accomplish this by managing state where its most relevant, the component itself, and by utilizing a combination of `useState` and `useEffect`. We come up with a variable `shownValue` and a setter for it. As the component mounts, we utilize `useEffect` to set the value. We also specify a dependency array for the value (Green 3).
 
-```typescriptx
+```tsx
 // src/components/InputDetail.tsx
 import { ChangeEvent, useEffect, useState } from "react";
 
@@ -576,7 +576,7 @@ export default function InputDetail({
 
 Similar to routing, when our concerns about the app are higher level as in state management and flows, e2e tests are effective at catching defects that we might not be able to test with component tests. The e2e test now works, and the component test serves as a regression assurance. The `onChange` now gets called twice vs thrice, and that is the only update.
 
-```typescriptx
+```tsx
 // src/components/InputDetail.cy.tsx
 import InputDetail from "./InputDetail";
 import "../styles.scss";
@@ -627,11 +627,11 @@ describe("InputDetail", () => {
 
 It is time to refactor all the references to `http://localhost:4000/api` with an environment variable. Create React App (CRA) comes with a `dotenv` package already installed. The only requirement is that variable names start with `REACT_APP_`. We can create an `.env` file right away with the api url.
 
-```env
+```
 REACT_APP_API_URL=http://localhost:4000/api
 ```
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.tsx
 const getData = useCallback(async () => {
   const response = await axios.get(`${process.env.REACT_APP_API_URL}/heroes`);
@@ -639,7 +639,7 @@ const getData = useCallback(async () => {
 }, []);
 ```
 
-```typescriptx
+```tsx
 // src/App.test.tsx
 const handlers = [
   rest.get(
@@ -653,7 +653,7 @@ const handlers = [
 
 The equivalent of `.env` is an `env` property in `./cypress.config.js` . It can be specific to `e2e`, `component` or both depending where the property is placed.
 
-```js
+```tsx
 // cypress.config.js
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -695,13 +695,13 @@ module.exports = defineConfig({
 
 Similarly, replace instances of the string `http://localhost:4000/api` in the component and e2e tests with a template literal `${Cypress.env('API_URL')}`. The files that need changes are:
 
-- _cypress/e2e/create-hero.cy.ts_
-- _cypress/e2e/edit-hero.cy.ts_
-- _cypress/e2e/network-hero.cy.ts_
-- _cypress/support/commands.ts_
-- _src/App.cy.tsx_
-- _src/components/InputDetail.cy.tsx_
-- _src/heroes/Heroes.cy.tsx_
+* _cypress/e2e/create-hero.cy.ts_
+* _cypress/e2e/edit-hero.cy.ts_
+* _cypress/e2e/network-hero.cy.ts_
+* _cypress/support/commands.ts_
+* _src/App.cy.tsx_
+* _src/components/InputDetail.cy.tsx_
+* _src/heroes/Heroes.cy.tsx_
 
 ### Custom hook `useAxios`
 
@@ -770,7 +770,7 @@ export default function useAxios(url: string) {
 
 At `Heroes` component, we do not need to utilize `useState` because now we get the data from `useAxios`. We just have to rename and initialize `data` variable into `heroes` .
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.tsx
 import { useNavigate, Routes, Route } from "react-router-dom";
 import ListHeader from "components/ListHeader";
@@ -845,11 +845,13 @@ We wrote a failing e2e test spying on an expected http GET call to `/heroes` rou
 
 We added a `useEffect` that gets the data with an `axios.get` call targeting the `/heroes` route (Green 1).
 
-<br />
+\
+
 
 We removed the json file import to get the data, utilized `useState`, while setting the hero array within the `useEffect` (Red 2, Green 2).
 
-<br />
+\
+
 
 Refactors:
 
@@ -859,13 +861,15 @@ We updated the component tests and the unit test to be network aware and stub th
 
 We updated the e2e tests to wait for the network so that ui assertions can begin after the DOM settles.
 
-<br />
+\
+
 
 We added a new e2e test to cover an alternate hero add flow; navigating to add hero from edit hero (Red 3).
 
 To address the failure, we managed the state where it is most relevant; `InputDetail` component. We only used `useState` and `useEffect`. (Green 3)
 
-<br />
+\
+
 
 Refactors:
 
@@ -873,20 +877,20 @@ We refactored the hard coded api route to an environment variable.
 
 We used a hook `useAxios` to yield the data at the component in an abstracted way.
 
-<br />
+\
+
 
 ## Takeaways
 
-- From Kent Dodds:
-  _"HTTP requests are another common side-effect that we need to do in applications. This is no different from the side-effects we need to apply to a rendered DOM or when interacting with browser APIs like localStorage. In all these cases, we do that within a `useEffect` hook callback. This hook allows us to ensure that whenever certain changes take place, we apply the side-effects based on those changes."_
-- We can use the built in `fetch` api or `axios` to make http calls from the application to the backend.
-- `useEffect` dependency array:
-  - `useEffect(fn, [a, b, c])` -> run the effect when a, or b, or c change
-  - `useEffect(fn, [a])` -> run the effect when a changes
-  - `useEffect(fn, [])` -> run the effect when... nothing changes, that's why it runs just once
-  - `useEffect(fn)` -> run the effect at every render
-- Wrap expensive functions in `useCallback` to memoize repeated calls.
-- We can manage most http state with `useState` & `useEffect`, however the implementation can grow as the app scales.
-- Component testing with Cypress, using the real browser, can help diagnose issues in the app that may be harder to do using Jest/RTL.
-- If component tests are making network calls, we can stub the network with the [`cy.intercept`](https://docs.cypress.io/api/commands/intercept) api. The contrast to `cy.intercept` is [`msw`](https://mswjs.io/docs/) for Jest/RTL .
-- Similar to routing, when our concerns about the app are higher level as in state management and flows, e2e tests are effective at catching edge cases that we might not be able to cover with component tests.
+* From Kent Dodds: _"HTTP requests are another common side-effect that we need to do in applications. This is no different from the side-effects we need to apply to a rendered DOM or when interacting with browser APIs like localStorage. In all these cases, we do that within a `useEffect` hook callback. This hook allows us to ensure that whenever certain changes take place, we apply the side-effects based on those changes."_
+* We can use the built in `fetch` api or `axios` to make http calls from the application to the backend.
+* `useEffect` dependency array:
+  * `useEffect(fn, [a, b, c])` -> run the effect when a, or b, or c change
+  * `useEffect(fn, [a])` -> run the effect when a changes
+  * `useEffect(fn, [])` -> run the effect when... nothing changes, that's why it runs just once
+  * `useEffect(fn)` -> run the effect at every render
+* Wrap expensive functions in `useCallback` to memoize repeated calls.
+* We can manage most http state with `useState` & `useEffect`, however the implementation can grow as the app scales.
+* Component testing with Cypress, using the real browser, can help diagnose issues in the app that may be harder to do using Jest/RTL.
+* If component tests are making network calls, we can stub the network with the [`cy.intercept`](https://docs.cypress.io/api/commands/intercept) api. The contrast to `cy.intercept` is [`msw`](https://mswjs.io/docs/) for Jest/RTL .
+* Similar to routing, when our concerns about the app are higher level as in state management and flows, e2e tests are effective at catching edge cases that we might not be able to cover with component tests.

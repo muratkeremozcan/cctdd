@@ -1,4 +1,6 @@
-## [`json-server`](https://github.com/typicode/json-server)
+# json-server
+
+### [`json-server`](https://github.com/typicode/json-server)
 
 We have been using a json file `src/heroes/heroes.json` in the `Heroes` component. Our app is not talking to a backend. It would be ideal to have a fake REST API instead, and `json-server` can enable that. Add the following packages to our app:
 
@@ -107,7 +109,7 @@ Update `package.json` scripts as below. The changes make it so that the UI serve
 
 For CI, update `.github/workflows/main.yml` `cypress-e2e-test` section > Cypress GitHub action command > `start` property from `yarn start` to `yarn dev`. This will ensure that the start command not only starts the UI server, but also the backend.
 
-```yml
+```yaml
 cypress-e2e-test:
   needs: [install-dependencies]
   runs-on: ubuntu-latest
@@ -130,7 +132,7 @@ cypress-e2e-test:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-## Backend-e2e
+### Backend-e2e
 
 Cypress is a great tool as an API client to test any live backend; check out [CRUD API testing a deployed service with Cypress](https://dev.to/muratkeremozcan/crud-api-testing-a-deployed-service-with-cypress-using-cy-api-spok-cypress-data-session-cypress-each-4mlg). We can write backend e2e tests that ensure that the backend works properly. With `json-server` this is not needed, but we want to showcase a real life example and also we will use some of these api commands in the UI e2e CRUD tests to setup and clean up state. In the real world, most likely the backend would be in a separate repo and host its own Cypress api e2e tests. The common commands that would also be used in the front end would most likely be hosted in an internal Cypress test package; check out a guide about that [here](https://dev.to/muratkeremozcan/how-to-create-an-internal-test-plugins-for-your-team-in-ts-implement-custom-commands-and-use-other-cypress-plugins-in-them-5lp).
 
@@ -182,7 +184,7 @@ describe("Backend e2e", () => {
 
 It would be more ideal to have the backend served on a `/api` route so that it is not confused by the front end, and it is more aligned with the convention. Modify the url with this change for a failing test (Red 1).
 
-```typescriptx
+```typescript
 // cypress/e2e/backend/crud.cy.ts
 describe("Backend e2e", () => {
   it("should ", () => {
@@ -206,7 +208,7 @@ describe("Backend e2e", () => {
 
 To satisfy the change, we need 2 modifications. First, create a file `routes.json` at the project root:
 
-```typescriptx
+```json
 {
   "/api/*": "/$1"
 }
@@ -505,16 +507,16 @@ describe("Backend e2e", () => {
 
 The test taking responsibility for the db state is a best practice. Here we have create update delete all under one block, but another approach could be like the below. The duplicated sub steps are highlighted in **bold**.
 
-- Creation
-  - **UI create**
-  - **API delete**
-- Update
-  - **API create**
-  - UI update
-  - **API delete**
-- Delete
-  - **API create**
-  - **UI delete**
+* Creation
+  * **UI create**
+  * **API delete**
+* Update
+  * **API create**
+  * UI update
+  * **API delete**
+* Delete
+  * **API create**
+  * **UI delete**
 
 As you can see, covering the update scenario satisfies it all, otherwise there is duplication between the tests.
 
@@ -603,8 +605,8 @@ We will get a failure about the 404 status because Cypress retries commands (for
 
 [cy.request](https://docs.cypress.io/api/commands/request) has two properties we love to control:
 
-- `retryOnStatusCodeFailure`: Whether Cypress should automatically retry status code errors under the hood. Cypress will retry a request up to 4 times if this is set to true.
-- `failOnStatusCode` : Whether to fail on response codes other than `2xx` and `3xx`
+* `retryOnStatusCodeFailure`: Whether Cypress should automatically retry status code errors under the hood. Cypress will retry a request up to 4 times if this is set to true.
+* `failOnStatusCode` : Whether to fail on response codes other than `2xx` and `3xx`
 
 We can control those two together in an argument flag `allowedToFail` with default value of `false`. When we expect to have non-200 status codes, we can set that to true. Here is the api enhancement (Green 3).
 
@@ -693,7 +695,7 @@ We can refactor the api to be better readable and extendible by putting the opti
 
 We can also improve the type by casting the `cy.request` response, indicating the type of the value we will get.
 
-```typescriptx
+```typescript
 const getRoute = (
   // required args
   route: string,
@@ -1020,7 +1022,7 @@ declare global {
 }
 ````
 
-Use the commands in the spec file. We will do a final touch up here to use [`faker`](https://fakerjs.dev/api/) for the data we are working with. `yarn add -D @faker-js/faker ` (Refactor 4).
+Use the commands in the spec file. We will do a final touch up here to use [`faker`](https://fakerjs.dev/api/) for the data we are working with. `yarn add -D @faker-js/faker` (Refactor 4).
 
 ```typescript
 // cypress/e2e/backend/crud.cy.ts
@@ -1080,7 +1082,7 @@ describe('Backend e2e', () => {
 
 The final code may look sophisticated, but it took many cycles of getting the tests to work and refactoring to get there.
 
-## Summary
+### Summary
 
 We faked a backed server for our application to talk to using `json-server`.
 
@@ -1090,7 +1092,8 @@ This required to seed the database with a `db.json` file, also to start the api 
 
 We started with a `GET` test to verify the seeded data. We modified the backend to use a unique prefix `api`, and verified heroes and villains (Red 1, Green 1, Refactor 1)
 
-<br />
+\
+
 
 We created a new test to add a hero. But because the test leaves state behind, rerunning it caused issues (Red 2).
 
@@ -1098,7 +1101,8 @@ We used `json-server-reset` to reset the db to its original form before each tes
 
 We enhanced the test with update and delete (Refactor 2)
 
-<br />
+\
+
 
 We added a test to ensure that the deleted entity is removed from the DB (Red 3).
 
@@ -1112,7 +1116,7 @@ We reached a state where we kept adding tests, and got green repeatedly.
 
 After that point we kept refactoring until we were happy with the result, using Cypress commands, faker, better types so on and so forth.
 
-## Takeaways
+### Takeaways
 
 The true value of TDD is realized during development. It can be applied after so, however the RedGreenRefactor cycles become more like GreenRefactor. The incremental, small steps moving forward towards more comprehensive tests and refactored code are still the same.
 

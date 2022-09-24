@@ -15,7 +15,7 @@ describe("ErrorComp", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/components/ErrorComp.test.tsx
 import ErrorComp from "./ErrorComp";
 import { render, screen } from "@testing-library/react";
@@ -28,7 +28,7 @@ describe("ErrorComp", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/components/ErrorComp.tsx
 export default function ErrorComp() {
   return (
@@ -53,7 +53,7 @@ describe("Spinner", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/components/Spinner.test.tsx
 import Spinner from "./Spinner";
 import { render, screen } from "@testing-library/react";
@@ -66,7 +66,7 @@ describe("Spinner", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/components/Spinner.tsx
 import React from "react";
 import { FaSpinner } from "react-icons/fa";
@@ -97,7 +97,7 @@ describe("PageSpinner", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/components/PageSpinner.test.tsx
 import PageSpinner from "./PageSpinner";
 import { render, screen } from "@testing-library/react";
@@ -110,7 +110,7 @@ describe("PageSpinner", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/components/PageSpinner.tsx
 import Spinner from "./Spinner";
 
@@ -217,7 +217,7 @@ const handleSearch =
 
 Instead of rendering the list by `heroes.map`, we use `filteredHeroes`, which will get set by the `handleSearch` upon a change event.
 
-```typescriptx
+```tsx
 // src/heroes/HeroList.tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
@@ -305,7 +305,7 @@ To address the defect, we have to render the `HeroList` whenever `heroes` change
 
 `useEffect(() => setFilteredHeroes(heroes), [heroes])`
 
-```typescriptx
+```tsx
 // src/heroes/HeroList.tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
@@ -412,7 +412,7 @@ In our `HeroList` component, `setFilteredHeroes` can be treated as a low priorit
 
 The first change is in the return segment of `handleSearch`. `startTransition` wraps a function that returns `setFilteredHeroes`.
 
-```typescriptx
+```tsx
 return startTransition(() =>
   setFilteredHeroes(
     [...data].filter(
@@ -426,7 +426,7 @@ return startTransition(() =>
 
 We can reduce the opacity of the entire component in case the transition `isPending`:
 
-```typescriptx
+```tsx
  return (
     <div
       style={{
@@ -442,7 +442,7 @@ We can reduce the opacity of the entire component in case the transition `isPend
 
 Here are the `useTransition` updates to the `HeroList` component.
 
-```typescriptx
+```tsx
 // src/heroes/HeroList.tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
@@ -546,7 +546,7 @@ If you have access to the state updating code, prefer `useTransition`. If you do
 
 In our `HeroList` component, the `hero` data is coming in as a prop, which is a good candidate for `useDeferredValue`.
 
-```typescriptx
+```tsx
 export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
   const deferredHeroes = useDeferredValue(heroes)
   const isStale = deferredHeroes !== heroes
@@ -555,7 +555,7 @@ export default function HeroList({heroes, handleDeleteHero}: HeroListProps) {
 
 We can utilize the `isStale` value in the CSS like so:
 
-```typescriptx
+```tsx
 <div
   style={{
     opacity: isPending ? 0.5 : 1,
@@ -565,7 +565,7 @@ We can utilize the `isStale` value in the CSS like so:
 
 Here is the updated `HeroList` component (Refactor 1):
 
-```typescriptx
+```tsx
 // src/heroes/HeroList.tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
@@ -669,7 +669,7 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
 
 The conditional rendering gives another clue; do we need a search bar when there is no data? Let's add that feature, starting with a failing test. We will rearrange `HeroList.cy.tsx` a bit so that we can capture the test in two contexts; mount without hero data, and mount with hero data (Red 2).
 
-```typescriptx
+```tsx
 // src/heroes/HeroList.cy.tsx
 import { BrowserRouter } from "react-router-dom";
 import HeroList from "./HeroList";
@@ -744,7 +744,7 @@ describe("HeroList", () => {
 
 To satisfy the test, all we need is conditional rendering for the search bar.
 
-```typescriptx
+```tsx
 {
   deferredHeroes.length > 0 && (
     <div className="card-content">
@@ -757,7 +757,7 @@ To satisfy the test, all we need is conditional rendering for the search bar.
 
 Here is the `HeroList` component in its final form (Green 2):
 
-```typescriptx
+```tsx
 // src/heroes/HeroList.tsx
 import { useNavigate } from "react-router-dom";
 import CardContent from "components/CardContent";
@@ -867,13 +867,12 @@ export default function HeroList({ heroes, handleDeleteHero }: HeroListProps) {
 
 To manage the amount of code loaded upon application startup - the initial bundle - we can use code splitting which aims to load the app's code in chunks in order to improve UI responsiveness. In React, [Suspense](https://reactjs.org/docs/code-splitting.html) and lazy loading are used to accomplish code splitting. They are usually talked about together with `ErrorBoundary`, because `Suspense` and `ErrorBoundary` components let us decouple the loading and error UI from individual components. Here are the key ideas:
 
-- While loading show the `Suspense` component, if error show the `ErrorBoundary` component, if success show the component we want to render.
-
-- Use `React.lazy` to load components only when they are first rendered.
+* While loading show the `Suspense` component, if error show the `ErrorBoundary` component, if success show the component we want to render.
+* Use `React.lazy` to load components only when they are first rendered.
 
 Converting a component to a lazy component with the `lazy` function:
 
-```typescriptx
+```tsx
 // staticly imported component
 import Heroes from "heroes/Heroes";
 
@@ -883,7 +882,7 @@ const Heroes = lazy(() => import("heroes/Heroes"));
 
 Use the Suspense and ErrorBoundary components to wrap UI that contains one or more lazy components in its tree. Here is how they work together at a high level:
 
-```typescriptx
+```tsx
 <ErrorBoundary fallback={<ErrorComp />}>
   <Suspense fallback={<PageSpinner />}>
     <Routes>
@@ -897,7 +896,7 @@ Use the Suspense and ErrorBoundary components to wrap UI that contains one or mo
 
 For setup, install `react-error-boundary` with `yarn add react-error-boundary`and update `App.tsx` like so:
 
-```typescriptx
+```
 // src/App.tsx
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -1082,13 +1081,13 @@ describe("HeroDetail", () => {
 
 Looking at the `HeroDetail` component, we have `status` from `usePostHero` and `isUpdating` from `usePutHero` hooks, which we can utilize. In case these are seen, render the `PageSpinner` (Green 2).
 
-```typescriptx
+```
 if (status === "loading" || isUpdating) {
   return <PageSpinner />;
 }
 ```
 
-```typescriptx
+```
 // src/heroes/HeroDetail.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -1186,7 +1185,7 @@ it.only("should handle non-200 Save", () => {
 
 Looking at the `HeroDetail` component, we have `postError` from `usePostHero` and `isUpdateError` from `usePutHero` hooks, which we can utilize (Green 3).
 
-```typescriptx
+```
 if (status === "loading" || isUpdating) {
   return <PageSpinner />;
 }
@@ -1196,7 +1195,7 @@ if (postError || isUpdateError) {
 }
 ```
 
-```typescriptx
+```
 // src/heroes/HeroDetail.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -1448,7 +1447,7 @@ describe("Edit hero", () => {
 
 The other component test that is using `cy.intercept` in a happy path flow is `Heroes.cy.tsx`. It is stubbing a `GET` call to `/heroes` route like so:
 
-```typescriptx
+```tsx
 cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
   fixture: "heroes.json",
 }).as("getHeroes");
@@ -1458,7 +1457,7 @@ By default, `cy.intecept` accepts the status code as 200. What happens when the 
 
 `Heroes` component is using `HeroDetail`. Before we begin, we will slightly refactor the test to have 2 contexts; one for 200 flows, and the new test for the non-200 flow. The non-200 test we will create will come before the 200 flows.
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.cy.tsx
 import Heroes from "./Heroes";
 import { BrowserRouter } from "react-router-dom";
@@ -1523,7 +1522,7 @@ describe("Heroes", () => {
 
 Let's start with the new test. We setup the network setup, mount the component, and expect to see an error.
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.cy.tsx
 import Heroes from "./Heroes";
 import { BrowserRouter } from "react-router-dom";
@@ -1603,7 +1602,7 @@ Running the component test, we see that nothing renders, Axios retrying multiple
 
 We can mirror the improvement that was done to `HeroDetail` in `Heroes`.
 
-```typescriptx
+```tsx
 // HeroDetail
 if (status === "loading" || isUpdating) {
   return <PageSpinner />;
@@ -1614,7 +1613,7 @@ if (postError || isUpdateError) {
 }
 ```
 
-```typescriptx
+```tsx
 // Heroes
 if (status === "loading") {
   return <PageSpinner />;
@@ -1627,7 +1626,7 @@ if (getError || isDeleteError) {
 
 Here is the `Heroes` component enhanced for rendering `Suspense` and `ErrorBoundary`.
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -1705,9 +1704,9 @@ export default function HeroDetail() {
 }
 ```
 
-Still those Axios retries are taking long and nothing renders. We can speed up the network errors by using [ `cy.clock`](https://docs.cypress.io/api/commands/clock) and [`cy.tick`](https://docs.cypress.io/api/commands/tick). We also tell Cypress that uncaught exceptions are expected using `Cypress.on('uncaught:exception', () => false)`.
+Still those Axios retries are taking long and nothing renders. We can speed up the network errors by using [`cy.clock`](https://docs.cypress.io/api/commands/clock) and [`cy.tick`](https://docs.cypress.io/api/commands/tick). We also tell Cypress that uncaught exceptions are expected using `Cypress.on('uncaught:exception', () => false)`.
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.cy.tsx
 it.only("should go through the error flow", () => {
   Cypress.on("uncaught:exception", () => false);
@@ -1734,7 +1733,7 @@ After that change, the only remaining failure is `data-cy` not rendering
 
 We need to remember that a component test is an independent, small scale app. Our application is being wrapped at the base level, and with that `ErrorBoundary` and `Suspense` are able to apply to every component under the App. Therefore we also need to wrap our mounted component (Green 5).
 
-```typescriptx
+```tsx
 // remember App.tsx
 <QueryClientProvider client={queryClient}>
   <ErrorBoundary fallback={<ErrorComp />}>
@@ -1752,7 +1751,7 @@ We need to remember that a component test is an independent, small scale app. Ou
 
 Compare to our new mount:
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.cy.tsx
 cy.mount(
   <QueryClientProvider client={new QueryClient()}>
@@ -1769,7 +1768,7 @@ cy.mount(
 
 Our test can work with that, but most likely the verbosity will be needed elsewhere. We can instead use a custom function for it like so:
 
-```typescriptx
+```tsx
 const wrappedMount = (
   WrappedComponent: React.ElementType,
   props: JSX.IntrinsicAttributes &
@@ -1797,7 +1796,7 @@ wrappedMount(Heroes);
 
 It is optimal to make that a Cypress command which we can use in any component without having to import. We could replace most `cy.mount`s in the component test suite, with the exception of `App.cy.tsx` . Even when the custom mount is not needed, the additional wrappers will not hurt. Change `./cypress/support/component.ts` to a `tsx` file. We align the command better with `cy.mount` in command version of the `wrappedMount`.
 
-```typescriptx
+```tsx
 // cypress/support/component.tsx
 import "./commands";
 import "@testing-library/cypress/add-commands";
@@ -1830,7 +1829,7 @@ Cypress.Commands.add(
 
 Add the definition to `cypress.d.ts.`
 
-```typescript
+```tsx
 /** Mounts the component wrapped by all the providers:
 * QueryClientProvider, ErrorBoundary, Suspense, BrowserRouter
 * @param component React Node to mount
@@ -1843,16 +1842,16 @@ wrappedMount(
 
 Here is the final version of the test with `cy.wrappedMount`. We included a check for the spinner before the error as a bonus (Refactor 5). You can optionally apply `cy.wrappedMount` refactor to a few of the component tests:
 
-- `src/components/Heroes.cy.tsx`
-- `src/components/HeroList.cy.tsx`
-- `src/components/HeroDetail.cy.tsx`
-- Not as useful but still possible (they only use `BrowserRouter` as the wrapper):
-  - `src/components/HeaderBar.cy.tsx`
-  - `src/components/HeaderBarBrand.cy.tsx`
-  - `src/components/ListHeader.cy.tsx`
-  - `src/components/NavBar.cy.tsx`
+* `src/components/Heroes.cy.tsx`
+* `src/components/HeroList.cy.tsx`
+* `src/components/HeroDetail.cy.tsx`
+* Not as useful but still possible (they only use `BrowserRouter` as the wrapper):
+  * `src/components/HeaderBar.cy.tsx`
+  * `src/components/HeaderBarBrand.cy.tsx`
+  * `src/components/ListHeader.cy.tsx`
+  * `src/components/NavBar.cy.tsx`
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.cy.tsx
 import Heroes from "./Heroes";
 import "../styles.scss";
@@ -1924,7 +1923,7 @@ describe("Heroes", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/heroes/HeroList.cy.tsx
 import HeroList from "./HeroList";
 import "../styles.scss";
@@ -1992,7 +1991,7 @@ describe("HeroList", () => {
 });
 ```
 
-```typescriptx
+```tsx
 // src/heroes/HeroDetail.cy.tsx
 import HeroDetail from "./HeroDetail";
 import "../styles.scss";
@@ -2053,7 +2052,7 @@ describe("HeroDetail", () => {
 
 In RTL, being able to handle the spinner in the beginning is a bit different. We have to use an `act` to asynchronously wait. Here is the updated unit test:
 
-```typescriptx
+```tsx
 // src/App.test.tsx
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -2094,7 +2093,7 @@ describe("200 flow", () => {
 
 To mirror `cy.wrappedMount` in RTL, create a custom `render` at `src/test-utils.tsx`. This file also exports `'@testing-library/react'`, so we can import `screen`, `userEvent`, `waitFor` from here in case we are using the `wrappedRender`. Similar to the component tests, `wrappedRender` is the most useful in 3 components under `heroes` folder.
 
-```typescriptx
+```tsx
 // src/test-utils.tsx
 import React, { FC, Suspense } from "react";
 import { render, RenderOptions } from "@testing-library/react";
@@ -2131,7 +2130,7 @@ export { wrappedRender };
 
 `HeroList.test.tsx` is the RTL mirror of `HeroList.cy.tsx`
 
-```typescriptx
+```tsx
 // src/heroes/HeroList.test.tsx
 import HeroList from "./HeroList";
 import { wrappedRender, screen, waitFor } from "test-utils";
@@ -2211,7 +2210,7 @@ With [msw](https://testing-library.com/docs/react-testing-library/example-intro/
 
 > Alternatively we could spy on the `react-query` hooks and verify they are called. While that is what most developers have been used to, it is an implementation detail because changes to our state management approach would break the tests.
 
-```typescriptx
+```tsx
 // src/heroes/HeroDetail.test.tsx
 import HeroDetail from "./HeroDetail";
 import { wrappedRender, act, screen, waitFor } from "test-utils";
@@ -2273,7 +2272,7 @@ describe("HeroDetail", () => {
 
 `Heroes.test.tsx` is the RTL mirror of `Heroes.cy.tsx`.
 
-```typescriptx
+```tsx
 // src/heroes/Heroes.test.tsx
 import Heroes from "./Heroes";
 import { wrappedRender, screen, waitForElementToBeRemoved } from "test-utils";
@@ -2380,7 +2379,8 @@ describe("Heroes", () => {
 
 We added new components to be used in the chapter.
 
-<br />
+\
+
 
 We added a new test for a hero search / filter feature (Red 1).
 
@@ -2388,15 +2388,18 @@ We added the implementation to `HeroList` component, and ensured that there are 
 
 We enhanced the component with `useTransition` to wrap the code we have control over (`setFilteredHeroes`) and `useDeferredValue` to wrap the value we do not have control over (`heroes` value being passed in as a prop) (Refactor 1).
 
-<br />
+\
+
 
 We added conditional rendering for the search-filter (Red 2, Green 2)
 
-<br />
+\
+
 
 We configured the application for `Suspense` and `ErrorBoundary`
 
-<br />
+\
+
 
 We wrote a non-200 / network error edge case for `HeroDetail` component which also hits the `Suspense` code using a `cy.intercept` delay option (Red 3, Red 4).
 
@@ -2404,7 +2407,8 @@ We added conditional rendering to `HeroDetail` for loading and error conditions 
 
 In order to cover `PUT` request loading and error condition, we utilized a ui-integration test, since it is aware of a state that can trigger a back-end modification, but doesn't necessarily have to receive a 500 response from a real network to render the error (Refactor 4)
 
-<br />
+\
+
 
 We wrote a non-200 / network error edge case for `Heroes` component which is `HeroDetail`'s parent.' It uses `GET` request to get the data (Red 5).
 
@@ -2412,17 +2416,18 @@ We wrapped the component test mount in the fashion the root app is wrapped by `E
 
 We improved the component test to check for the spinner. Similar to the `POST` request error case, we covered the network error case for `DELETE` in a ui-integration test since it is aware of a state that can trigger a back-end modification, but doesn't necessarily have to receive a 500 response from a real network to render the error (Refactor 5).
 
-<br />
+\
+
 
 We modified the RTL unit test to work with `Suspense`
 
 ## Takeaways
 
-- When adding major features, it is important to execute the CT as well as e2e test suites to ensure there are no regressions. Small incremental steps coupled by confident tests make error diagnosis easier.
-- Although they have a reputation of being "brittle", well-written, stable e2e or ui-integration tests have a high fault-finding capability, catching the defects that are not realized in an isolated component, or unit test.
-- While multiple state updates are occurring simultaneously, Concurrency refers to certain state updates having less priority over others, for the purpose of optimizing UI responsiveness. `useTransition` & `useDeferredValue` can be used to specify what is of lower priority. If you have access to the state updating code, prefer `useTransition` and wrap that code. If you do not have access to the code but only to the final value, utilize `useDeferredValue` to wrap that value.
-- `Suspense` with `lazy` loading is used to code-split the initial application bundle, in order to improve UI responsiveness. Together with `ErrorBoundary` , they de-couple the loading and error UI from individual components. While loading show the `Suspense` component, if error show the `ErrorBoundary` component, if success show the component we want to render.
-- When beginning to write tests for error cases, any test that is covering the positive flows to spy on or stub the network with `cy.intercept()` is a good candidate to begin with. Start at the component level and move up to ui-integration when further tests are not possible.
-- Any time we are not able to cover a test at a low level with component tests, move up to ui-integration tests. Most the time a ui-integration test will suffice, and when it is not enough we can use a true e2e that hits the backend. Use the least costly kind of test to gain the highest confidence; where they are in the pyramid is only relevant by the ability to perform that kind of test in the given context.
-- We can speed up the network errors by using [`cy.clock`](https://docs.cypress.io/api/commands/clock) and [`cy.tick`](https://docs.cypress.io/api/commands/tick). When covering error case we also tell Cypress that uncaught exceptions are expected using `Cypress.on('uncaught:exception', () => false)`.
-- Remember that a component test is an independent, small scale application. Whatever is wrapping the base `App` component may need to be wrapping a component test mount as well (`Providers`, `ErrorBoundary`, `Suspense`, `Router` etc.).
+* When adding major features, it is important to execute the CT as well as e2e test suites to ensure there are no regressions. Small incremental steps coupled by confident tests make error diagnosis easier.
+* Although they have a reputation of being "brittle", well-written, stable e2e or ui-integration tests have a high fault-finding capability, catching the defects that are not realized in an isolated component, or unit test.
+* While multiple state updates are occurring simultaneously, Concurrency refers to certain state updates having less priority over others, for the purpose of optimizing UI responsiveness. `useTransition` & `useDeferredValue` can be used to specify what is of lower priority. If you have access to the state updating code, prefer `useTransition` and wrap that code. If you do not have access to the code but only to the final value, utilize `useDeferredValue` to wrap that value.
+* `Suspense` with `lazy` loading is used to code-split the initial application bundle, in order to improve UI responsiveness. Together with `ErrorBoundary` , they de-couple the loading and error UI from individual components. While loading show the `Suspense` component, if error show the `ErrorBoundary` component, if success show the component we want to render.
+* When beginning to write tests for error cases, any test that is covering the positive flows to spy on or stub the network with `cy.intercept()` is a good candidate to begin with. Start at the component level and move up to ui-integration when further tests are not possible.
+* Any time we are not able to cover a test at a low level with component tests, move up to ui-integration tests. Most the time a ui-integration test will suffice, and when it is not enough we can use a true e2e that hits the backend. Use the least costly kind of test to gain the highest confidence; where they are in the pyramid is only relevant by the ability to perform that kind of test in the given context.
+* We can speed up the network errors by using [`cy.clock`](https://docs.cypress.io/api/commands/clock) and [`cy.tick`](https://docs.cypress.io/api/commands/tick). When covering error case we also tell Cypress that uncaught exceptions are expected using `Cypress.on('uncaught:exception', () => false)`.
+* Remember that a component test is an independent, small scale application. Whatever is wrapping the base `App` component may need to be wrapping a component test mount as well (`Providers`, `ErrorBoundary`, `Suspense`, `Router` etc.).
