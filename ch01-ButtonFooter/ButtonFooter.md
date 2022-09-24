@@ -319,11 +319,7 @@ describe("ButtonFooter", () => {
 });
 ```
 
-<<<<<<< Updated upstream
 There are diverging opinions about code duplication in tests. Some prefer to have long tests with duplication, as opposed to using test hooks and helpers, so that failure diagnosis is easier. Always think about how the test may fail and if the refactor will make diagnosis harder. In this case, the two components will most likely fail the same way. If we keep the helper function nearby, we can refactor the test to be drier (Refactor 6).
-=======
-There are differing opinions on duplication in tests. Some prefer long tests, with duplication, without many test hooks, so that failure diagnosis is easier. In this case the way these components would fail would most likely be the same. If we can keep the helper function nearby, easy to access, we can refactor the test to be drier (Refactor 6).
->>>>>>> Stashed changes
 
 > Tip: use [`cy.pause()`](https://docs.cypress.io/api/commands/pause#Pause-and-step-through-each-click-command) to step through tests during diagnosis, or demos. Another useful diagnosis command is [ `cy.debug()`](https://docs.cypress.io/api/commands/debug#Syntax).
 
@@ -456,19 +452,9 @@ And we refactored the test to be leaner (Refactor 6).
 
 ## Takeaways
 
-<<<<<<< Updated upstream
 - Having first a failing test, ensures a fault-finding one.
 - TypeScript and ESlint can serve as "tests" that give us a Red.
 - Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
 - The RedGreenRefactor cycles do not always have to be in that order. It can be a few cycles of Red + Green, and then Refactor. Or it can be a Red, followed by a few Greens, and no Refactor. The key idea is to start with something failing, do the mimimum to get it to work, and then make it better.
 - Using `data-cy` attributes for selectors, with template literals and JSX, we can have a precise and effortless way to refer to a component or its variants (ex: save vs edit).
 - Refactoring can be applied to tests so long as they will not be detrimental to failure diagnosis, evaluate case by case.
-=======
-* Having first a failing test, ensures a fault-finding one.
-* TypeScript and ESlint can serve as "tests" that give us a Red.
-* Once we have a passing test, we can keep adding to it until we get a new failure, or until we want to refactor.
-* The RedGreenRefactor cycles do not always have to be in that order. It can be a few cycles of  Red + Green, and then Refactor. Or it can be a Red, followed by a few Greens, and no Refactor. 
-* The key idea is to start with something failing, do the minimal to get it to work, and then make it better.
-* Using `data-cy` attributes for selectors, with template literals and JSX, we can have a precise and effortless way to refer to a component or its variants (ex: save vs edit).
-* We can refactor tests, with a consideration on failure diagnosis, think , "How hard will it be to diagnose a failure here?".
->>>>>>> Stashed changes
