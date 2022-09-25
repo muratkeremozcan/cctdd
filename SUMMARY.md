@@ -41,4 +41,5 @@
   - [Suspense, ErrorBoundary, Concurrency](ch18-suspense-errBoundary-concurrency/suspense-errBoundary-concurrency.md)
 - [ch19-Villains-context-api](ch19-villains-context-api/README.md)
   - [Context API](ch19-Villains-context-api/Villains-context-api.md)
-- [ch30-Appendix](ch30-Appendix/combined-code-coverage.md)
+- [ch30-Appendix]
+  - [Code Coverage](ch30-Appendix/combined-code-coverage.md)

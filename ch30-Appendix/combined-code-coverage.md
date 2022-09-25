@@ -147,11 +147,11 @@ We need to tell Jest not to include coverage from `cy.ts*` files. This can be do
 
 ### Redundant source code
 
-In `Heroes.tsx` and `Villiains.tsx` we have a section 
+In `Heroes.tsx` and `Villiains.tsx` we have a section
 
 ```tsx
-if (status === 'loading') {
-  return <PageSpinner />
+if (status === "loading") {
+  return <PageSpinner />;
 }
 ```
 
