@@ -1,5 +1,9 @@
 Code coverage is not a be all, end all metric. However, we can empirically prove that practicing TDD at all levels can at the end yield a high amount of code coverage. We can also analyze where we may be missing coverage, or have redundant source code looking at analytics.
 
+## References
+
+This appendix is based on the blog post [Triple combined code coverage for React Apps with Jest, Cypress component and e2e tests, using Github Actions](https://dev.to/muratkeremozcan/triple-combined-code-coverage-for-react-apps-with-jest-cypress-component-and-e2e-tests-using-github-actions-1icc). We will be adapting it to TypeScript.
+
 ## Setup Cypress Component & E2e coverage
 
 ### Add the packages
@@ -12,7 +16,7 @@ yarn add -D @babel/plugin-transform-modules-commonjs @babel/preset-env @babel/pr
 
 ### Instrument the app for E2e
 
-This script is the same as the react version
+This script is the same as the JS version
 
 ```json
 "start": "react-scripts -r @cypress/instrument-cra start"
@@ -147,19 +151,15 @@ We need to tell Jest not to include coverage from `cy.ts*` files. This can be do
 
 ### Redundant source code
 
-In `Heroes.tsx` and `Villiains.tsx` we have a section
+In `Heroes.tsx` and `Villiains.tsx` we have a section 
 
 ```tsx
-if (status === "loading") {
-  return <PageSpinner />;
+if (status === 'loading') {
+  return <PageSpinner />
 }
 ```
 
 Code coverage points out that this line is not covered, although we have tests in `Hero.cy.tsx` etc. explicitly checking for the spinner. This is leftover code from prior to implementing ErrorBoundary. We can safely remove it.
-
-## References
-
-For more about code coverage refer to the blog series [Triple combined code coverage for React Apps with Jest, Cypress component and e2e tests, using Github Actions](https://dev.to/muratkeremozcan/triple-combined-code-coverage-for-react-apps-with-jest-cypress-component-and-e2e-tests-using-github-actions-1icc).
 
 ## Coverage measurements
 
