@@ -1,4 +1,8 @@
+# Combined Code Coverage
+
 Code coverage is not a be all, end all metric. However, we can empirically prove that practicing TDD at all levels can at the end yield a high amount of code coverage. We can also analyze where we may be missing coverage, or have redundant source code looking at analytics.
+
+We will acquire coverage from Cypress CT, Cypress E2e, as well as any Jest and / or RTL tests. We will then combine the coverage into a single report.
 
 ## References
 
@@ -151,11 +155,11 @@ We need to tell Jest not to include coverage from `cy.ts*` files. This can be do
 
 ### Redundant source code
 
-In `Heroes.tsx` and `Villiains.tsx` we have a section 
+In `Heroes.tsx` and `Villiains.tsx` we have a section
 
 ```tsx
-if (status === 'loading') {
-  return <PageSpinner />
+if (status === "loading") {
+  return <PageSpinner />;
 }
 ```
 
