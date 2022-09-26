@@ -12,7 +12,7 @@ In the later chapters when we tackle state and routing, Cypress e2e testing will
 
 In every chapter we will explicitly capture Red Green Refactor cycles of TDD, and will wrap with a 1:1 comparison of the Cypress component test to React Testing Library, followed by a summary & key takeaways. Every code sample is meant to be copy pastable and to give reproducible results, however the reader is encouraged to write and incrementally improve the code rather than copy paste. One final disclaimer; in the early chapters, to avoid major rehash of files and code later, we might make some decisions towards being more aligned with the final version of the app.
 
-Years ago John Papa created the same app in Angular, Vue and ReactJS, alas the React version is dated, and as the React community we know how frequently the meta changes. The approach gives readers coming from Vue and Angular to make 1:1 comparisons when writing Cypress component tests, and even a possibility to redo this exercise in one of those frameworks.
+Years ago John Papa created the same app in Angular, Vue and ReactJS, alas the React version is dated, and as the React community we know how frequently the meta changes. The approach gives readers coming from Vue and Angular the opportunity to make 1:1 comparisons when writing Cypress component tests, and even a possibility to redo this exercise in one of those frameworks.
 
 ## Acknowledgements
 
