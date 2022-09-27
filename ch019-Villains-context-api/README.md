@@ -1,6 +1,7 @@
 # Context API
 
-Before starting this section, make sure to go through the prerequisite [Update the current app to be more generic](./prerequisite.md) where we update the application to be more generic between Heroes and Villains.
+Before starting this section,
+make sure to go through the prerequisite[Update the current app to be more generic](./prerequisite.md) where we update the application to be more generic between Heroes and Villains.
 
 In this chapter we will mirror heroes into villains, and apply the Context api to villains. Context api lets us pass a value deep into the component tree, without explicitly threading it through every component. This will give us a nice contrast between passing the state as prop to child components, versus using the context to share the state down the component tree.
 
