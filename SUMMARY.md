@@ -2,7 +2,7 @@
 
 - [CCTDD: Cypress Component Test Driven Design](README.md)
 - [ch00-styles](ch00-styles/README.md)
-- [ch011-ButtonFooter](ch011-ButtonFooter/README.md)
+- [ch01-ButtonFooter](ch01-ButtonFooter/README.md)
 - [ch02-CardContent](ch02-cardcontent/README.md)
 - [ch03-HeaderBarBrand](ch03-headerbarbrand/README.md)
 - [ch04-HeaderBar](ch04-headerbar/README.md)
