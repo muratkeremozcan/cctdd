@@ -1951,53 +1951,53 @@ export default function HeroDetail() {
 
 We added a failing test to render `HeroDetail` together with `HeroList` (Red 1), and added the two components to the `Heroes` (Green 1).
 
-\
+</br>
 
 We wrote a test that scrutinizes the url when clicking the refresh button on `ListHeader` (Red 2).
 
 We used react-router's `useNavigate` to programmatically navigate to the url we need upon clicking refresh (Green 2).
 
-\
+</br>
 
 We added a similar test for the add button, scrutinizing the url, again utilizing `useNavigate` (Red 3, Green 3).
 
-\
+</br>
 
 We configured `react-router` for descendant routes, updated TS and the test to ensure everything still works (Red 4, Green 4). We refactored the test to be more cohesive and meaningful (Refactor 4).
 
 Recalling `react-router` chapter that routing is best tested with e2e, we added an e2e test to increase confidence in our component; verify more than the pathname, that the child components render a certain way. Our e2e test for create hero cancel flow worked great.
 
-\
+</br>
 
 Next, we saw a similarity in the edit hero cancel flow and added a failing e2e test for it When the edit button is clicked, we wanted to land on a route such as `/heroes/edit-hero/HeroAslaug`(Red 5)
 
 We utilized `useNavigate` in the already existing `handleSelectHero` function of `HeroList` component, hard coding the same url (Green 5).
 
-\
+</br>
 
 We added a test to check if we can edit any hero and end up at the correct route (Red 6).
 
 We removed the hard coded /HeroAslaug from the `navigate` at HeroList`, instead made` handleSelectHero`a function driven by a`heroId\` argument (Green 6).
 
-\
+</br>
 
 We enhanced the test to check that `HeroDetail` is displayed in addition to being at the correct route (Red 7)
 
 We made use of route parameter `:id` at `Heroes` edit-hero route. Once the `:id` was matching the `heroId` argument of `handleSelectHero`, we had a passing test (Green 7).
 
-\
+</br>
 
 We enhanced the test for conditional rendering of the id field; if there is a heroId, there should be a field (Red 8).
 
 We made use of `useParams` and matched the `:id` router parameter by using `const {id} = useParams()` at `HeroDetail`. In the conditional rendering we used `id` instead of `hero.id` (Green 8).
 
-\
+</br>
 
 We enhanced the test by checking that name and description are displayed in `HeroDetail` when editing a hero (Red 9).
 
 We decided to use search params in `HeroList` `handleSelectHero` instead of adding additional routes. `useSearchParams` helped grab the search parameters from the url (Green 9)
 
-\
+</br>
 
 We added enhanced the test to check that cancel button lands us on `HeroList` component from `HeroDetails` (Red 10).
 
@@ -2005,7 +2005,7 @@ We enhanced `HeroDetail` to utilize `useNavigate` to `/heroes` route when cancel
 
 We also added a test to the add hero flow, since the `HeroDetails` to `HeroList` navigation on `Cancel` is the same (Refactor 10).
 
-\
+</br>
 
 ## Takeaways
 

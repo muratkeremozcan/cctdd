@@ -796,31 +796,31 @@ Before tackling the list we decided to write test for a single list item.
 
 We wrote a test that renders the child component `CardContent`, and used hard-coded prop values to pass the test (Red 1, Green 1, Red 2, Green 2). We used a hard-coded data both in the component and the test to imitate state (Refactor 2)
 
-\
+</br>
 
 We added a test for rendering the other child component `ButtonFooter` (Red 3).
 
 We took advantage of TS to add the missing props (Green 3).
 
-\
+</br>
 
 We added tests for handling the delete and select hero events, spying on `console.log` (Red 4).
 
 We added functions that console.log the respective events, and we completed the single item with styles (Green 4, Refactor 4).
 
-\
+</br>
 
 ### The list
 
 We decided to pass an array of heroes to the component as a prop and saw TS error (Red 5). We used the `Hero[]` type in `HeroListProps` to resolve the TS error (Green 5).
 
-\
+</br>
 
 We removed the hard-coded `hero` object from the test, which caused a failure (Red 6), instead we referenced the first index of the `heroes` array with `heroes[0]` (Green 6).
 
 We contemplated about the pattern to render lists in React; using `map`. We modified the array index reference instead to the map callback argument, which is the `hero` object for each array item. We also began to use a Cypress fixture to render a larger list in the component test (Refactor 6).
 
-\
+</br>
 
 We added a test that verifies the length of the entire list (Red 7).
 

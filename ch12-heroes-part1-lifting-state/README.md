@@ -991,29 +991,29 @@ Continued after routing chapter.
 
 We added a test to render `ListHeader` child component (wrapped in `BrowserRouter`), and added to component with empty props to make the test pass (Red 1, Green 1).
 
-\
+</br>
 
 We added tests checking for console.logs upon clicking he add and refresh buttons (Red 2).
 
 We used functions that console.log the function name to make the tests Pass (Green 2, Refactor 2).
 
-\
+</br>
 
 We added a failing test for another child `HeroList` and included the child component in the render (Red 3, Green 3). We used hard coded data for the time being.
 
-\
+</br>
 
 We added a failing test for rendering the modal (Red 4). We added mostly empty string props to make the test work (Green 4).
 
 We wrote another test to be able to close the modal and got an error `func.apply is not a function`, which means our event handler isn't doing anything. To solve it we used console.logging for the event handler functions and refactored them (Green 5, Refactor 5).
 
-\
+</br>
 
 We wrote a pseudo test for the modal flow; with the initial step that the modal should be closed (Red 6).
 
 We hard coded a `false` with a blueprint for conditional rendering to make the test pass (Green 6).
 
-\
+</br>
 
 We added a new test to the flow; to check that the modal gets opened on delete button click (Red 7).
 
@@ -1023,13 +1023,13 @@ We realized that the children `HeroList` and `ModalYesNo` components share state
 
 As before, we refactored the click handler to its own function (Refactor 7).
 
-\
+</br>
 
 We wrote the next test in the modal flow, when `button-no` is clicked the modal should go away (Red 8).
 
 All we needed was to instead use `setShowModal(false)` instead of the existing console.log in the `handleCloseModal` function (Green 8).
 
-\
+</br>
 
 We added a test for the other branch of the modal; the delete flow (Red 9).
 

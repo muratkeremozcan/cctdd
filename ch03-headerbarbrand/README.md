@@ -488,13 +488,13 @@ We added a failing test for a link that goes to an href (Red 1).
 
 We added the link to the component (Green 1).
 
-\
+</br>
 
 The icon / link was not visible (Red 2).
 
 We added a `react-icon` and verified the visibility of the link (Green 2).
 
-\
+</br>
 
 We added a failing test for a new feature to open a new tab when clicking on the external link (Red 3).
 
@@ -502,19 +502,19 @@ We added the `target=_blank` and `rel` attributes to the component (Green 3).
 
 We added CSS to make the component look better (Refactor 3).
 
-\
+</br>
 
 We improved the test by making a deeper check and using the `data-cy` selector (Red 4).
 
 Subsequently we improved the component to pass the test (Green 4).
 
-\
+</br>
 
 We added `react-router` and used `NavLink` for the internal link. We got two failures, one for NavLink not having a `to` attribute, the other about the test not being wrapped by a `Router` component (Red 5).
 
 We add the `to` attribute to `NavLink`, and wrapped the mounted component in `BrowserRouter` (Green 5).
 
-\
+</br>
 
 Looking at the [Angular version of the app](https://papa-heroes-angular.azurewebsites.net/heroes), we added new tests for the DOM structure (Red 6).
 

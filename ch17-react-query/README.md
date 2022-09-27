@@ -2116,13 +2116,13 @@ describe("Heroes", () => {
 
 We replaced `useAxios` with `useGetHeroes` and saw performance increases thanks to caching.
 
-\
+</br>
 
 We wrote an e2e test to add a hero with the UI and check the redirect (Red 1).
 
 We wrote the `usePostHero` hook and used it in `HeroDetail` component (Green 1).
 
-\
+</br>
 
 We enhanced the test to check that the new hero is in the list (Red 2).
 
@@ -2132,7 +2132,7 @@ We refactored some of our tests into ui-integration tests since they did not nec
 
 We created commands to be able to use natural or stubbed data upon loading the baseUrl. We also ensured that the test are stateless; resetting the db before each test, and cleaning up after themselves using the api commands we created previously.
 
-\
+</br>
 
 We wrote an e2e test to navigate to a hero, edit it, verify the redirect and the updated data on the hero list (Red 3).
 
@@ -2140,7 +2140,7 @@ We wrote the `usePutHero` hook, with caching support for update, and used it in 
 
 We onced again refactored the tests that do not need the backend into ui-integration tests (Refactor 3).
 
-\
+</br>
 
 We wrote a test to delete a hero (Red 4)
 

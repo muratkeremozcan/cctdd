@@ -611,13 +611,13 @@ We started with a simple test that checks that the modal-root is rendered (Red 1
 
 We used a modal recipe and imported it to our component (Green 1).
 
-\
+</br>
 
 We decided on the skeleton of the component and wrote a test for it (Red 2).
 
 We refactored the component by adding styles. As in the previous chapters, we used visual aids for refactor increments (Refactor 3).
 
-\
+</br>
 
 We wrote a failing test with the 4 pieces of text in the modal, using hard coded values (Red 3)
 
@@ -625,13 +625,13 @@ We added the hard-coded strings into respective tags to pass the test (Green 3).
 
 Aided by the visuals of the component, we made a design choice to parameterize one of the strings, and leave the rest unchanged. It was of significance to be aided by the tool in the refactoring of the component as well as the design.
 
-\
+</br>
 
 We added a prop fo the parameterized string "message" and wrote a failing test for it (Red 4).
 
 We followed the pattern of adding a prop type, an argument to the component and using the value in the function return / render.
 
-\
+</br>
 
 We added click handler tests for the Yes and No buttons (Red 5, 6), and added the props to the component with types, args and onClick attributes (Green 5, 6).
 

@@ -537,7 +537,7 @@ We started with a failing test for a button click (Red 1, 2).
 
 We enhanced the component to have button with a `data-cy` selector (Green 1) and an onClick handler (Green 2).
 
-\
+</br>
 
 We repeated the same for a refresh button (Red 3, Green 3).
 
@@ -545,13 +545,13 @@ We enhanced the component with aria labels (Refactor 3).
 
 We used the test tool as the visual design tool, and added icons for add and refresh (Refactor 4).
 
-\
+</br>
 
 We added a failing test for a link that contains the title of the list (Red 5).
 
 We made the test pass with a hard-coded title in a link (Green 5).
 
-\
+</br>
 
 We recalled that we prefer to pass hard-coded values as props instead. We added the prop to the component mount in the test (Red 6).
 

@@ -1475,17 +1475,17 @@ export default function HeroDetail({ hero: initHero }: HeroDetailProps) {
 
 We added a failing test for the header tag and wrote a minimal component to pass the test (Red 1, Green 1).
 
-\
+</br>
 
 ### Form fields
 
 We wrote a test checking for 3 `InputDetail` components / form fields and enhanced the component (Red 2, Green 2).
 
-\
+</br>
 
 We took advantage of the TS compiler to add the mandatory props to `InputDetail` component (Red 3, Green 3).
 
-\
+</br>
 
 We took advantage of Cypress Testing Library commands to check for field values and placeholders (Red 4).
 
@@ -1499,7 +1499,7 @@ Consequently We used the visuals of the component test runner, as opposed to dri
 
 It is important to note that while we opted not to use the tests for an uncertain feature (the state), the fact that the component test is a mini UI application helped us progress.
 
-\
+</br>
 
 ### `footer`
 
@@ -1507,7 +1507,7 @@ We added a failing test for the `ButtonFooter` component, and enhanced the paren
 
 We took advantage of TS to add the missing props to `ButtonFooter` component (Green 5).
 
-\
+</br>
 
 We wrote a test checking that save and cancel click handlers are called when the respective buttons are pressed (Red 6).
 
@@ -1527,7 +1527,7 @@ We wrote tests for the 4 states the component, based on the variations of the `h
 
 We used `useState` hook to manage the component's internal (UI) state (Green 7).
 
-\
+</br>
 
 We wrote tests for handling name and description changes (Red 8).
 

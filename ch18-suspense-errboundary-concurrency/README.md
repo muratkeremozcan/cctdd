@@ -2379,7 +2379,7 @@ describe("Heroes", () => {
 
 We added new components to be used in the chapter.
 
-\
+</br>
 
 We added a new test for a hero search / filter feature (Red 1).
 
@@ -2387,23 +2387,24 @@ We added the implementation to `HeroList` component, and ensured that there are 
 
 We enhanced the component with `useTransition` to wrap the code we have control over (`setFilteredHeroes`) and `useDeferredValue` to wrap the value we do not have control over (`heroes` value being passed in as a prop) (Refactor 1).
 
-\
+</br>
 
 We added conditional rendering for the search-filter (Red 2, Green 2)
 
-\
+</br>
 
 We configured the application for `Suspense` and `ErrorBoundary`
 
-\
+</br>
 
 We wrote a non-200 / network error edge case for `HeroDetail` component which also hits the `Suspense` code using a `cy.intercept` delay option (Red 3, Red 4).
 
-We added conditional rendering to `HeroDetail` for loading and error conditions that may occur with a `POST` request (Green 3, Green 4)
+We added conditional rendering to `HeroDetail` for loading and error conditions that may occur with a `POST` request (Green 3,
+Green 4)
 
 In order to cover `PUT` request loading and error condition, we utilized a ui-integration test, since it is aware of a state that can trigger a back-end modification, but doesn't necessarily have to receive a 500 response from a real network to render the error (Refactor 4)
 
-\
+</br>
 
 We wrote a non-200 / network error edge case for `Heroes` component which is `HeroDetail`'s parent.' It uses `GET` request to get the data (Red 5).
 
@@ -2411,7 +2412,7 @@ We wrapped the component test mount in the fashion the root app is wrapped by `E
 
 We improved the component test to check for the spinner. Similar to the `POST` request error case, we covered the network error case for `DELETE` in a ui-integration test since it is aware of a state that can trigger a back-end modification, but doesn't necessarily have to receive a 500 response from a real network to render the error (Refactor 5).
 
-\
+</br>
 
 We modified the RTL unit test to work with `Suspense`
 

@@ -416,25 +416,25 @@ We looked at the requirement and wrote a minimal failing test that mounts a comp
 
 We added a component to pass the test (Green 1).
 
-<br />
+</br>
 
 We made the hard-coded string into a variable in the test, and made it so that it is a prop being passed in to `cy.mount`. (Red 2)
 
 We added the prop `label` and its type to the component (Green 2).
 
-<br />
+</br>
 
 We added an icon to the component as a new prop and got a failing test (Red 3).
 
 We enhanced the test to also use that new prop (Green 3).
 
-<br />
+</br>
 
 We added a test for the onClick event (Red 4).
 
 We enhanced the component to accommodate the new feature (Green 4).
 
-<br />
+</br>
 
 We decided to use a data-cy query for the button click (Red 5).
 
@@ -442,7 +442,7 @@ And enhanced the component with the data-cy attribute (Green 5, Refactor 5).
 
 We enhanced the test and made sure that the `svg` is rendered.
 
-<br />
+</br>
 
 We increased the test coverage by trying a different component; a Save button (Green 6).
 

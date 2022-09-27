@@ -439,7 +439,7 @@ We created a minimal component to pass the test (Green 1).
 
 We refactored the component to use NavLinks instead of anchor tags (Refactor 1)
 
-\
+</br>
 
 We had a test failure, aided by TS errors, about a missing an attribute from the NavLinks (Red 2).
 
@@ -447,7 +447,7 @@ The `to` attributes and their routes got added to the NavLinks (Green 2).
 
 Similar to the previous chapters, of significance here was TS also aiding us, alongside a failing test.
 
-\
+</br>
 
 Any time we have a green test, \*we can either refactor or add additional tests until we get another red\*.
 
@@ -455,7 +455,7 @@ Our preference is adding tests before styles.
 
 We added tests for route checks (Green 3), and refactored the test further (Refactor 3).
 
-\
+</br>
 
 Once we exhausted the tests we can think of, we added styles to the component and realized something off with visuals. Every link was active (Red 4).
 

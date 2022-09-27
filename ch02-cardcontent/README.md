@@ -187,21 +187,19 @@ describe("CardContent", () => {
 
 ## Summary
 
-\
-
 We started with a minimal test that renders the component (Red 1)
 
 We added the function component to make it green (Green1)
 
 We added a test to verify the render (Green 1)
 
-\
+</br>
 
 We wrote a failing test for the divs (Red 2).
 
 We hard-coded the values into the divs that we created for the component (Green2).
 
-\
+</br>
 
 We enhanced the test to render with props instead of hard-coded values (Red 3).
 
@@ -209,7 +207,7 @@ We added the props and their types to the component (Green 3).
 
 We added styles and classes to the component (Refactor 3).
 
-\
+</br>
 
 ## Takeaways
 

@@ -519,7 +519,7 @@ We hard-coded a value for the placeholder attribute to make the test pass (Green
 
 We refactored the hard-coded value to be instead a prop. We added the prop to the types, to the arguments of the component, and we used that argument for the value of the placeholder attribute (Refactor 1).
 
-\
+</br>
 
 We identified a usual pattern in forms; a `div` wrapping a `label` and an `input` with css and attributes. We wrote a failing test that checks for the field name under a label tag (Red 2).
 
@@ -527,19 +527,19 @@ We added the new prop to the types, to the arguments of the component, and to th
 
 We identified a key knowledge on forms that `input type="text"` makes an `input` a text input, `label htmlFor={someValue}` links the `label` and `input` tags. We enhanced the component with this knowledge (Refactor 2).
 
-\
+</br>
 
 We added a test for a new prop `value` / `defaultValue` (Red 3).
 
 As in the previous cycles, we made the test green by adding defaultValue to the type, to the arguments of the component, and to the `input` attribute (Green 3)
 
-\
+</br>
 
 We decided to add support for two variants of the component; one for writable fields, and the other for readonly fields. We added a new test verifying that a readonly field should not be modified (Red 4).
 
 As in the previous cycles, we added the readOnly type, the argument to the component, and the attribute with a matching prop (Green 4).
 
-\
+</br>
 
 Finally, we wanted an `onChange` prop for the field. We added a test checking that the `onChange` event is called while modifying the field (Red 5).
 

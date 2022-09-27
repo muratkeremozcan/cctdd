@@ -1092,7 +1092,7 @@ This required to seed the database with a `db.json` file, also to start the api 
 
 We started with a `GET` test to verify the seeded data. We modified the backend to use a unique prefix `api`, and verified heroes and villains (Red 1, Green 1, Refactor 1)
 
-\
+</br>
 
 We created a new test to add a hero. But because the test leaves state behind, rerunning it caused issues (Red 2).
 
@@ -1100,7 +1100,7 @@ We used `json-server-reset` to reset the db to its original form before each tes
 
 We enhanced the test with update and delete (Refactor 2)
 
-\
+</br>
 
 We added a test to ensure that the deleted entity is removed from the DB (Red 3).
 

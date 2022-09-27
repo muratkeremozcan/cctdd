@@ -206,7 +206,7 @@ const About = () => (
         them, uses CCTDD and takes variances along the way.
       </p>
 
-      <br />
+      </br>
       <h2 className="title">Live applications by John Papa</h2>
 
       <ul>
@@ -563,7 +563,7 @@ We added `BrowserRouter` wrapping the main component to pass the tests (Green 1,
 
 We added styles (Refactor 2).
 
-\
+</br>
 
 We added a failing test for an invalid route, rendering the `NotFound` component (Red 3).
 
@@ -571,13 +571,13 @@ We created the backbone of the route setup; a Routes component wrapping a Route 
 
 We added styles (Refactor 3).
 
-\
+</br>
 
 We added a test for a direct navigation to /about routes (Red 4).
 
 We setup the route for `About` component (Green 4).
 
-\
+</br>
 
 We added a test for the initial redirect of the app from / to /heroes (Red 5).
 
@@ -585,7 +585,7 @@ We enhanced the setup of routes with `Navigate` (Green 5).
 
 We added a test to check the direct navigation to /heroes, and another to test the route history (Refactor 5).
 
-\
+</br>
 
 We had a look at the test `App.cy.tsx`, and discussed test duplication. We deemed the test okay to keep as a sanity although it does not do anything extra over another component test or the e2e. The other reason to keep it was to start a study of 1:1 comparisons of CT with RTL. We updated the App RTL test to mirror the App sanity component test.
 

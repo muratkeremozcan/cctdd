@@ -845,11 +845,11 @@ We wrote a failing e2e test spying on an expected http GET call to `/heroes` rou
 
 We added a `useEffect` that gets the data with an `axios.get` call targeting the `/heroes` route (Green 1).
 
-\
+</br>
 
 We removed the json file import to get the data, utilized `useState`, while setting the hero array within the `useEffect` (Red 2, Green 2).
 
-\
+</br>
 
 Refactors:
 
@@ -859,13 +859,13 @@ We updated the component tests and the unit test to be network aware and stub th
 
 We updated the e2e tests to wait for the network so that ui assertions can begin after the DOM settles.
 
-\
+</br>
 
 We added a new e2e test to cover an alternate hero add flow; navigating to add hero from edit hero (Red 3).
 
 To address the failure, we managed the state where it is most relevant; `InputDetail` component. We only used `useState` and `useEffect`. (Green 3)
 
-\
+</br>
 
 Refactors:
 
@@ -873,7 +873,7 @@ We refactored the hard coded api route to an environment variable.
 
 We used a hook `useAxios` to yield the data at the component in an abstracted way.
 
-\
+</br>
 
 ## Takeaways
 
