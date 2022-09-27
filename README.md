@@ -36,6 +36,10 @@ Making comparisons and contrasts are a great way to learn new tech. There aren't
 
 This is a live book keeping updated and improved daily. We can have a Redux mirror, a Redux Toolkit mirror, an X-State mirror, perhaps one day we can migrate the application to NextJs. Expect to see more chapters in the future and learn more about front-end development together.
 
+## Questions, Comments & Feedback
+
+For all the above you can start a [discussion](https://github.com/muratkeremozcan/cctdd/discussions) or open an [issue](https://github.com/muratkeremozcan/cctdd/issues) at the [CCTDD GitHub repo](https://github.com/muratkeremozcan/cctdd).
+
 ## Setup
 
 Use this [template](https://github.com/muratkeremozcan/react-cypress-ts-template) to create a new repository. The repo will have React, TS, Cypress (e2e & ct), GHA with CI architecture, Jest, ESLint, Prettier, Renovate, Husky, Lint-staged, and most of the things you wish to have before getting started with a new project. Clone your new repo and install.
