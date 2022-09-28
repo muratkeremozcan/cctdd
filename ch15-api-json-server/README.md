@@ -5,8 +5,7 @@
 We have been using a json file `src/heroes/heroes.json` in the `Heroes` component. Our app is not talking to a backend. It would be ideal to have a fake REST API instead, and `json-server` can enable that. Add the following packages to our app:
 
 ```bash
-yarn add json-server
-yarn add -D concurrently
+yarn add -D concurrently json-server
 ```
 
 Create a `db.json` file in the project root and copy the below content to it.
