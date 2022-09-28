@@ -92,7 +92,7 @@ Update `package.json` scripts as below. The changes make it so that the UI serve
   "dev": "concurrently -k yarn:start yarn:start:api",
   "build": "react-scripts build",
   "test": "react-scripts test",
-  "test:coverage": "jest --watchAll=false --coverage",
+  "test:coverage": "yarn test --watchAll=false --coverage",
   "test:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --watch --runInBand",
   "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|json|css|md|mdx|html)\"",
   "lint": "eslint . --cache-location node_modules/.cache/eslint",
