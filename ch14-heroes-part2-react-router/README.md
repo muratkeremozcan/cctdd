@@ -1850,6 +1850,12 @@ export default function ButtonFooter({
 }
 ```
 
+#### Aside: the 3 event types in React
+
+- Change event (_onChange_): `React.ChangeEvent<HTMLInputElement>`
+- Click event (_onClick_): `React.MouseEvent<HTMLButtonElement>`
+- Form submit event (_onSubmit_): `React.FormEvent`
+
 ### Custom hook
 
 We can extract the 3 lines related to `useSearchParams` into a custom hook, which can help us abstract it away.
