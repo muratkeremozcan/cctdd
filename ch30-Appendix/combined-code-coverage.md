@@ -45,7 +45,7 @@ This is similar to the JS version, with TS and TSX included.
 
 There are 3 key differences on the TS version of the configuration. In the beginning of the file we have to import `@cypress/instrument-cra`. We need to include `@babel/preset-typescript` in the module presets, and the test property has to be TS instead of JS.
 
-```js
+```javascript
 import "@cypress/instrument-cra";
 import { defineConfig } from "cypress";
 const codeCoverageTask = require("@bahmutov/cypress-code-coverage/plugin");
