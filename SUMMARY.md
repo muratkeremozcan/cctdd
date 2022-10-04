@@ -24,3 +24,4 @@
   - [Prerequisite](ch19-Villains-context-api/prerequisite.md)
 - [ch30-Appendix](ch30-Appendix/README.md)
   - [Combined Code Coverage](ch30-Appendix/combined-code-coverage.md)
+  - [React Dev Tools](ch30-Appendix/react-dev-tools.md)
