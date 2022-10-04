@@ -26,3 +26,18 @@ To install the extension:
 Mind that the components from the Cypress runner will also be showing. Another shortcoming is that components do not get cleaned up when running components back to back
 
 ![react-dev-tools](../img/react-dev-tools.png)
+
+Here are video instructions for enabling React Dev Tools in Cypress: https://youtu.be/mluEiIYtyE0
+
+```html
+<iframe
+    width="640"
+    height="480"
+    src="https://www.youtube.com/watch?v=mluEiIYtyE0"
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen
+>
+</iframe>
+```
+
