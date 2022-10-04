@@ -2,7 +2,9 @@
 
 It is highly desirable to have a tool that allows us to inspect the React component tree in the browser. This is especially useful when we are trying to debug a problem in the UI. It is even more desirable when a single component is being served. The React Dev Tools extension is a great tool for this purpose.
 
-To install the extension:
+Here are [video instructions]( https://youtu.be/mluEiIYtyE0) for enabling React Dev Tools in Cypress.
+
+Steps:
 
 1. Open the Cypress runner, either an e2e test or component test will do. We recommend component since that is more relevant to the React Dev Tools extension.
 
@@ -23,21 +25,7 @@ To install the extension:
 
 4. Start a component test, and verify that React Dev Tools loads.
 
-Mind that the components from the Cypress runner will also be showing. Another shortcoming is that components do not get cleaned up when running components back to back
+Mind that the components from the Cypress runner will also be showing. Another shortcoming is that components do not get cleaned up when running components back to back.
 
 ![react-dev-tools](../img/react-dev-tools.png)
-
-Here are video instructions for enabling React Dev Tools in Cypress: https://youtu.be/mluEiIYtyE0
-
-```html
-<iframe
-    width="640"
-    height="480"
-    src="https://www.youtube.com/watch?v=mluEiIYtyE0"
-    frameborder="0"
-    allow="autoplay; encrypted-media"
-    allowfullscreen
->
-</iframe>
-```
 
