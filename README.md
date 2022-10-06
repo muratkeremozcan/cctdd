@@ -44,7 +44,7 @@ For all the above you can start a [discussion](https://github.com/muratkeremozca
 
 Use this [template](https://github.com/muratkeremozcan/react-cypress-ts-template) to create a new repository. The repo will have React, TS, Cypress (e2e & ct), GHA with CI architecture, Jest, ESLint, Prettier, Renovate, Husky, Lint-staged, and most of the things you wish to have before getting started with a new project. Clone your new repo and install.
 
-For the instructions we will assume that the repo you created is https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts, **where you can find the final version of the app**. The examples use `yarn` , and `npm` can be used if preferred.
+For the instructions we will assume that the repo you created is [https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts](https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts), **where you can find the final version of the app**. The examples use `yarn` , and `npm` can be used if preferred.
 
 ```bash
 git clone https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts
