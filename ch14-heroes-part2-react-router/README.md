@@ -1852,8 +1852,8 @@ export default function ButtonFooter({
 
 #### Aside: the 3 event types in React
 
-- Change event (_onChange_): `React.ChangeEvent<HTMLInputElement>`
-- Click event (_onClick_): `React.MouseEvent<HTMLButtonElement>`
+- Change event (_onChange_): `React.ChangeEvent<HTMLInputElement>`, `React.ChangeEvent<HTMLSelectElement>`
+- Click event (_onClick_): `React.MouseEvent<HTMLButtonElement>`, `React.MouseEvent<HTMLAnchorElement>`
 - Form submit event (_onSubmit_): `React.FormEvent`
 
 ### Custom hook
