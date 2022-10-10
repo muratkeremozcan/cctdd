@@ -32,7 +32,7 @@ These are the resources that have inspired the content of this book.
 
 ## GitHub repos with Cypress Component + e2e examples
 
-[tour-of-heroes-react-cypress-ts - the final app built this book](https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts)
+[tour-of-heroes-react-cypress-ts - the final app built in this book](https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts)
 
 [react-hooks-in-action-with-cypress - the final app built in React Hooks in Action book](https://github.com/muratkeremozcan/react-hooks-in-action-with-cypress)
 
