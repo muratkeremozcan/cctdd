@@ -22,13 +22,23 @@ Many thanks to the reviewers of this content; [Matthew Schrepel](https://www.lin
 
 These are the resources that have inspired the content of this book.
 
-[React Hooks in Action - Manning Publications](https://www.manning.com/books/react-hooks-in-action)
+[React Hooks in Action - John Larsen](https://www.manning.com/books/react-hooks-in-action)
 
-[Epic React by Kent C. Dodds](https://epicreact.dev/)
+[Epic React - Kent C. Dodds](https://epicreact.dev/)
 
 [Learning TDD - Saleem Siddiqui](https://www.oreilly.com/library/view/learning-test-driven-development/9781098106461/)
 
-[Tour of Heroes by John Papa](https://papa-heroes-angular.azurewebsites.net/heroes)
+[Tour of Heroes - John Papa](https://papa-heroes-angular.azurewebsites.net/heroes)
+
+## GitHub repos with Cypress Component + e2e examples
+
+[tour-of-heroes-react-cypress-ts - the final app built this book](https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts)
+
+[react-hooks-in-action-with-cypress - the final app built in React Hooks in Action book](https://github.com/muratkeremozcan/react-hooks-in-action-with-cypress)
+
+[bookshelf - the final app from Epic React](https://github.com/muratkeremozcan/bookshelf)
+
+[365+ Cypress component test examples](https://github.com/muratkeremozcan/cypress-react-component-test-examples)
 
 ## Future
 
