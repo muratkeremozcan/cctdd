@@ -685,7 +685,9 @@ Mirror it to `./cypress/fixtures/db.json` so that we can reset the db state corr
 
 ### Mirror the components
 
-We are creating 3 components for boys, mirroring heroes group as they are.
+We are creating 3 components for boys, mirroring heroes group as they are. We also have to update some of the base components. 
+
+For `ListHeader` only the type changes for `title`. 
 
 ```tsx
 // src/components/ListHeader.tsx
@@ -724,6 +726,8 @@ export default function ListHeader({
   );
 }
 ```
+
+The rest are mirrors. Create a folder `./src/boys/` and the 3 mirror files under it.
 
 ```tsx
 // src/boys/BoyDetail.tsx
@@ -1427,66 +1431,66 @@ The routes-nav needs a new test to cover villains route.
 
 ```typescript
 // cypress/e2e/routes-nav.cy.ts
-describe("routes navigation (ui-integration)", () => {
+describe('routes navigation (ui-integration)', () => {
   beforeEach(() => {
-    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
-      fixture: "heroes",
-    }).as("stubbedGetHeroes");
-  });
-  it("should land on baseUrl, redirect to /heroes", () => {
-    cy.visit("/");
-    cy.getByCy("header-bar").should("be.visible");
-    cy.getByCy("nav-bar").should("be.visible");
+    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
+      fixture: 'heroes',
+    }).as('stubbedGetHeroes')
+  })
+  it('should land on baseUrl, redirect to /heroes', () => {
+    cy.visit('/')
+    cy.getByCy('header-bar').should('be.visible')
+    cy.getByCy('nav-bar').should('be.visible')
 
-    cy.location('pathname').should('eq' "/heroes");
-    cy.getByCy("heroes").should("be.visible");
-  });
+    cy.location('pathname').should('eq', '/heroes')
+    cy.getByCy('heroes').should('be.visible')
+  })
 
-  it("should direct-navigate to /heroes", () => {
-    const route = "/heroes";
-    cy.visit(route);
-    cy.location('pathname').should('eq' route);
-    cy.getByCy("heroes").should("be.visible");
-  });
+  it('should direct-navigate to /heroes', () => {
+    const route = '/heroes'
+    cy.visit(route)
+    cy.location('pathname').should('eq', route)
+    cy.getByCy('heroes').should('be.visible')
+  })
 
-  it("should direct-navigate to /villains", () => {
-    const route = "/villains";
-    cy.visit(route);
-    cy.location('pathname').should('eq' route);
-    cy.getByCy("villains").should("be.visible");
-  });
+  it('should direct-navigate to /villains', () => {
+    const route = '/villains'
+    cy.visit(route)
+    cy.location('pathname').should('eq', route)
+    cy.getByCy('villains').should('be.visible')
+  })
 
-  it("should land on not found when visiting an non-existing route", () => {
-    const route = "/route48";
-    cy.visit(route);
-    cy.location('pathname').should('eq' route);
-    cy.getByCy("not-found").should("be.visible");
-  });
+  it('should land on not found when visiting an non-existing route', () => {
+    const route = '/route48'
+    cy.visit(route)
+    cy.location('pathname').should('eq', route)
+    cy.getByCy('not-found').should('be.visible')
+  })
 
-  it("should direct-navigate to about", () => {
-    const route = "/about";
-    cy.visit(route);
-    cy.location('pathname').should('eq' route);
-    cy.getByCy("about").contains("CCTDD");
-  });
+  it('should direct-navigate to about', () => {
+    const route = '/about'
+    cy.visit(route)
+    cy.location('pathname').should('eq', route)
+    cy.getByCy('about').contains('CCTDD')
+  })
 
-  it("should cover route history with browser back and forward", () => {
-    cy.visit("/about");
-    const routes = ["villains", "heroes", "about"];
+  it('should cover route history with browser back and forward', () => {
+    cy.visit('/about')
+    const routes = ['villains', 'heroes', 'about']
     cy.wrap(routes).each((route: string) =>
-      cy.get(`[href="/${route}"]`).click()
-    );
+      cy.get(`[href="/${route}"]`).click(),
+    )
 
-    const lastIndex = routes.length - 1;
-    cy.location('pathname').should('eq' routes[lastIndex]);
-    cy.go("back");
-    cy.location('pathname').should('eq' routes[lastIndex - 1]);
-    cy.go("back");
-    cy.location('pathname').should('eq' routes[lastIndex - 2]);
-    cy.go("forward").go("forward");
-    cy.location('pathname').should('eq' routes[lastIndex]);
-  });
-});
+    const lastIndex = routes.length - 1
+    cy.location('pathname').should('eq', routes[lastIndex])
+    cy.go('back')
+    cy.location('pathname').should('eq', routes[lastIndex - 1])
+    cy.go('back')
+    cy.location('pathname').should('eq', routes[lastIndex - 2])
+    cy.go('forward').go('forward')
+    cy.location('pathname').should('eq', routes[lastIndex])
+  })
+})
 ```
 
 ### Mirror the Cypress component tests
@@ -1528,7 +1532,7 @@ describe("NavBar", () => {
 });
 ```
 
-For `App.cy` we need to intercept the `boys` route and add a check for `boys`
+For `App.cy` we need to intercept the `boys` route and add a check for `boys`.
 
 ```tsx
 // src/App.cy.tsx
@@ -1565,6 +1569,8 @@ describe("ct sanity", () => {
   });
 });
 ```
+
+We need 3 new component tests for the 3 components under `boys`.
 
 ```tsx
 // src/boys/BoyDetail.cy.tsx
@@ -1764,6 +1770,8 @@ describe("Boys", () => {
 ```
 
 ### Mirror the RTL tests
+
+We just need to replicate what was done with Cy CT to RTL.
 
 ```tsx
 // src/boys/BoyDetail.test.tsx
@@ -2002,6 +2010,8 @@ describe("Boys", () => {
 });
 ```
 
+`App.test` needs a `msw` handler and a new route check.
+
 ```tsx
 // src/App.test.tsx
 iimport {act, render, screen} from '@testing-library/react'
@@ -2054,43 +2064,45 @@ describe('200 flow', () => {
 })
 ```
 
+`Navbar.test` needs the same `routes` variable update to include `Boys`.
+
 ```tsx
 // src/components/NavBar.test.tsx
-import NavBar from "./NavBar";
-import { render, screen, within, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { BrowserRouter } from "react-router-dom";
-import "@testing-library/jest-dom";
+import NavBar from './NavBar'
+import {render, screen, within, waitFor} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import {BrowserRouter} from 'react-router-dom'
+import '@testing-library/jest-dom'
 
-const routes = ["Heroes", "Villains", "Boys", "About"];
-const link = async (name: string) => screen.findByRole("link", { name });
+const routes = ['Heroes', 'Villains', 'Boys', 'About']
+const link = async (name: string) => screen.findByRole('link', {name})
 
-describe("NavBar", () => {
+describe('NavBar', () => {
   beforeEach(() => {
     render(
       <BrowserRouter>
         <NavBar />
-      </BrowserRouter>
-    );
-  });
+      </BrowserRouter>,
+    )
+  })
 
-  it("should verify route layout", async () => {
-    expect(await screen.findByText("Menu")).toBeVisible();
+  it('should verify route layout', async () => {
+    expect(await screen.findByText('Menu')).toBeVisible()
 
-    const menuList = await screen.findByTestId("menu-list");
-    routes.map((route) => within(menuList).getByText(route));
-  });
+    const menuList = await screen.findByTestId('menu-list')
+    routes.map(route => within(menuList).getByText(route))
+  })
 
-  it.each(routes)("should navigate to route %s", async (route: string) => {
-    const activeRouteLink = await link(route);
-    userEvent.click(activeRouteLink);
-    await waitFor(() => expect(activeRouteLink).toHaveClass("active-link"));
-    expect(window.location.pathname).toEqual(`/${route.toLowerCase()}`);
+  it.each(routes)('should navigate to route %s', async (route: string) => {
+    const activeRouteLink = await link(route)
+    userEvent.click(activeRouteLink)
+    await waitFor(() => expect(activeRouteLink).toHaveClass('active-link'))
+    expect(window.location.pathname).toEqual(`/${route.toLowerCase()}`)
 
-    const remainingRoutes = routes.filter((r) => r !== route);
-    remainingRoutes.map(async (inActiveRoute) => {
-      expect(await link(inActiveRoute)).not.toHaveClass("active-link");
-    });
-  });
-});
+    const remainingRoutes = routes.filter(r => r !== route)
+    remainingRoutes.map(async inActiveRoute => {
+      expect(await link(inActiveRoute)).not.toHaveClass('active-link')
+    })
+  })
+})
 ```
