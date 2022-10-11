@@ -1482,13 +1482,13 @@ describe('routes navigation (ui-integration)', () => {
     )
 
     const lastIndex = routes.length - 1
-    cy.location('pathname').should('eq', routes[lastIndex])
+    cy.location('pathname').should('include', routes[lastIndex])
     cy.go('back')
-    cy.location('pathname').should('eq', routes[lastIndex - 1])
+    cy.location('pathname').should('include', routes[lastIndex - 1])
     cy.go('back')
-    cy.location('pathname').should('eq', routes[lastIndex - 2])
+    cy.location('pathname').should('include', routes[lastIndex - 2])
     cy.go('forward').go('forward')
-    cy.location('pathname').should('eq', routes[lastIndex])
+    cy.location('pathname').should('include', routes[lastIndex])
   })
 })
 ```
