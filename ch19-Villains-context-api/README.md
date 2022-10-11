@@ -61,15 +61,15 @@ Here are the general steps with Context api:
 
 5.  Call useContext with the shared context, assign to a var:
 
-```tsx
-// src/villains/VillainList.tsx (the sharee)
-import { useContext } from "react";
-import { VillainsContext } from "./VillainsContext";
+    ```tsx
+    // src/villains/VillainList.tsx (the sharee)
+    import { useContext } from "react";
+    import { VillainsContext } from "./VillainsContext";
 
-// ..
+    // ..
 
-const villains = useContext(VillainsContext);
-```
+    const villains = useContext(VillainsContext);
+    ```
 
 Following step 1, we create the context at a new file, and export it:
 
