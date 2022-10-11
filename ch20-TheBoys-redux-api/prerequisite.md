@@ -98,7 +98,10 @@ export function useDeleteEntity(entityType: EntityType) {
 }
 ```
 
-`useGetEntities` just needs the comment to be updated *Helper for GET to `/heroes` or `/villains` routes* to *Helper for GET to `/heroes` ,  `/villains` /boys`  routes*.
+`useGetEntities` just needs the comment to be updated
+
+* *Helper for GET to `/heroes` or `/villains` routes* 
+* *Helper for GET to `/heroes` ,  `/villains` or  `/boys`  routes*.
 
 `usePostEntity` gets updated for `Boy`.
 
