@@ -685,9 +685,9 @@ Mirror it to `./cypress/fixtures/db.json` so that we can reset the db state corr
 
 ### Mirror the components
 
-We are creating 3 components for boys, mirroring heroes group as they are. We also have to update some of the base components. 
+We are creating 3 components for boys, mirroring heroes group as they are. We also have to update some of the base components.
 
-For `ListHeader` only the type changes for `title`. 
+For `ListHeader` only the type changes for `title`.
 
 ```tsx
 // src/components/ListHeader.tsx
@@ -1431,66 +1431,66 @@ The routes-nav needs a new test to cover villains route.
 
 ```typescript
 // cypress/e2e/routes-nav.cy.ts
-describe('routes navigation (ui-integration)', () => {
+describe("routes navigation (ui-integration)", () => {
   beforeEach(() => {
-    cy.intercept('GET', `${Cypress.env('API_URL')}/heroes`, {
-      fixture: 'heroes',
-    }).as('stubbedGetHeroes')
-  })
-  it('should land on baseUrl, redirect to /heroes', () => {
-    cy.visit('/')
-    cy.getByCy('header-bar').should('be.visible')
-    cy.getByCy('nav-bar').should('be.visible')
+    cy.intercept("GET", `${Cypress.env("API_URL")}/heroes`, {
+      fixture: "heroes",
+    }).as("stubbedGetHeroes");
+  });
+  it("should land on baseUrl, redirect to /heroes", () => {
+    cy.visit("/");
+    cy.getByCy("header-bar").should("be.visible");
+    cy.getByCy("nav-bar").should("be.visible");
 
-    cy.location('pathname').should('eq', '/heroes')
-    cy.getByCy('heroes').should('be.visible')
-  })
+    cy.location("pathname").should("eq", "/heroes");
+    cy.getByCy("heroes").should("be.visible");
+  });
 
-  it('should direct-navigate to /heroes', () => {
-    const route = '/heroes'
-    cy.visit(route)
-    cy.location('pathname').should('eq', route)
-    cy.getByCy('heroes').should('be.visible')
-  })
+  it("should direct-navigate to /heroes", () => {
+    const route = "/heroes";
+    cy.visit(route);
+    cy.location("pathname").should("eq", route);
+    cy.getByCy("heroes").should("be.visible");
+  });
 
-  it('should direct-navigate to /villains', () => {
-    const route = '/villains'
-    cy.visit(route)
-    cy.location('pathname').should('eq', route)
-    cy.getByCy('villains').should('be.visible')
-  })
+  it("should direct-navigate to /villains", () => {
+    const route = "/villains";
+    cy.visit(route);
+    cy.location("pathname").should("eq", route);
+    cy.getByCy("villains").should("be.visible");
+  });
 
-  it('should land on not found when visiting an non-existing route', () => {
-    const route = '/route48'
-    cy.visit(route)
-    cy.location('pathname').should('eq', route)
-    cy.getByCy('not-found').should('be.visible')
-  })
+  it("should land on not found when visiting an non-existing route", () => {
+    const route = "/route48";
+    cy.visit(route);
+    cy.location("pathname").should("eq", route);
+    cy.getByCy("not-found").should("be.visible");
+  });
 
-  it('should direct-navigate to about', () => {
-    const route = '/about'
-    cy.visit(route)
-    cy.location('pathname').should('eq', route)
-    cy.getByCy('about').contains('CCTDD')
-  })
+  it("should direct-navigate to about", () => {
+    const route = "/about";
+    cy.visit(route);
+    cy.location("pathname").should("eq", route);
+    cy.getByCy("about").contains("CCTDD");
+  });
 
-  it('should cover route history with browser back and forward', () => {
-    cy.visit('/about')
-    const routes = ['villains', 'heroes', 'about']
+  it("should cover route history with browser back and forward", () => {
+    cy.visit("/about");
+    const routes = ["villains", "heroes", "about"];
     cy.wrap(routes).each((route: string) =>
-      cy.get(`[href="/${route}"]`).click(),
-    )
+      cy.get(`[href="/${route}"]`).click()
+    );
 
-    const lastIndex = routes.length - 1
-    cy.location('pathname').should('include', routes[lastIndex])
-    cy.go('back')
-    cy.location('pathname').should('include', routes[lastIndex - 1])
-    cy.go('back')
-    cy.location('pathname').should('include', routes[lastIndex - 2])
-    cy.go('forward').go('forward')
-    cy.location('pathname').should('include', routes[lastIndex])
-  })
-})
+    const lastIndex = routes.length - 1;
+    cy.location("pathname").should("include", routes[lastIndex]);
+    cy.go("back");
+    cy.location("pathname").should("include", routes[lastIndex - 1]);
+    cy.go("back");
+    cy.location("pathname").should("include", routes[lastIndex - 2]);
+    cy.go("forward").go("forward");
+    cy.location("pathname").should("include", routes[lastIndex]);
+  });
+});
 ```
 
 ### Mirror the Cypress component tests
@@ -1642,57 +1642,65 @@ describe("BoyDetail", () => {
 
 ```tsx
 // src/boys/BoyList.cy.tsx
-import BoyDetail from "./BoyDetail";
+import BoyList from "./BoyList";
 import "../styles.scss";
+import boys from "../../cypress/fixtures/boys.json";
 
-describe("BoyDetail", () => {
-  beforeEach(() => {
-    cy.wrappedMount(<BoyDetail />);
+describe("BoyList", () => {
+  it("no boys should not display a list nor search bar", () => {
+    cy.wrappedMount(
+      <BoyList boys={[]} handleDeleteBoy={cy.stub().as("handleDeleteBoy")} />
+    );
+
+    cy.getByCy("boy-list").should("exist");
+    cy.getByCyLike("boy-list-item").should("not.exist");
+    cy.getByCy("search").should("not.exist");
   });
 
-  it("should handle Save", () => {
-    cy.intercept("POST", "*", { statusCode: 200 }).as("postBoy");
-    cy.getByCy("save-button").click();
-    cy.wait("@postBoy");
-  });
+  context("with boys in the list", () => {
+    beforeEach(() => {
+      cy.wrappedMount(
+        <BoyList
+          boys={boys}
+          handleDeleteBoy={cy.stub().as("handleDeleteBoy")}
+        />
+      );
+    });
 
-  it("should handle non-200 Save", () => {
-    cy.intercept("POST", "*", { statusCode: 400, delay: 100 }).as("postBoy");
-    cy.getByCy("save-button").click();
-    cy.getByCy("spinner");
-    cy.wait("@postBoy");
-    cy.getByCy("error");
-  });
+    it("should render the boy layout", () => {
+      cy.getByCyLike("boy-list-item").should("have.length", boys.length);
 
-  it("should handle Cancel", () => {
-    cy.getByCy("cancel-button").click();
-    cy.location("pathname").should("eq", "/boys");
-  });
+      cy.getByCy("card-content");
+      cy.contains(boys[0].name);
+      cy.contains(boys[0].description);
 
-  it("should handle name change", () => {
-    const newBoyName = "abc";
-    cy.getByCy("input-detail-name").type(newBoyName);
+      cy.get("footer").within(() => {
+        cy.getByCy("delete-button");
+        cy.getByCy("edit-button");
+      });
+    });
 
-    cy.findByDisplayValue(newBoyName).should("be.visible");
-  });
+    it("should search and filter boy by name and description", () => {
+      cy.getByCy("search").type(boys[0].name);
+      cy.getByCyLike("boy-list-item")
+        .should("have.length", 1)
+        .contains(boys[0].name);
 
-  it("should handle description change", () => {
-    const newBoyDescription = "123";
-    cy.getByCy("input-detail-description").type(newBoyDescription);
+      cy.getByCy("search").clear().type(boys[2].description);
+      cy.getByCyLike("boy-list-item")
+        .should("have.length", 1)
+        .contains(boys[2].description);
+    });
 
-    cy.findByDisplayValue(newBoyDescription).should("be.visible");
-  });
+    it("should handle delete", () => {
+      cy.getByCy("delete-button").first().click();
+      cy.get("@handleDeleteBoy").should("have.been.called");
+    });
 
-  it("id: false, name: false - should verify the minimal state of the component", () => {
-    cy.get("p").then(($el) => cy.wrap($el.text()).should("equal", ""));
-    cy.getByCyLike("input-detail").should("have.length", 2);
-    cy.getByCy("input-detail-id").should("not.exist");
-
-    cy.findByPlaceholderText("e.g. Colleen").should("be.visible");
-    cy.findByPlaceholderText("e.g. dance fight!").should("be.visible");
-
-    cy.getByCy("save-button").should("be.visible");
-    cy.getByCy("cancel-button").should("be.visible");
+    it("should handle edit", () => {
+      cy.getByCy("edit-button").first().click();
+      cy.location("pathname").should("eq", "/boys/edit-boy/" + boys[0].id);
+    });
   });
 });
 ```
@@ -2068,41 +2076,41 @@ describe('200 flow', () => {
 
 ```tsx
 // src/components/NavBar.test.tsx
-import NavBar from './NavBar'
-import {render, screen, within, waitFor} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import {BrowserRouter} from 'react-router-dom'
-import '@testing-library/jest-dom'
+import NavBar from "./NavBar";
+import { render, screen, within, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { BrowserRouter } from "react-router-dom";
+import "@testing-library/jest-dom";
 
-const routes = ['Heroes', 'Villains', 'Boys', 'About']
-const link = async (name: string) => screen.findByRole('link', {name})
+const routes = ["Heroes", "Villains", "Boys", "About"];
+const link = async (name: string) => screen.findByRole("link", { name });
 
-describe('NavBar', () => {
+describe("NavBar", () => {
   beforeEach(() => {
     render(
       <BrowserRouter>
         <NavBar />
-      </BrowserRouter>,
-    )
-  })
+      </BrowserRouter>
+    );
+  });
 
-  it('should verify route layout', async () => {
-    expect(await screen.findByText('Menu')).toBeVisible()
+  it("should verify route layout", async () => {
+    expect(await screen.findByText("Menu")).toBeVisible();
 
-    const menuList = await screen.findByTestId('menu-list')
-    routes.map(route => within(menuList).getByText(route))
-  })
+    const menuList = await screen.findByTestId("menu-list");
+    routes.map((route) => within(menuList).getByText(route));
+  });
 
-  it.each(routes)('should navigate to route %s', async (route: string) => {
-    const activeRouteLink = await link(route)
-    userEvent.click(activeRouteLink)
-    await waitFor(() => expect(activeRouteLink).toHaveClass('active-link'))
-    expect(window.location.pathname).toEqual(`/${route.toLowerCase()}`)
+  it.each(routes)("should navigate to route %s", async (route: string) => {
+    const activeRouteLink = await link(route);
+    userEvent.click(activeRouteLink);
+    await waitFor(() => expect(activeRouteLink).toHaveClass("active-link"));
+    expect(window.location.pathname).toEqual(`/${route.toLowerCase()}`);
 
-    const remainingRoutes = routes.filter(r => r !== route)
-    remainingRoutes.map(async inActiveRoute => {
-      expect(await link(inActiveRoute)).not.toHaveClass('active-link')
-    })
-  })
-})
+    const remainingRoutes = routes.filter((r) => r !== route);
+    remainingRoutes.map(async (inActiveRoute) => {
+      expect(await link(inActiveRoute)).not.toHaveClass("active-link");
+    });
+  });
+});
 ```
