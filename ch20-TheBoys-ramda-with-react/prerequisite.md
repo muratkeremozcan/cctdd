@@ -2108,7 +2108,7 @@ describe("NavBar", () => {
     expect(window.location.pathname).toEqual(`/${route.toLowerCase()}`);
 
     const remainingRoutes = routes.filter((r) => r !== route);
-    remainingRoutes.map(async (inActiveRoute) => {
+    remainingRoutes.forEach(async (inActiveRoute) => {
       expect(await link(inActiveRoute)).not.toHaveClass("active-link");
     });
   });
