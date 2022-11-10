@@ -358,6 +358,8 @@ import NavBar from "./NavBar";
 import { BrowserRouter } from "react-router-dom";
 import "../styles.scss";
 
+const routes = ["heroes", "villains", "boys", "about"];
+
 describe("NavBar", () => {
   it("should navigate to the correct routes", () => {
     cy.mount(
@@ -366,21 +368,18 @@ describe("NavBar", () => {
       </BrowserRouter>
     );
 
-    cy.getByCy("nav-bar").within(() => {
-      cy.contains("p", "Menu");
+    cy.contains("p", "Menu");
+    cy.getByCy("menu-list").children().should("have.length", routes.length);
 
-      const routes = ["heroes", "villains", "about"];
-      cy.getByCy("menu-list").children().should("have.length", routes.length);
+    routes.forEach((route: string) => {
+      cy.get(`[href="/${route}"]`)
+        .contains(route, { matchCase: false })
+        .click()
+        .should("have.class", "active-link")
+        .siblings()
+        .should("not.have.class", "active-link");
 
-      routes.forEach((route: string) => {
-        cy.get(`[href="/${route}"]`)
-          .contains(route, {matchCase: false})
-          .click()
-          .should('have.class', 'active-link')
-          .siblings()
-          .should('not.have.class', 'active-link')
-
-        cy.url().should('contain', route)
+      cy.url().should("contain", route);
     });
   });
 });
@@ -398,8 +397,7 @@ import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 
-const routes = ["Heroes", "Villains", "About"];
-const link = async (name: string) => screen.findByRole("link", { name });
+const routes = ["Heroes", "Villains", "Boys", "About"];
 
 describe("NavBar", () => {
   beforeEach(() => {
@@ -414,10 +412,13 @@ describe("NavBar", () => {
     expect(await screen.findByText("Menu")).toBeVisible();
 
     const menuList = await screen.findByTestId("menu-list");
-    routes.map((route) => within(menuList).getByText(route));
+    expect(within(menuList).queryAllByRole("link").length).toBe(routes.length);
+
+    routes.forEach((route) => within(menuList).getByText(route));
   });
 
   it.each(routes)("should navigate to route %s", async (route: string) => {
+    const link = async (name: string) => screen.findByRole("link", { name });
     const activeRouteLink = await link(route);
     userEvent.click(activeRouteLink);
     await waitFor(() => expect(activeRouteLink).toHaveClass("active-link"));
