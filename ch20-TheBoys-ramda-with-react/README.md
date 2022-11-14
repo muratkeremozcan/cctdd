@@ -153,7 +153,7 @@ greetCurriedR("hello")("John")("Doe"); //? hello, John Doe
 greetCurriedR("hello", "John", "Doe"); //? hello, John Doe
 ```
 
-How is currying used in the React world? You will recall that we used currying in `Heroes.tsx`, `HeroesList.tsx`, `VillianList.tsx` `VillainList.tsx` components. We did not use Ramda curry, because it would be too complex at that time. You can optionally change them now. We can utilize Ramda curry in vs the classic curry in `BoysList.tsx` components for sure.
+How is currying used in the React world? You will recall that we used currying in `Heroes.tsx`, `HeroesList.tsx`, `VillianList.tsx` `VillainList.tsx` components. We did not use Ramda curry, because it would be too complex at that time. You can optionally change them now.
 
 ```tsx
 // src/heroes/Heroes.tsx
@@ -193,7 +193,7 @@ const handleSelectHero = curry(
 );
 ```
 
-Let's make sure to use the
+Let's make sure to use Ramda curry in the `BoysList.tsx` components for sure.
 
 ```tsx
 // src/boys/BoyList.tsx
