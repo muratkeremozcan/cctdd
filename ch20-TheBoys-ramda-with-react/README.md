@@ -980,4 +980,6 @@ export default function BoyList({ boys, handleDeleteBoy }: BoyListProps) {
 }
 ```
 
-Our tooling and tests are still intact after the changes, and that is the luxury of having very high coverage. We were able to apply daring, experimental refactors to our code, and are still confident that nothing regressed while the code became easier to read and work with using FP and Ramda. You can find the PR for this section at https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts/pull/110.
+Our tooling and tests are still intact after the changes, and that is the luxury of having very high coverage. We were able to apply daring, experimental refactors to our code, and are still confident that nothing regressed while the code became easier to read and work with using FP and Ramda. 
+
+To take a look at the before and after, you can find the PR for this section at https://github.com/muratkeremozcan/tour-of-heroes-react-cypress-ts/pull/110. You can also compare the Boys group of files to Heroes or Villains.
