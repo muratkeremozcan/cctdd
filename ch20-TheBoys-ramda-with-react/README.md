@@ -8,7 +8,7 @@ If we take a look at the recent proposals to EcmaScript, we will realize that FP
 
 We have a React app with solid tests built by TDD at all levels and 100% code coverage. In the prerequisites we mirrored `Heroes` group of entities to `Boys`. Now we can try out daring refactors and see if things still work.
 
-While the literature on FP is plenty, there is a lack of real world examples of using FP and Ramda, especially with TypeScript. We are hopeful that this section addresses that gap.
+While the literature on FP is plenty, there is a lack of real world examples of using FP and Ramda, especially with modern React and TypeScript. We are hopeful that this section addresses that gap.
 
 ## Functional Programming JS resources
 
@@ -94,6 +94,127 @@ const addNewBoy = partial(navigate, ["/boys/add-boy"]);
 
 const handleRefresh = () => navigate("/boys");
 const handleRefresh = partial(navigate, ["/boys"]);
+```
+
+## [`curry`](https://ramdajs.com/docs/#curry)
+
+No FP premier is complete without curry. We will cover a simple example here, and recall how we used classic curry before.
+
+```typescript
+// standalone example, copy paste anywhere
+import { compose, curry } from "ramda";
+
+const add = (x: number, y: number) => x + y;
+
+const result = add(2, 3);
+result; //? 5
+
+// What happens if you don’t give add its required parameters?
+// What if you give too little?
+// add(2) // NaN
+
+// So we curry: return a new function per expected parameter
+const addCurried = curry(add); // just wrap the function in curry
+const addCurriedClassic = (x: number) => (y: number) => x + y;
+
+addCurried(2); // waits to be executed
+addCurried(2)(3); //? 5
+addCurriedClassic(2); // waits to be executed
+addCurriedClassic(2)(3); //? 5
+
+const add3 = (x: number, y: number, z: number) => x + y + z;
+const greetFirstLast = (greeting: string, first: string, last: string) =>
+  `${greeting}, ${first} ${last}`;
+
+const add3CurriedClassic = (x: number) => (y: number) => (z: number) =>
+  x + y + z;
+const greetCurriedClassic =
+  (greeting: string) => (first: string) => (last: string) =>
+    `${greeting}, ${first} ${last}`;
+const add3CurriedR = curry(add3); // just wrap the function
+const greetCurriedR = curry(greetFirstLast); // just wrap the function
+
+add3CurriedClassic(2)(3); // waiting to be executed
+add3CurriedClassic(2)(3)(4); //?
+// add3CurriedClassic(2, 3, 4) // doesn't work
+
+greetCurriedClassic("hello"); // waiting to be executed
+greetCurriedClassic("hello")("John")("Doe"); //?
+// greetCurriedClassic('hello', 'John', 'Doe') // doesn't work
+
+add3CurriedR(2)(3); // waiting to be executed
+add3CurriedR(2)(3)(4); //? 9
+// the advantage of ramda is flexible arity
+add3CurriedR(2, 3, 4); //?
+
+greetCurriedR("hello", "John"); // waiting to be executed
+greetCurriedR("hello")("John")("Doe"); //? hello, John Doe
+// flexible arity with ramda!
+greetCurriedR("hello", "John", "Doe"); //? hello, John Doe
+```
+
+How is currying used in the React world? You will recall that we used currying in `Heroes.tsx`, `HeroesList.tsx`, `VillianList.tsx` `VillainList.tsx` components. We did not use Ramda curry, because it would be too complex at that time. You can optionally change them now. We can utilize Ramda curry in vs the classic curry in `BoysList.tsx` components for sure.
+
+```tsx
+// src/heroes/Heroes.tsx
+import { curry } from "ramda";
+
+// currying: the outer fn takes our custom arg and returns a fn that takes the event
+const handleDeleteHero = (hero: Hero) => () => {
+  setHeroToDelete(hero);
+  setShowModal(true);
+};
+// we can use Ramda curry instead, we have to pass the unused event argument though
+const handleDeleteHero = curry((hero: Hero, e: React.MouseEvent) => {
+  setHeroToDelete(hero);
+  setShowModal(true);
+});
+```
+
+```tsx
+// src/heroes/HeroList.tsx
+import { curry } from "ramda";
+
+// currying: the outer fn takes our custom arg and returns a fn that takes the event
+const handleSelectHero = (heroId: string) => () => {
+  const hero = deferredHeroes.find((h: Hero) => h.id === heroId);
+  navigate(
+    `/heroes/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`
+  );
+};
+// we can use Ramda curry instead, we have to pass the unused event argument though
+const handleSelectHero = curry(
+  (heroId: string, e: MouseEvent<HTMLButtonElement>) => {
+    const hero = deferredHeroes.find((h: Hero) => h.id === heroId);
+    navigate(
+      `/heroes/edit-hero/${hero?.id}?name=${hero?.name}&description=${hero?.description}`
+    );
+  }
+);
+```
+
+Let's make sure to use the
+
+```tsx
+// src/boys/BoyList.tsx
+import { curry } from "ramda";
+
+// currying: the outer fn takes our custom arg and returns a fn that takes the event
+const handleSelectBoy = (boyId: string) => () => {
+  const boy = deferredBoys.find((b: Boy) => b.id === boyId);
+  navigate(
+    `/boys/edit-boy/${boy?.id}?name=${boy?.name}&description=${boy?.description}`
+  );
+};
+// we can use Ramda curry instead, we have to pass the unused event argument though
+const handleSelectBoy = curry(
+  (boyId: string, e: MouseEvent<HTMLButtonElement>) => {
+    const boy = deferredBoys.find((b: Boy) => b.id === boyId);
+    navigate(
+      `/boys/edit-boy/${boy?.id}?name=${boy?.name}&description=${boy?.description}`
+    );
+  }
+);
 ```
 
 ## [`ifElse`](https://ramdajs.com/docs/#ifElse)
@@ -491,8 +612,8 @@ Here is a quick comparison of `.toLowerCase()` vs `toLower()` and `.indexOf()` v
 
 ```typescript
 "HELLO".toLowerCase(); // hello
-toLower("HELLO") // hello
-  [(1, 2, 3, 4)].indexOf(3); // 2
+toLower("HELLO"); // hello
+[1, 2, 3, 4].indexOf(3); // 2
 indexOf(3, [1, 2, 3, 4]); // 2
 ```
 
@@ -552,7 +673,7 @@ const propertyExistsNew = curry((searchField: string, item: Hero) =>
 Our final function `searchExistsC` uses the previous two. Here are the classic and Ramda versions side by side. We can evolve the Ramda version to take 1 argument, and get the data later whenever it is available.
 
 ```typescript
-// data.filter(callback)
+// (2 args) => data.filter(callback)
 const searchPropertiesC = (data: Hero[], searchField: string) =>
   [...data].filter((item: Hero) => propertyExistsC(searchField, item));
 
@@ -680,6 +801,7 @@ Here is the comparison of the key changes:
 
 ```tsx
 // src/boys/BoyList.tsx (before)
+
 /** returns a boolean whether the boy properties exist in the search field */
 const searchExists = (searchProperty: BoyProperty, searchField: string) =>
   String(searchProperty).toLowerCase().indexOf(searchField.toLowerCase()) !==
@@ -780,12 +902,14 @@ export default function BoyList({ boys, handleDeleteBoy }: BoyListProps) {
   // needed to refresh the list after deleting a boy
   useEffect(() => setFilteredBoys(deferredBoys), [deferredBoys]);
 
-  const handleSelectBoy = (boyId: string) => () => {
-    const boy = deferredBoys.find((b: Boy) => b.id === boyId);
-    navigate(
-      `/boys/edit-boy/${boy?.id}?name=${boy?.name}&description=${boy?.description}`
-    );
-  };
+  const handleSelectBoy = curry(
+    (boyId: string, e: MouseEvent<HTMLButtonElement>) => {
+      const boy = deferredBoys.find((b: Boy) => b.id === boyId);
+      navigate(
+        `/boys/edit-boy/${boy?.id}?name=${boy?.name}&description=${boy?.description}`
+      );
+    }
+  );
 
   /** returns a boolean whether the boy properties exist in the search field */
   const searchExists = (searchField: string, searchProperty: BoyProperty) =>
