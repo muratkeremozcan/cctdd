@@ -332,10 +332,12 @@ describe("VillainList", () => {
       cy.contains(villains[0].name);
       cy.contains(villains[0].description);
 
-      cy.get("footer").within(() => {
-        cy.getByCy("delete-button");
-        cy.getByCy("edit-button");
-      });
+      cy.get("footer")
+        .first()
+        .within(() => {
+          cy.getByCy("delete-button");
+          cy.getByCy("edit-button");
+        });
     });
 
     it("should search and filter villain by name and description", () => {
@@ -614,10 +616,12 @@ describe("VillainList", () => {
       cy.contains(villains[0].name);
       cy.contains(villains[0].description);
 
-      cy.get("footer").within(() => {
-        cy.getByCy("delete-button");
-        cy.getByCy("edit-button");
-      });
+      cy.get("footer")
+        .first()
+        .within(() => {
+          cy.getByCy("delete-button");
+          cy.getByCy("edit-button");
+        });
     });
 
     it("should search and filter villain by name and description", () => {

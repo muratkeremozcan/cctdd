@@ -641,10 +641,12 @@ describe("HeroList", () => {
     cy.contains(heroes[0].name);
     cy.contains(heroes[0].description);
 
-    cy.get("footer").within(() => {
-      cy.getByCy("delete-button");
-      cy.getByCy("edit-button");
-    });
+    cy.get("footer")
+      .first()
+      .within(() => {
+        cy.getByCy("delete-button");
+        cy.getByCy("edit-button");
+      });
   });
 
   context("handleDelete, handleEdit", () => {

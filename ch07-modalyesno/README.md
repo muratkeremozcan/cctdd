@@ -102,12 +102,14 @@ describe("ModalYesNo", () => {
 
     cy.get("#modal-root").should("exist");
 
-    cy.get("div").within(() => {
-      cy.get("header");
-      cy.get("section");
-      cy.get("footer");
-      cy.get("button").should("have.length", 2);
-    });
+    cy.get("div")
+      .last()
+      .within(() => {
+        cy.get("header");
+        cy.get("section");
+        cy.get("footer");
+        cy.get("button").should("have.length", 2);
+      });
   });
 });
 ```
@@ -175,12 +177,14 @@ describe("ModalYesNo", () => {
 
     cy.get("#modal-root").should("exist");
 
-    cy.get("div").within(() => {
-      cy.get("header");
-      cy.get("section");
-      cy.get("footer");
-      cy.get("button").should("have.length", 2);
-    });
+    cy.get("div")
+      .last()
+      .within(() => {
+        cy.get("header");
+        cy.get("section");
+        cy.get("footer");
+        cy.get("button").should("have.length", 2);
+      });
   });
 });
 ```
@@ -202,13 +206,15 @@ describe("ModalYesNo", () => {
 
     cy.get("#modal-root").should("exist");
 
-    cy.get("div").within(() => {
-      cy.get("header").contains("Confirm");
-      cy.get("section").contains("Are you sure?");
-      cy.get("footer");
-      cy.getByCy("button-yes").contains("Yes");
-      cy.getByCy("button-no").contains("No");
-    });
+    cy.get("div")
+      .last()
+      .within(() => {
+        cy.get("header").contains("Confirm");
+        cy.get("section").contains("Are you sure?");
+        cy.get("footer");
+        cy.getByCy("button-yes").contains("Yes");
+        cy.getByCy("button-no").contains("No");
+      });
   });
 });
 ```
@@ -265,13 +271,15 @@ describe("ModalYesNo", () => {
 
     cy.get("#modal-root").should("exist");
 
-    cy.get("div").within(() => {
-      cy.get("header").contains("Confirm");
-      cy.get("section").contains(message);
-      cy.get("footer");
-      cy.getByCy("button-yes").contains("Yes");
-      cy.getByCy("button-no").contains("No");
-    });
+    cy.get("div")
+      .last()
+      .within(() => {
+        cy.get("header").contains("Confirm");
+        cy.get("section").contains(message);
+        cy.get("footer");
+        cy.getByCy("button-yes").contains("Yes");
+        cy.getByCy("button-no").contains("No");
+      });
   });
 });
 ```
@@ -328,13 +336,15 @@ describe("ModalYesNo", () => {
 
     cy.get("#modal-root").should("exist");
 
-    cy.get("div").within(() => {
-      cy.get("header").contains("Confirm");
-      cy.get("section").contains(message);
-      cy.get("footer");
-      cy.getByCy("button-yes").contains("Yes");
-      cy.getByCy("button-no").contains("No");
-    });
+    cy.get("div")
+      .last()
+      .within(() => {
+        cy.get("header").contains("Confirm");
+        cy.get("section").contains(message);
+        cy.get("footer");
+        cy.getByCy("button-yes").contains("Yes");
+        cy.getByCy("button-no").contains("No");
+      });
 
     cy.getByCy("button-yes").click();
     cy.get("@onYes").should("be.called");
@@ -403,13 +413,15 @@ describe("ModalYesNo", () => {
 
     cy.get("#modal-root").should("exist");
 
-    cy.get("div").within(() => {
-      cy.get("header").contains("Confirm");
-      cy.get("section").contains(message);
-      cy.get("footer");
-      cy.getByCy("button-yes").contains("Yes");
-      cy.getByCy("button-no").contains("No");
-    });
+    cy.get("div")
+      .last()
+      .within(() => {
+        cy.get("header").contains("Confirm");
+        cy.get("section").contains(message);
+        cy.get("footer");
+        cy.getByCy("button-yes").contains("Yes");
+        cy.getByCy("button-no").contains("No");
+      });
 
     cy.getByCy("button-yes").click();
     cy.get("@onYes").should("be.called");
@@ -483,13 +495,15 @@ describe("ModalYesNo", () => {
 
     cy.get("#modal-root").should("exist");
 
-    cy.get("div").within(() => {
-      cy.get("header").contains("Confirm");
-      cy.get("section").contains(message);
-      cy.get("footer");
-      cy.getByCy("button-yes").contains("Yes");
-      cy.getByCy("button-no").contains("No");
-    });
+    cy.get("div")
+      .last()
+      .within(() => {
+        cy.get("header").contains("Confirm");
+        cy.get("section").contains(message);
+        cy.get("footer");
+        cy.getByCy("button-yes").contains("Yes");
+        cy.getByCy("button-no").contains("No");
+      });
 
     cy.getByCy("button-yes").click();
     cy.get("@onYes").should("be.called");

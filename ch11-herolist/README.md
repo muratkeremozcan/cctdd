@@ -164,10 +164,12 @@ describe("HeroList", () => {
     cy.contains(hero.name);
     cy.contains(hero.description);
 
-    cy.get("footer").within(() => {
-      cy.getByCy("delete-button");
-      cy.getByCy("edit-button");
-    });
+    cy.get("footer")
+      .first()
+      .within(() => {
+        cy.getByCy("delete-button");
+        cy.getByCy("edit-button");
+      });
   });
 });
 ```
@@ -249,10 +251,12 @@ describe("HeroList", () => {
     cy.contains(hero.name);
     cy.contains(hero.description);
 
-    cy.get("footer").within(() => {
-      cy.getByCy("delete-button");
-      cy.getByCy("edit-button");
-    });
+    cy.get("footer")
+      .first()
+      .within(() => {
+        cy.getByCy("delete-button");
+        cy.getByCy("edit-button");
+      });
   });
 
   context("handleDeleteHero, handleSelectHero", () => {
@@ -426,10 +430,12 @@ describe("HeroList", () => {
     cy.contains(heroes[0].name);
     cy.contains(heroes[0].description);
 
-    cy.get("footer").within(() => {
-      cy.getByCy("delete-button");
-      cy.getByCy("edit-button");
-    });
+    cy.get("footer").first().within(()
+      .first()
+      .within(() => {
+        cy.getByCy("delete-button");
+        cy.getByCy("edit-button");
+      });
   });
 
   context("handleDelete, handleEdit", () => {
@@ -643,10 +649,12 @@ describe("HeroList", () => {
     cy.contains(heroes[0].name);
     cy.contains(heroes[0].description);
 
-    cy.get("footer").within(() => {
-      cy.getByCy("delete-button");
-      cy.getByCy("edit-button");
-    });
+    cy.get("footer")
+      .first()
+      .within(() => {
+        cy.getByCy("delete-button");
+        cy.getByCy("edit-button");
+      });
   });
 
   context("handleDelete, handleEdit", () => {
@@ -689,10 +697,12 @@ describe("HeroList", () => {
     cy.contains(heroes[0].name);
     cy.contains(heroes[0].description);
 
-    cy.get("footer").within(() => {
-      cy.getByCy("delete-button");
-      cy.getByCy("edit-button");
-    });
+    cy.get("footer")
+      .first()
+      .within(() => {
+        cy.getByCy("delete-button");
+        cy.getByCy("edit-button");
+      });
   });
 
   context("handleDelete, handleEdit", () => {

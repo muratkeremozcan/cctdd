@@ -1670,7 +1670,7 @@ describe("BoyList", () => {
       cy.contains(boys[0].name);
       cy.contains(boys[0].description);
 
-      cy.get("footer").within(() => {
+      cy.get("footer").first().within(() => {
         cy.getByCy("delete-button");
         cy.getByCy("edit-button");
       });
