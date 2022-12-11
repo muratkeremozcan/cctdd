@@ -900,7 +900,7 @@ Use the Suspense and ErrorBoundary components to wrap UI that contains one or mo
 
 For setup, install `react-error-boundary` with `yarn add react-error-boundary`and update `App.tsx` like so:
 
-```
+```tsx
 // src/App.tsx
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -1091,7 +1091,7 @@ if (status === "loading" || isUpdating) {
 }
 ```
 
-```
+```tsx
 // src/heroes/HeroDetail.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -1199,7 +1199,7 @@ if (postError || isUpdateError) {
 }
 ```
 
-```
+```tsx
 // src/heroes/HeroDetail.tsx
 import { useState, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
