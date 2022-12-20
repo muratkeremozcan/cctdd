@@ -1487,6 +1487,7 @@ describe("Villains", () => {
       cy.tick(5000);
       cy.wait("@notFound");
     });
+    cy.tick(5000);
 
     cy.getByCy("error");
   });

@@ -1726,6 +1726,7 @@ it.only("should go through the error flow", () => {
     cy.tick(5000);
     cy.wait("@notFound");
   });
+  cy.tick(5000);
 
   cy.getByCy("error");
 });
@@ -1876,6 +1877,7 @@ describe("Heroes", () => {
       cy.tick(5000);
       cy.wait("@notFound");
     });
+    cy.tick(5000);
 
     cy.getByCy("error");
   });
