@@ -1670,10 +1670,12 @@ describe("BoyList", () => {
       cy.contains(boys[0].name);
       cy.contains(boys[0].description);
 
-      cy.get("footer").first().within(() => {
-        cy.getByCy("delete-button");
-        cy.getByCy("edit-button");
-      });
+      cy.get("footer")
+        .first()
+        .within(() => {
+          cy.getByCy("delete-button");
+          cy.getByCy("edit-button");
+        });
     });
 
     it("should search and filter boy by name and description", () => {
@@ -1718,10 +1720,11 @@ describe("Boys", () => {
     cy.wrappedMount(<Boys />);
 
     cy.getByCy("page-spinner").should("be.visible");
-    Cypress._.times(4, () => {
+    Cypress._.times(3, () => {
       cy.tick(5000);
       cy.wait("@notFound");
     });
+    cy.tick(5000);
 
     cy.getByCy("error");
   });

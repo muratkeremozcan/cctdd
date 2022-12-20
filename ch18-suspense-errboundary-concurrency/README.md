@@ -1722,7 +1722,7 @@ it.only("should go through the error flow", () => {
 
   mounter(new QueryClient());
 
-  Cypress._.times(4, () => {
+  Cypress._.times(3, () => {
     cy.tick(5000);
     cy.wait("@notFound");
   });
@@ -1872,7 +1872,7 @@ describe("Heroes", () => {
     cy.wrappedMount(<Heroes />);
 
     cy.getByCy("page-spinner").should("be.visible");
-    Cypress._.times(4, () => {
+    Cypress._.times(3, () => {
       cy.tick(5000);
       cy.wait("@notFound");
     });
