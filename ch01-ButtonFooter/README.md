@@ -368,6 +368,22 @@ describe("ButtonFooter", () => {
 });
 ```
 
+## Important note about styles
+
+Instead of having to import styles in every component test file, we can import them at `cypress/support/component.ts` file (or `.tsx` in the future), which runs before every component test.
+
+Note that in the upcoming examples, we will explicitly import the styles for TDD purposes. In the final project, you can remove the imports from the test files and have it only at the support file.
+
+```tsx
+// cypress/support/component.tsx
+import "./commands";
+import { mount } from "cypress/react18";
+// import styles here so you don't have to import in each component test
+import "../../src/styles.scss";
+
+Cypress.Commands.add("mount", mount);
+```
+
 ![ButtonFooter-Refactor6](../img/ButtonFooter-Refactor6.png)
 
 ## React Testing Library (RTL) version of the component test
