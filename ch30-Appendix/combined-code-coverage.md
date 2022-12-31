@@ -233,7 +233,7 @@ const log = (x: string) => {
 export default log;
 ```
 
-We can not convert the config file to to TS, import plugins and tasks from the files. This way, in the future, if we have new plugins or tasks, the config file does not have to change. Also helps us if we have multiple config files for deployments (dev, stage, prod, etc.).
+We can now convert the config file to TS, import plugins and tasks from the files. This way, in the future, if we have new plugins or tasks, the config file does not have to change. Also helps us if we have multiple config files for deployments (dev, stage, prod, etc.), none of them have to change in case the plugins change.
 
 ```typescript
 import "@cypress/instrument-cra";
