@@ -172,3 +172,141 @@ TDD has ensured that we build and explore the application through tests, coverin
 ![3-cov](../img/3-cov.png)
 
 ![combined-100](../img/combined-100.png)
+
+## Addendum
+
+Check out [Optimizing and simplifying Cypress config for scale](https://www.youtube.com/watch?v=9d7zDR3eyB8). Based on the optimizations, the final app can refactored to make the config file even simpler.
+
+We create one file for plugins, `cypress/support/plugins.ts` ,and have all plugins in there.
+
+```typescript
+// cypress/support/plugins.ts
+const cyCodeCov = require("@bahmutov/cypress-code-coverage/plugin");
+
+/**
+ * The collection of plugins to use with Cypress
+ * @param on  `on` is used to hook into various events Cypress emits
+ * @param config  `config` is the resolved Cypress config
+ */
+export default function plugins(
+  on: Cypress.PluginEvents,
+  config: Cypress.PluginConfigOptions
+) {
+  return {
+    // add plugins here
+    // ...cyDataSession(on, config), // example
+    ...cyCodeCov(on, config),
+  };
+}
+```
+
+Similarly, and as an extra, we can create one file for tasks, `cypress/support/tasks.ts` , and have all tasks in there.
+
+```typescript
+// cypress/support/tasks.ts
+import log from "./log";
+
+/**
+ * The collection of tasks to use with `cy.task()`
+ * @param on `on` is used to hook into various events Cypress emits
+ */
+export default function tasks(on: Cypress.PluginEvents) {
+  on("task", { log });
+
+  // add tasks here
+}
+```
+
+Let's have a simple task, some Node code, to log out to the CLI when running `cy.task('log', 'hello')` . This logs out to the CLI as opposed to browser console.
+
+```typescript
+// cypress/support/log.ts
+// an example task that logs to the CLI console
+// cy.task('log', 'e2e sanity passed')
+
+const log = (x: string) => {
+  console.log(x);
+
+  return null;
+};
+
+export default log;
+```
+
+We can not convert the config file to to TS, import plugins and tasks from the files. This way, in the future, if we have new plugins or tasks, the config file does not have to change. Also helps us if we have multiple config files for deployments (dev, stage, prod, etc.).
+
+```typescript
+import "@cypress/instrument-cra";
+import { defineConfig } from "cypress";
+import plugins from "./cypress/support/plugins";
+import tasks from "./cypress/support/tasks";
+
+export default defineConfig({
+  projectId: "7mypio",
+  // @ts-expect-error - experimentalSingleTabRunMode is not in the type definition
+  experimentalSingleTabRunMode: true,
+  retries: {
+    runMode: 2,
+    openMode: 0,
+  },
+  env: {
+    API_URL: "http://localhost:4000/api",
+  },
+  e2e: {
+    specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
+    baseUrl: "http://localhost:3000",
+    setupNodeEvents(on, config) {
+      tasks(on);
+      return plugins(on, config);
+    },
+  },
+
+  component: {
+    setupNodeEvents(on, config) {
+      tasks(on);
+      return plugins(on, config);
+    },
+    specPattern: "src/**/*.cy.{js,jsx,ts,tsx}",
+    devServer: {
+      framework: "create-react-app",
+      bundler: "webpack",
+      // here are the additional settings from Gleb's instructions
+      webpackConfig: {
+        // workaround to react-scripts 5 issue https://github.com/cypress-io/cypress/issues/22762
+        devServer: {
+          port: 3001,
+        },
+        mode: "development",
+        devtool: false,
+        module: {
+          rules: [
+            // application and Cypress files are bundled like React components
+            // and instrumented using the babel-plugin-istanbul
+            {
+              test: /\.ts$/,
+              exclude: /node_modules/,
+              use: {
+                loader: "babel-loader",
+                options: {
+                  presets: [
+                    "@babel/preset-env",
+                    "@babel/preset-react",
+                    "@babel/preset-typescript",
+                  ],
+                  plugins: [
+                    "istanbul",
+                    [
+                      "@babel/plugin-transform-modules-commonjs",
+                      { loose: true },
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+});
+```
