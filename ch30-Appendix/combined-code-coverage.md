@@ -325,7 +325,7 @@ For Vite code coverage with Vite, we need a lot less packages:
 yarn add -D  istanbul istanbul-lib-coverage nyc vite-plugin-istanbul
 ```
 
-## ### Instrument the app (helps both E2e and CT)
+### Instrument the app (helps both E2e and CT)
 
 We need to modify our `vite.config.ts` slightly.
 
