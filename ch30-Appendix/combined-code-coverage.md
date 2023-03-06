@@ -169,11 +169,11 @@ Code coverage points out that this line is not covered, although we have tests i
 
 TDD has ensured that we build and explore the application through tests, covering everything that matters. Code coverage has not been a thought while practicing TDD, but TDD helped us gain 100% combined code coverage at the end. Here is the [CodeCov report](https://app.codecov.io/gh/muratkeremozcan/tour-of-heroes-react-cypress-ts?search=&trend=24%20hours):
 
-![3-cov](../img/3-cov.png)
+![3-cov](img/3-cov.png)
 
-![combined-100](../img/combined-100.png)
+![combined-100](img/combined-100.png)
 
-## Addendum
+## Addendum - configuration refactor
 
 Check out [Optimizing and simplifying Cypress config for scale](https://www.youtube.com/watch?v=9d7zDR3eyB8). Based on the optimizations, the final app can refactored to make the config file even simpler.
 
@@ -310,3 +310,64 @@ export default defineConfig({
   },
 });
 ```
+
+## Addendum - code coverage with Vite instead of Webpack
+
+Assume that instead of Webpack, we want to use Vite. We replicated the original Webpack version of the Tour of Heroes repo in Vite over at [tour-of-heroes-react-vite-cypress-ts](https://github.com/muratkeremozcan/tour-of-heroes-react-vite-cypress-ts). We want to have Cypress e2e and component test coverage with Vite. 
+
+TL, DR; check out the [PR for setting up Cypress e2e + CT code coverage with Vite](https://github.com/muratkeremozcan/tour-of-heroes-react-vite-cypress-ts/pull/2/files).
+
+### Add the packages
+
+For Vite code coverage with Vite, we need a lot less packages:
+
+```bash
+yarn add -D  istanbul istanbul-lib-coverage nyc vite-plugin-istanbul
+```
+
+## Instrument the app (helps both E2e and CT)
+
+We need to modify our `vite.config.ts` slightly.
+
+```typescript
+import {defineConfig} from 'vite'
+import path from 'path'
+import react from '@vitejs/plugin-react'
+import istanbul from 'vite-plugin-istanbul'
+
+export default defineConfig({
+  // need to add sourcemaps 
+  build: {
+    sourcemap: true,
+  },
+  // plugins: [react()], // modify the plugins as below
+  plugins: [
+    react(),
+    istanbul({
+      cypress: true,
+      requireEnv: false,
+    }),
+  ],
+  // no changes 
+  resolve: {
+    //    
+  },
+})
+
+```
+
+### Configure `nyc` for local coverage evaluation
+
+This is exactly the same as the Webpack version of things, we will not repeat the text here.
+
+### Configure `cypress.config.js` for code coverage, instrument the app for component testing
+
+No additional settings here; we do not need `@cypress/instrument-cra`.
+
+### Configure both `cypress/support/e2e.ts` and `cypress/support/component.ts`
+
+This is exactly the same as the Webpack version of things, we will not repeat the text here.
+
+### Add coverage convenience scripts to package.json
+
+Again, no distinctions here vs the Webpack version of things.
