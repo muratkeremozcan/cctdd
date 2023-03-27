@@ -40,9 +40,9 @@ import "./styles.scss";
 
 function App() {
   return (
-    <DataBrowserRouter>
+    <BrowserRouter>
       <HeaderBar />
-    </DataBrowserRouter>
+    </BrowserRouter>
   );
 }
 
